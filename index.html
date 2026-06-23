@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Check-in Counter</title>
+  <style>
+    :root {
+      --thai-color: #007aff;
+      --non-thai-color: #34c759;
+      --minus-color: #ff3b30;
+    }
+    
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f2f2f7;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* 上部のヘッダーバー */
+    .header {
+      background-color: #ffffff;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      z-index: 10;
+    }
+
+    /* メインコンテナ（2分割） */
+    .container {
+      display: flex;
+      flex: 1;
+      height: 100%;
+    }
+
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .column-thai { border-right: 2px solid #e5e5ea; }
+
+    /* カウントボタン（大きく表示） */
+    .btn-main {
+      flex: 3;
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.1s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .column-thai .btn-main { background-color: var(--thai-color); }
+    .column-non-thai .btn-main { background-color: var(--non-thai-color); }
+
+    .btn-main:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    /* 人数表示 */
+    .counter-display {
+      font-size: 72px;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px 40px;
+      border-radius: 15px;
+      min-width: 120px;
+      text-align: center;
+    }
+
+    /* マイナスボタン（下に配置） */
+    .btn-sub {
+      flex: 1;
+      margin-top: 20px;
+      border: 3px solid var(--minus-color);
+      background-color: #ffffff;
+      color: var(--minus-color);
+      border-radius: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.1s, color 0.1s;
+    }
+
+    .btn-sub:active {
+      background-color: var(--minus-color);
+      color: #ffffff;
+    }
+
+    /* ローディングオーバーレイ */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">Check-in Terminal 1</div>
+  
+  <div class="container">
+    <div class="column column-thai">
+      <button class="btn-main" onclick="sendCount('Thai', 1)">
+        THAI
+        <div class="counter-display" id="count-thai">0</div>
+      </button>
+      <button class="btn-sub" onclick="sendCount('Thai', -1)">− Incorrect entry</button>
+    </div>
+
+    <div class="column column-non-thai">
+      <button class="btn-main" onclick="sendCount('Non-Thai', 1)">
+        Non-Thai
+        <div class="counter-display" id="count-non-thai">0</div>
+      </button>
+      <button class="btn-sub" onclick="sendCount('Non-Thai', -1)">− Incorrect entry</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="loading-overlay">Updating...</div>
+
+  <script>
+    // 【重要】ここに取得したGASのWebアプリURLを入力してください
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwZdfnnf5ncR33oQnARUPDz_PUQWRTegmHJcQigGj0cIYLuWZUtgEXCBYK8kkQWEqeD/exec";
+
+    // 画面起動時に現在のカウントを取得
+    window.addEventListener('DOMContentLoaded', fetchCurrentCounts);
+    
+    // 2台のiPad間での同期を保つため、5秒ごとに裏で自動更新
+    setInterval(fetchCurrentCounts, 5000);
+
+    async function sendCount(type, value) {
+      showLoading(true);
+      try {
+        const response = await fetch(GAS_URL, {
+          method: "POST",
+          mode: "cors",
+          headers: { "Content-Type": "text/plain" }, // GASのCORS制約回避のためプレーンテキストで送る
+          body: JSON.stringify({ type: type, value: value })
+        });
+        const result = await response.json();
+        if (result.status === "success") {
+          updateDisplay(result.data);
+        }
+      } catch (error) {
+        console.error("Error sending data:", error);
+        alert("Failed to update. Please check internet connection.");
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function fetchCurrentCounts() {
+      try {
+        const response = await fetch(GAS_URL);
+        const data = await response.json();
+        updateDisplay(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    function updateDisplay(data) {
+      if(data) {
+        document.getElementById('count-thai').innerText = data.thai;
+        document.getElementById('count-non-thai').innerText = data.nonThai;
+      }
+    }
+
+    function showLoading(show) {
+      // 連続タップによるバグを防ぎたい場合は有効にしてください
+      // 今回は操作性を優先し、裏で同期する形にしています（必要に応じて表示）
+    }
+  </script>
+</body>
+</html>

@@ -108,7 +108,7 @@
       z-index: 3;
     }
 
-    /* ★波紋アニメーションを1.6秒に伸ばして、もっと優雅でスローに */
+    /* ★波紋アニメーションを4.0秒（超・低速スロー）へ拡張 */
     .ripple-effect {
       position: absolute;
       top: 50%;
@@ -118,17 +118,17 @@
       margin-top: -90px;
       margin-left: -90px;
       border-radius: 50%;
-      border: 4px solid rgba(0, 225, 255, 0.85);
-      background: radial-gradient(circle, rgba(0, 225, 255, 0.15) 0%, rgba(0, 225, 255, 0) 70%);
+      border: 3px solid rgba(0, 225, 255, 0.85);
+      background: radial-gradient(circle, rgba(0, 225, 255, 0.1) 0%, rgba(0, 225, 255, 0) 70%);
       pointer-events: none;
       z-index: 4;
-      animation: rippleSpread 1.6s cubic-bezier(0.1, 0.4, 0.2, 1) forwards;
+      animation: rippleSpread 4.0s cubic-bezier(0.1, 0.2, 0.3, 1) forwards;
     }
 
     @keyframes rippleSpread {
-      0% { transform: scale(0); opacity: 1; border-width: 6px; }
-      30% { opacity: 0.9; }
-      100% { transform: scale(2.4); opacity: 0; border-width: 0.5px; }
+      0% { transform: scale(0); opacity: 1; border-width: 5px; }
+      20% { opacity: 0.9; }
+      100% { transform: scale(2.6); opacity: 0; border-width: 0.5px; }
     }
 
     .footprint-zone:active .ripple-button {
@@ -144,27 +144,38 @@
       z-index: 2;
     }
 
+    /* ★マイナスボタンのスタイルを完全刷新（iOSのバグをリセット） */
     .btn-minus {
       position: absolute;
       bottom: 20px;
       left: 20px;
       width: 55px;
       height: 55px;
-      background-color: var(--minus-color);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 14px;
-      font-size: 32px;
-      font-weight: bold;
+      background-color: var(--minus-color) !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      border-radius: 14px !important;
+      
+      /* iOS Safariのボタン標準デザイン・影を完全無効化 */
+      -webkit-appearance: none;
+      appearance: none;
+      box-shadow: none;
+      
+      /* 中の文字を確実に「白」かつ「センター」に固定 */
+      color: #ffffff !important;
+      font-size: 36px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+      
       cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
       backdrop-filter: blur(5px);
       -webkit-backdrop-filter: blur(5px);
       z-index: 10;
     }
     .btn-minus:active {
-      background-color: rgba(255, 59, 48, 0.6);
+      background-color: rgba(255, 59, 48, 0.6) !important;
     }
 
     @keyframes walkUpLeft {
@@ -202,7 +213,7 @@
         <div class="ripple-button"></div>
       </div>
 
-      <button class="btn-minus" onclick="handleClick('Member-Thai', -1)" style="color: #ffffff !important;">−</button>
+      <button class="btn-minus" onclick="handleClick('Member-Thai', -1)">−</button>
     </div>
 
     <div class="card card-non-thai">
@@ -213,7 +224,7 @@
         <div class="ripple-button"></div>
       </div>
 
-      <button class="btn-minus" onclick="handleClick('Member-NonThai', -1)" style="color: #ffffff !important;">−</button>
+      <button class="btn-minus" onclick="handleClick('Member-NonThai', -1)">−</button>
     </div>
   </div>
 
@@ -244,18 +255,18 @@
       sendCountBackend(type, value);
     }
 
-    // ★波紋が出る間隔を0.35秒（350ms）に広げ、1つずつ綺麗に湧き出るようにしました
+    // ★次の波紋が出るまでのディレイも 0.7秒（700ms）ずつに大きく広げました
     function createTripleRipple(zone) {
       const button = zone.querySelector('.ripple-button');
       if (!button) return;
 
-      const delays = [0, 350, 700]; 
+      const delays = [0, 700, 1400]; 
       delays.forEach(delay => {
         setTimeout(() => {
           const ripple = document.createElement('div');
           ripple.className = 'ripple-effect';
           button.appendChild(ripple);
-          setTimeout(() => ripple.remove(), 1600);
+          setTimeout(() => ripple.remove(), 4000); // 4秒後に消去
         }, delay);
       });
     }

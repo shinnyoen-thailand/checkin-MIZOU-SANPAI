@@ -11,8 +11,6 @@
   <title>MEMBER Counter</title>
   <style>
     :root {
-      --thai-color: rgba(0, 122, 255, 0.85);
-      --non-thai-color: rgba(52, 199, 89, 0.85);
       --minus-color: rgba(255, 255, 255, 0.15);
       --bg-glass: rgba(255, 255, 255, 0.25);
     }
@@ -74,6 +72,7 @@
       text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
       margin: 0 0 10px 0;
       text-align: center;
+      z-index: 6;
     }
 
     .counter-display {
@@ -83,7 +82,7 @@
       text-shadow: 2px 4px 15px rgba(0,0,0,0.7);
       font-variant-numeric: tabular-nums;
       margin: 10px 0 20px 0;
-      z-index: 5;
+      z-index: 6;
     }
 
     .footprint-zone {
@@ -94,32 +93,33 @@
       align-items: center;
       cursor: pointer;
       position: relative;
+      z-index: 2;
     }
 
+    /* メインの足跡ボタン（普通の黒に変更） */
     .main-footprint {
-      width: 140px;
-      height: 140px;
-      filter: drop-shadow(2px 4px 10px rgba(0,0,0,0.5));
+      width: 150px;
+      height: 150px;
+      fill: rgba(0, 0, 0, 0.75);
+      filter: drop-shadow(2px 4px 10px rgba(0,0,0,0.4));
       transition: transform 0.1s;
+      z-index: 3;
     }
-    .card-thai .main-footprint { fill: rgba(140, 200, 255, 0.9); }
-    .card-non-thai .main-footprint { fill: rgba(150, 255, 170, 0.9); }
 
     .footprint-zone:active .main-footprint {
-      transform: scale(0.9);
+      transform: scale(0.92);
     }
 
-    /* トコトコ足跡の基本スタイル */
+    /* アニメーション用の足跡（普通の黒に変更） */
     .walking-step {
       position: absolute;
-      width: 60px;
-      height: 60px;
+      width: 150px;
+      height: 150px;
+      fill: rgba(0, 0, 0, 0.75);
       opacity: 0;
       pointer-events: none;
-      z-index: 4;
+      z-index: 1;
     }
-    .card-thai .walking-step { fill: rgba(0, 122, 255, 0.85); }
-    .card-non-thai .walking-step { fill: rgba(52, 199, 89, 0.85); }
 
     .btn-minus {
       position: absolute;
@@ -144,26 +144,25 @@
       background-color: rgba(255, 59, 48, 0.6);
     }
 
-    /* はっきりとその場にスタンプされて残るアニメーション */
-    @keyframes stampLeft {
-      0% { transform: translate(-45px, -40px) rotate(-15deg) scale(0.9); opacity: 0; }
-      5% { opacity: 0.95; } /* ポンと現れる */
-      75% { transform: translate(-45px, -40px) rotate(-15deg) scale(0.9); opacity: 0.95; } /* その場にしっかり残る */
-      100% { transform: translate(-45px, -45px) rotate(-15deg) scale(0.8); opacity: 0; } /* 最後に消える */
+    @keyframes walkUpLeft {
+      0% { transform: translateY(180px) translateX(-40px) rotate(-10deg) scale(0.95); opacity: 0; }
+      10% { opacity: 0.75; }
+      80% { transform: translateY(120px) translateX(-40px) rotate(-10deg) scale(0.95); opacity: 0.75; }
+      100% { transform: translateY(100px) translateX(-40px) rotate(-10deg) scale(0.9); opacity: 0; }
     }
 
-    @keyframes stampRight {
-      0% { transform: translate(45px, -120px) rotate(15deg) scale(0.85); opacity: 0; }
-      5% { opacity: 0.95; }
-      75% { transform: translate(45px, -120px) rotate(15deg) scale(0.85); opacity: 0.95; }
-      100% { transform: translate(45px, -125px) rotate(15deg) scale(0.75); opacity: 0; }
+    @keyframes walkUpRight {
+      0% { transform: translateY(100px) translateX(40px) rotate(10deg) scale(0.95); opacity: 0; }
+      10% { opacity: 0.75; }
+      80% { transform: translateY(40px) translateX(40px) rotate(10deg) scale(0.95); opacity: 0.75; }
+      100% { transform: translateY(20px) translateX(40px) rotate(10deg) scale(0.9); opacity: 0; }
     }
 
-    @keyframes stampFinal {
-      0% { transform: translate(-35px, -200px) rotate(-15deg) scale(0.8); opacity: 0; }
-      5% { opacity: 0.95; }
-      75% { transform: translate(-35px, -200px) rotate(-15deg) scale(0.8); opacity: 0.95; }
-      100% { transform: translate(-35px, -205px) rotate(-15deg) scale(0.7); opacity: 0; }
+    @keyframes walkUpFinal {
+      0% { transform: translateY(20px) translateX(-30px) rotate(-10deg) scale(0.95); opacity: 0; }
+      10% { opacity: 0.75; }
+      80% { transform: translateY(-40px) translateX(-30px) rotate(-10deg) scale(0.95); opacity: 0.75; }
+      100% { transform: translateY(-60px) translateX(-30px) rotate(-10deg) scale(0.9); opacity: 0; }
     }
   </style>
 </head>
@@ -236,22 +235,21 @@
     }
 
     function spawnFootprints(zone, type) {
-      const animations = ['stampLeft', 'stampRight', 'stampFinal'];
-      // タイ側なら左足スタート、ノンタイ側なら右足スタートで交互に歩かせる
+      const animations = ['walkUpLeft', 'walkUpRight', 'walkUpFinal'];
       const svgs = type.includes('Thai') && !type.includes('Non') 
         ? [leftFootSVG, rightFootSVG, leftFootSVG] 
         : [rightFootSVG, leftFootSVG, rightFootSVG];
       
-      const delays = [0, 280, 560]; // テンポよくトコトコ歩く間隔
+      const delays = [0, 450, 900];
 
       animations.forEach((anim, index) => {
         setTimeout(() => {
           const step = document.createElement('div');
           step.className = 'walking-step';
           step.innerHTML = svgs[index];
-          step.style.animation = `${anim} 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
+          step.style.animation = `${anim} 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
           zone.appendChild(step);
-          setTimeout(() => step.remove(), 1200);
+          setTimeout(() => step.remove(), 1500);
         }, delays[index]);
       });
     }

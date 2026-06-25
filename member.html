@@ -11,7 +11,9 @@
   <title>MEMBER Counter</title>
   <style>
     :root {
-      --minus-color: rgba(255, 255, 255, 0.15);
+      /* ②・③ マイナスボタンとガラス背景の定義 */
+      --minus-bg: rgba(230, 230, 230, 0.85); /* 薄いグレー */
+      --minus-border: #2ecc71;                /* みどり */
       --bg-glass: rgba(255, 255, 255, 0.25);
     }
     
@@ -29,6 +31,7 @@
       flex-direction: column;
     }
 
+    /* ④ 3秒長押しリセット用のヘッダー（長押し中に少し色が変わる視覚効果付き） */
     .header {
       background: linear-gradient(135deg, rgba(10, 50, 120, 0.95), rgba(20, 80, 180, 0.95));
       padding: 25px;
@@ -40,6 +43,12 @@
       z-index: 10;
       letter-spacing: 4px;
       text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: background 0.3s;
+      -webkit-touch-callout: none;
+    }
+    .header:active {
+      background: linear-gradient(135deg, rgba(20, 80, 180, 0.95), rgba(40, 110, 220, 0.95));
     }
 
     .container {
@@ -85,17 +94,18 @@
       z-index: 6;
     }
 
+    /* ② サークル周辺エリア（ここではカウントイベントを発生させない） */
     .footprint-zone {
       width: 100%;
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      cursor: pointer;
       position: relative;
       z-index: 1;
     }
 
+    /* ② カウント対象をこの「美しいサークル」のみに限定 */
     .ripple-button {
       position: relative;
       width: 180px;
@@ -106,9 +116,10 @@
       border: 2px solid rgba(255, 255, 255, 0.5);
       transition: transform 0.1s;
       z-index: 3;
+      cursor: pointer;
     }
 
-    /* ★波紋アニメーションを4.0秒（超・低速スロー）へ拡張 */
+    /* 波紋アニメーション（超・低速スロー：4秒間） */
     .ripple-effect {
       position: absolute;
       top: 50%;
@@ -131,7 +142,7 @@
       100% { transform: scale(2.6); opacity: 0; border-width: 0.5px; }
     }
 
-    .footprint-zone:active .ripple-button {
+    .ripple-button:active {
       transform: scale(0.94);
     }
 
@@ -144,26 +155,24 @@
       z-index: 2;
     }
 
-    /* ★マイナスボタンのスタイルを完全刷新（iOSのバグをリセット） */
+    /* ③ マイナスボタン：BOXは薄いグレー、枠はみどり、―は太文字の黒 */
     .btn-minus {
       position: absolute;
       bottom: 20px;
       left: 20px;
       width: 55px;
       height: 55px;
-      background-color: var(--minus-color) !important;
-      border: 1px solid rgba(255,255,255,0.3) !important;
+      background-color: var(--minus-bg) !important;
+      border: 2px solid var(--minus-border) !important;
       border-radius: 14px !important;
       
-      /* iOS Safariのボタン標準デザイン・影を完全無効化 */
       -webkit-appearance: none;
       appearance: none;
       box-shadow: none;
       
-      /* 中の文字を確実に「白」かつ「センター」に固定 */
-      color: #ffffff !important;
+      color: #000000 !important;   /* 太文字の黒 */
       font-size: 36px !important;
-      font-weight: 900 !important;
+      font-weight: 900 !important; 
       line-height: 1 !important;
       
       cursor: pointer;
@@ -175,7 +184,7 @@
       z-index: 10;
     }
     .btn-minus:active {
-      background-color: rgba(255, 59, 48, 0.6) !important;
+      background-color: rgba(255, 59, 48, 0.3) !important; /* タップ時は少し赤っぽく */
     }
 
     @keyframes walkUpLeft {
@@ -202,75 +211,92 @@
 </head>
 <body>
 
-  <div class="header">MEMBER</div>
+  <div class="header" id="header-btn" onmousedown="startResetTimer()" onmouseup="clearResetTimer()" onmouseleave="clearResetTimer()" ontouchstart="startResetTimer()" ontouchend="clearResetTimer()">MEMBER</div>
   
   <div class="container">
     <div class="card card-thai">
       <h2 class="card-title">THAI</h2>
       <div class="counter-display" id="count-m-thai">0</div>
       
-      <div class="footprint-zone" onclick="handleClick('Member-Thai', 1, this)">
-        <div class="ripple-button"></div>
+      <div class="footprint-zone">
+        <div class="ripple-button" onclick="handleCircleClick('Member-Thai', this)"></div>
       </div>
 
-      <button class="btn-minus" onclick="handleClick('Member-Thai', -1)">−</button>
+      <button class="btn-minus" onclick="handleMinusClick('Member-Thai')">−</button>
     </div>
 
     <div class="card card-non-thai">
       <h2 class="card-title">NON THAI</h2>
       <div class="counter-display" id="count-m-non-thai">0</div>
       
-      <div class="footprint-zone" onclick="handleClick('Member-NonThai', 1, this)">
-        <div class="ripple-button"></div>
+      <div class="footprint-zone">
+        <div class="ripple-button" onclick="handleCircleClick('Member-NonThai', this)"></div>
       </div>
 
-      <button class="btn-minus" onclick="handleClick('Member-NonThai', -1)">−</button>
+      <button class="btn-minus" onclick="handleMinusClick('Member-NonThai')">−</button>
     </div>
   </div>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxIZEpf7CUc8tx0NUEKLmMIZqHpm8nPTfiQoRf9RNM4v9be4-wupokeSOI6CTagOc5w/exec";
+    // ① スプレッドシートを廃止し、端末内のlocalStorageで爆速管理
+    let currentCounts = {
+      mThai: parseInt(localStorage.getItem('mThai')) || 0,
+      mNonThai: parseInt(localStorage.getItem('mNonThai')) || 0
+    };
 
-    let currentCounts = { mThai: 0, mNonThai: 0 };
+    // 起動時に画面表示を初期化
+    window.addEventListener('DOMContentLoaded', () => {
+      updateDisplay();
+    });
 
-    window.addEventListener('DOMContentLoaded', fetchCurrentCounts);
-    setInterval(fetchCurrentCounts, 10000);
-
-    const leftFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(0,0,0,0.78);"><path d="M52,85 C45,85 42,75 44,62 C46,52 38,44 40,34 C42,26 52,25 56,32 C60,39 56,48 58,58 C60,68 60,85 52,85 Z"/><circle cx="61" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="41" cy="19" r="4"/><circle cx="33" cy="24" r="3.5"/><circle cx="27" cy="31" r="3"/></svg>`;
-    const rightFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(0,0,0,0.78);"><path d="M48,85 C55,85 58,75 56,62 C54,52 62,44 60,34 C58,26 48,25 44,32 C40,39 44,48 42,58 C40,68 40,85 48,85 Z"/><circle cx="39" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="59" cy="19" r="4"/><circle cx="67" cy="24" r="3.5"/><circle cx="73" cy="31" r="3"/></svg>`;
-
-    function handleClick(type, value, element) {
-      if (type === 'Member-Thai') {
-        currentCounts.mThai = Math.max(0, currentCounts.mThai + value);
-        document.getElementById('count-m-thai').innerText = currentCounts.mThai;
-      } else if (type === 'Member-NonThai') {
-        currentCounts.mNonThai = Math.max(0, currentCounts.mNonThai + value);
-        document.getElementById('count-m-non-thai').innerText = currentCounts.mNonThai;
-      }
-
-      if (value === 1 && element) {
-        createTripleRipple(element);
-        spawnFootprints(element);
-      }
-      sendCountBackend(type, value);
+    function updateDisplay() {
+      document.getElementById('count-m-thai').innerText = currentCounts.mThai;
+      document.getElementById('count-m-non-thai').innerText = currentCounts.mNonThai;
     }
 
-    // ★次の波紋が出るまでのディレイも 0.7秒（700ms）ずつに大きく広げました
-    function createTripleRipple(zone) {
-      const button = zone.querySelector('.ripple-button');
-      if (!button) return;
+    // ② サークルが押されたときの処理
+    function handleCircleClick(type, circleElement) {
+      if (type === 'Member-Thai') {
+        currentCounts.mThai++;
+        localStorage.setItem('mThai', currentCounts.mThai);
+      } else {
+        currentCounts.mNonThai++;
+        localStorage.setItem('mNonThai', currentCounts.mNonThai);
+      }
+      updateDisplay();
 
+      // エフェクトは親のzoneを基準に発生させる
+      const zone = circleElement.parentElement;
+      createTripleRipple(circleElement);
+      spawnFootprints(zone);
+    }
+
+    // マイナスボタンの処理
+    function handleMinusClick(type) {
+      if (type === 'Member-Thai') {
+        currentCounts.mThai = Math.max(0, currentCounts.mThai - 1);
+        localStorage.setItem('mThai', currentCounts.mThai);
+      } else {
+        currentCounts.mNonThai = Math.max(0, currentCounts.mNonThai - 1);
+        localStorage.setItem('mNonThai', currentCounts.mNonThai);
+      }
+      updateDisplay();
+    }
+
+    // 波紋エフェクト
+    function createTripleRipple(button) {
       const delays = [0, 700, 1400]; 
       delays.forEach(delay => {
         setTimeout(() => {
           const ripple = document.createElement('div');
           ripple.className = 'ripple-effect';
           button.appendChild(ripple);
-          setTimeout(() => ripple.remove(), 4000); // 4秒後に消去
+          setTimeout(() => ripple.remove(), 4000);
         }, delay);
       });
     }
 
+    // 足跡エフェクト
     function spawnFootprints(zone) {
       const animations = ['walkUpLeft', 'walkUpRight', 'walkUpFinal'];
       const svgs = [leftFootSVG, rightFootSVG, leftFootSVG];
@@ -288,28 +314,26 @@
       });
     }
 
-    async function sendCountBackend(type, value) {
-      try {
-        await fetch(GAS_URL, {
-          method: "POST",
-          mode: "cors",
-          headers: { "Content-Type": "text/plain" },
-          body: JSON.stringify({ type: type, value: value })
-        });
-      } catch (error) { console.error("Backend send failed:", error); }
+    const leftFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(0,0,0,0.78);"><path d="M52,85 C45,85 42,75 44,62 C46,52 38,44 40,34 C42,26 52,25 56,32 C60,39 56,48 58,58 C60,68 60,85 52,85 Z"/><circle cx="61" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="41" cy="19" r="4"/><circle cx="33" cy="24" r="3.5"/><circle cx="27" cy="31" r="3"/></svg>`;
+    const rightFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(0,0,0,0.78);"><path d="M48,85 C55,85 58,75 56,62 C54,52 62,44 60,34 C58,26 48,25 44,32 C40,39 44,48 42,58 C40,68 40,85 48,85 Z"/><circle cx="39" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="59" cy="19" r="4"/><circle cx="67" cy="24" r="3.5"/><circle cx="73" cy="31" r="3"/></svg>`;
+
+    // ④ 3秒長押しタイマー処理
+    let resetTimer = null;
+    function startResetTimer() {
+      resetTimer = setTimeout(() => {
+        if (confirm("Reset MEMBER counts to 0?")) {
+          currentCounts.mThai = 0;
+          currentCounts.mNonThai = 0;
+          localStorage.setItem('mThai', 0);
+          localStorage.setItem('mThai', 0);
+          localStorage.setItem('mNonThai', 0);
+          updateDisplay();
+        }
+      }, 3000); // 3秒(3000ms)
     }
 
-    async function fetchCurrentCounts() {
-      try {
-        const response = await fetch(GAS_URL);
-        const data = await response.json();
-        if (data) {
-          currentCounts.mThai = data.mThai;
-          currentCounts.mNonThai = data.mNonThai;
-          document.getElementById('count-m-thai').innerText = currentCounts.mThai;
-          document.getElementById('count-m-non-thai').innerText = currentCounts.mNonThai;
-        }
-      } catch (error) { console.error("Fetch failed:", error); }
+    function clearResetTimer() {
+      clearTimeout(resetTimer);
     }
   </script>
 </body>

@@ -33,20 +33,29 @@
       flex-direction: column;
     }
 
-    /* 変更：落ち着いたチャコールグレーからライトシルバーへの高級グラデーション */
+    /* 変更：極限までぼかしたアブストラクトなホワイト＆ゴールドのボケグラデーション */
     .header {
-      background: linear-gradient(135deg, #2a2e35 0%, #6c757d 100%);
+      position: relative;
       padding: 25px;
       text-align: center;
       font-size: 55px;
       font-weight: 900;
       color: #ffffff;
-      box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+      box-shadow: 0 6px 30px rgba(0,0,0,0.4);
       z-index: 10;
       letter-spacing: 4px;
-      text-shadow: 1px 2px 5px rgba(0,0,0,0.4);
-      position: relative;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      text-shadow: 1px 2px 8px rgba(0,0,0,0.4);
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      
+      /* レイヤーを重ねて美しい温かみのあるボケ感を表現 */
+      background: #3d3a37;
+      background-image: 
+        radial-gradient(at 15% 25%, rgba(244, 241, 234, 0.35) 0px, transparent 50%),
+        radial-gradient(at 75% 30%, rgba(212, 175, 55, 0.35) 0px, transparent 60%),
+        radial-gradient(at 60% 85%, rgba(61, 58, 55, 0.9) 0px, transparent 70%);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
     }
 
     .btn-reset {
@@ -65,6 +74,7 @@
       transition: opacity 0.2s, transform 0.1s;
       -webkit-appearance: none;
       appearance: none;
+      z-index: 11;
     }
     .btn-reset:active {
       opacity: 0.5;
@@ -73,7 +83,7 @@
     .btn-reset svg {
       width: 36px;
       height: 36px;
-      fill: rgba(255, 255, 255, 0.9);
+      fill: rgba(255, 255, 255, 0.95);
       filter: drop-shadow(1px 2px 4px rgba(0,0,0,0.3));
     }
 

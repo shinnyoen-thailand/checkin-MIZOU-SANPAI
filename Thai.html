@@ -33,62 +33,61 @@
       justify-content: center;
     }
 
-    /* 🌟 中央上部の総合累計カウンター */
+    /* 🌟 変更：明るい背景でも金色が映える「深みのあるすりガラスBOX」 */
     .grand-total-container {
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: rgba(35, 30, 25, 0.65); /* 暗めのすりガラスでコントラストを確保 */
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 50px;
-      padding: 15px 40px;
+      padding: 15px 45px;
       margin-top: 30px;
       margin-bottom: -10px;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25), inset 0 0 15px rgba(255,255,255,0.4);
+      box-shadow: 0 12px 35px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.1);
       z-index: 50;
       animation: pulseGlow 3s infinite alternate;
     }
 
     @keyframes pulseGlow {
-      0% { box-shadow: 0 10px 30px rgba(0,0,0,0.25), inset 0 0 15px rgba(255,255,255,0.4); }
-      100% { box-shadow: 0 10px 35px rgba(212, 175, 55, 0.4), inset 0 0 20px rgba(255,255,255,0.6); }
+      0% { box-shadow: 0 12px 35px rgba(0,0,0,0.4), inset 0 0 20px rgba(255,255,255,0.1); }
+      100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.5), inset 0 0 25px rgba(212, 175, 55, 0.2); }
     }
 
-    /* 🎨 Total Attendance文字（上品なゴールドの輝き） */
+    /* 🎨 変更：ゴールドの文字をよりくっきり強調（ブライトゴールド） */
     .grand-total-title {
       font-size: 18px;
       font-weight: 900;
-      color: #ffffff;
+      color: #ffd700; /* 明るい純金カラー */
       text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 0 0 10px rgba(212, 175, 55, 0.8), 1px 1px 4px rgba(0,0,0,0.5);
+      letter-spacing: 2.5px;
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 2px 2px 4px rgba(0,0,0,0.8);
       margin: 0;
     }
 
-    /* 🪷 数字とロータスを横並びにするコンテナ */
     .grand-total-display-wrapper {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 15px;
-      margin-top: 5px;
+      gap: 18px;
+      margin-top: 6px;
     }
 
     .grand-total-number {
-      font-size: 45px;
+      font-size: 48px;
       font-weight: 800;
       color: #ffffff;
       font-variant-numeric: tabular-nums;
-      text-shadow: 1px 2px 10px rgba(0,0,0,0.5);
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.4), 2px 3px 8px rgba(0,0,0,0.9);
       line-height: 1;
     }
 
-    /* 🪷 ロータスアイコン（SVG）のスタイル */
+    /* 🪷 変更：ピンクのロータス（蓮の花） */
     .lotus-icon {
-      width: 32px;
-      height: 32px;
-      fill: #ffffff;
-      filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.7)) drop-shadow(1px 1px 3px rgba(0,0,0,0.4));
+      width: 36px;
+      height: 36px;
+      fill: #ff7bb5; /* 鮮やかで上品な蓮のピンク */
+      filter: drop-shadow(0 0 10px rgba(255, 123, 181, 0.8)) drop-shadow(1px 2px 4px rgba(0,0,0,0.6));
     }
 
     /* 📦 メインコンテナ */
@@ -116,7 +115,6 @@
       box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     }
 
-    /* 🎨 MEMBER文字スタイル（青いネオンシャドウ） */
     .title-member {
       font-size: 50px;
       font-weight: 900;
@@ -128,7 +126,6 @@
       letter-spacing: 1px;
     }
 
-    /* 🎨 VISITOR文字スタイル（緑のネオンシャドウ） */
     .title-visitor {
       font-size: 50px;
       font-weight: 900;
@@ -274,7 +271,6 @@
     <div class="card">
       <h2 class="title-member">MEMBER</h2>
       <div class="counter-display" id="count-member">0</div>
-      
       <div class="footprint-zone">
         <div class="ripple-button" onclick="handleCounterClick('member', this)"></div>
       </div>
@@ -283,7 +279,6 @@
     <div class="card">
       <h2 class="title-visitor">VISITOR</h2>
       <div class="counter-display" id="count-visitor">0</div>
-      
       <div class="footprint-zone">
         <div class="ripple-button btn-visitor-color" onclick="handleCounterClick('visitor', this)"></div>
       </div>
@@ -293,8 +288,7 @@
   <div id="status-message"></div>
 
   <script>
-    // 🔗 GAS Web App URL
-    const gasUrl = 'https://script.google.com/macros/s/AKfycbyBnDj17Ni5-UkB0xK3CQrAk7DNBgY2Nm6bJ207lQ1TXnowDPjF6TujSLKa1aqjBvsD/exec';
+    const gasUrl = 'https://script.google.com/macros/s/AKfycbxVsG2r7sZksb1etdkgvKLsxX0stOIufyqMYumgyPi4ZSa8_0UZb9LtugcXLlikFzHz/exec';
 
     let requestQueue = [];
     let isSending = false;

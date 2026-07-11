@@ -34,7 +34,7 @@
       position: relative;
     }
 
-    /* 🌟 中央上部：高級感のあるすりガラスBOX */
+    /* 🌟 中央上部：高級感のあるすりガラスBOX（長押し可能であることをユーザーに伝えないシークレット仕様） */
     .grand-total-container {
       background: rgba(30, 25, 20, 0.7);
       backdrop-filter: blur(25px);
@@ -48,6 +48,9 @@
       box-shadow: 0 12px 35px rgba(0,0,0,0.45), inset 0 0 20px rgba(255,255,255,0.05);
       z-index: 50;
       animation: pulseGlow 3s infinite alternate;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
     @keyframes pulseGlow {
@@ -263,7 +266,7 @@
       height: 100%;
       overflow: hidden;
       pointer-events: none;
-      z-index: 999; /* 最前面で舞わせる */
+      z-index: 999;
     }
 
     .sange-petal {
@@ -271,27 +274,16 @@
       top: -60px;
       width: 50px;
       height: 50px;
-      fill-opacity: 0.85; /* 和紙・シルクのような半透明感 */
+      fill-opacity: 0.85;
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
       animation: sangeFall linear forwards;
     }
 
-    /* ひらひらと回転しながら優雅に舞い降りる仏教的なアニメーション */
     @keyframes sangeFall {
-      0% {
-        transform: translateY(0) translateX(0) rotate(0deg) scale(1);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(105vh) translateX(100px) rotate(720deg) scale(0.8);
-        opacity: 0;
-      }
+      0% { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(105vh) translateX(100px) rotate(720deg) scale(0.8); opacity: 0; }
     }
   </style>
 </head>
@@ -314,29 +306,19 @@
       </linearGradient>
 
       <radialGradient id="sange-pink" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="70%" stop-color="#fff0f5"/>
-        <stop offset="100%" stop-color="#fba3c8"/>
+        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#fff0f5"/><stop offset="100%" stop-color="#fba3c8"/>
       </radialGradient>
       <radialGradient id="sange-blue" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="70%" stop-color="#f0f8ff"/>
-        <stop offset="100%" stop-color="#aadaf8"/>
+        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#f0f8ff"/><stop offset="100%" stop-color="#aadaf8"/>
       </radialGradient>
       <radialGradient id="sange-green" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="70%" stop-color="#f5fffa"/>
-        <stop offset="100%" stop-color="#b4dcad"/>
+        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#f5fffa"/><stop offset="100%" stop-color="#b4dcad"/>
       </radialGradient>
       <radialGradient id="sange-yellow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="70%" stop-color="#fffff0"/>
-        <stop offset="100%" stop-color="#fcefa6"/>
+        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#fffff0"/><stop offset="100%" stop-color="#fcefa6"/>
       </radialGradient>
       <radialGradient id="sange-purple" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="70%" stop-color="#f8f4ff"/>
-        <stop offset="100%" stop-color="#d1c2f0"/>
+        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#f8f4ff"/><stop offset="100%" stop-color="#d1c2f0"/>
       </radialGradient>
 
       <g id="sange-petal-shape">
@@ -353,7 +335,7 @@
 
   <div class="sange-container" id="sange-layer"></div>
 
-  <div class="grand-total-container">
+  <div class="grand-total-container" id="grand-total-box">
     <div class="grand-total-title">Total Attendance</div>
     <div class="grand-total-display-wrapper">
       
@@ -422,14 +404,61 @@
 
     let requestQueue = [];
     let isSending = false;
-    
-    // 🌸 散華が一度発火したかを記録するフラグ
     let hasCelebrated = false; 
 
     window.addEventListener('DOMContentLoaded', () => {
       updateDisplay();
+      setupLongPress(); // 🌟 長押しイベントの初期化
       window.addEventListener('contextmenu', function(e) { e.preventDefault(); }, { passive: false });
     });
+
+    // 🌟 セキュリティ：長押しによるカウンターリセット管理システム
+    function setupLongPress() {
+      const target = document.getElementById('grand-total-box');
+      let pressTimer;
+
+      const startPress = (e) => {
+        // 誤発火を防ぐため3秒（3000ms）ホールド
+        pressTimer = setTimeout(() => {
+          triggerResetAuth();
+        }, 3000);
+      };
+
+      const cancelPress = () => {
+        clearTimeout(pressTimer);
+      };
+
+      // iPadのタッチイベント、およびPCマウス両対応
+      target.addEventListener('touchstart', startPress, { passive: true });
+      target.addEventListener('touchend', cancelPress, { passive: true });
+      target.addEventListener('touchmove', cancelPress, { passive: true });
+      target.addEventListener('mousedown', startPress);
+      target.addEventListener('mouseup', cancelPress);
+      target.addEventListener('mouseleave', cancelPress);
+    }
+
+    // 🌟 パスワード認証およびローカルストレージ初期化処理
+    function triggerResetAuth() {
+      const password = prompt("Please enter the reset password:");
+      
+      if (password === "0425") {
+        // すべての数値をクリア
+        localStorage.setItem('today_member', '0');
+        localStorage.setItem('today_visitor', '0');
+        localStorage.setItem('total_member', '0');
+        localStorage.setItem('total_visitor', '0');
+        
+        // 散華の再生記録もクリア
+        hasCelebrated = false;
+        
+        updateDisplay();
+        alert("All counters have been successfully reset to 0.");
+        
+        // サーバー（GAS）側にも同期用ダミーまたはリセット信号を送る場合はここに追記可能
+      } else if (password !== null) {
+        alert("Incorrect password. Reset canceled.");
+      }
+    }
 
     function getOrCreateDeviceId() {
       let id = localStorage.getItem('deviceId');
@@ -448,7 +477,6 @@
         localStorage.setItem('today_member', '0');
         localStorage.setItem('today_visitor', '0');
         localStorage.setItem('lastSavedDate', todayStr);
-        // 日付が変わったら散華フラグもリセットして翌日また鳴らせるようにする
         hasCelebrated = false;
       }
     }
@@ -467,42 +495,34 @@
       document.getElementById('count-visitor').innerText = tVisitor;
       document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
 
-      // 🌸 【テスト用】累計が10人になった瞬間に散華を舞わせる
+      // 【テスト用】10人で散華が舞う設定
       if (grandTotal === 10 && !hasCelebrated) {
         triggerSangeEffect();
-        hasCelebrated = true; // 連打しても1回だけ動くようにロック
+        hasCelebrated = true; 
       }
     }
 
-    // 🌸 散華（さんげ）を生成して降らせる関数
     function triggerSangeEffect() {
       const sangeLayer = document.getElementById('sange-layer');
       const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
-      const petalCount = 35; // 画面に舞わせる枚数
+      const petalCount = 35;
 
       for (let i = 0; i < petalCount; i++) {
-        // ランダムな色の選定
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        
-        // SVGの動的生成
         const svgNS = "http://www.w3.org/2000/svg";
         const svgPetal = document.createElementNS(svgNS, "svg");
         svgPetal.setAttribute("class", "sange-petal");
         svgPetal.setAttribute("viewBox", "0 0 50 50");
-        
-        // 5種類のグラデーションカラーをランダムに適用
         svgPetal.setAttribute("fill", `url(#sange-${randomColor})`);
 
-        // 事前に定義した共通の花びらシェイプを読み込む
         const useTag = document.createElementNS(svgNS, "use");
         useTag.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#sange-petal-shape");
         svgPetal.appendChild(useTag);
 
-        // 舞い落ちるスタート位置・速度・サイズをランダムにばらつかせる
-        const startLeft = Math.random() * 100; // 画面の横幅0〜100%
-        const animationDelay = Math.random() * 3; // 0〜3秒遅れてスタート
-        const animationDuration = 4 + Math.random() * 3; // 落ちる速度 4〜7秒
-        const size = 30 + Math.random() * 25; // 花びらの大きさ 30px〜55px
+        const startLeft = Math.random() * 100;
+        const animationDelay = Math.random() * 3;
+        const animationDuration = 4 + Math.random() * 3;
+        const size = 30 + Math.random() * 25;
 
         svgPetal.style.left = `${startLeft}%`;
         svgPetal.style.width = `${size}px`;
@@ -512,7 +532,6 @@
 
         sangeLayer.appendChild(svgPetal);
 
-        // アニメーションが終わったらメモリ解放のため削除
         setTimeout(() => {
           svgPetal.remove();
         }, (animationDelay + animationDuration) * 1000);

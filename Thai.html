@@ -33,7 +33,7 @@
       justify-content: center;
     }
 
-    /* 🌟 中央上部：高級感のあるダーク系すりガラスBOX */
+    /* 🌟 中央上部：すりガラスBOX */
     .grand-total-container {
       background: rgba(30, 25, 20, 0.7);
       backdrop-filter: blur(25px);
@@ -54,14 +54,13 @@
       100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4), inset 0 0 25px rgba(212, 175, 55, 0.15); }
     }
 
-    /* 🎨 変更：白抜き文字 ＋ 輪郭をぼかしたゴールドシャドウ */
+    /* 🎨 白抜き文字 ＋ 輪郭をぼかしたゴールドシャドウ */
     .grand-total-title {
       font-size: 18px;
       font-weight: 900;
-      color: #ffffff; /* 白抜き文字 */
+      color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 2.5px;
-      /* 幾重にも重ねることで、ゴールドのボカシ輪郭を表現 */
       text-shadow: 
         0 0 4px rgba(212, 175, 55, 0.9), 
         0 0 10px rgba(212, 175, 55, 0.8), 
@@ -87,11 +86,12 @@
       line-height: 1;
     }
 
-    /* 🪷 変更：再現したリアルな蓮の花の絵 */
-    .lotus-art {
-      width: 52px;
-      height: 52px;
-      filter: drop-shadow(0 0 8px rgba(255, 74, 149, 0.6)) drop-shadow(1px 2px 3px rgba(0,0,0,0.6));
+    /* 🪷 変更：横向きの凛とした蓮のアートサイズ調整 */
+    .lotus-side-art {
+      width: 54px;
+      height: 54px;
+      /* 柔らかな光と穏やかな陰影を落とすフィルター */
+      filter: drop-shadow(0 2px 8px rgba(255, 182, 193, 0.5)) drop-shadow(1px 2px 4px rgba(0,0,0,0.5));
     }
 
     /* 📦 メインコンテナ */
@@ -258,15 +258,18 @@
 
   <svg style="width:0; height:0; position:absolute;">
     <defs>
-      <linearGradient id="petal-grad" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0%" stop-color="#e62173"/>
-        <stop offset="60%" stop-color="#ff63a8"/>
-        <stop offset="100%" stop-color="#ffb3d1"/>
+      <linearGradient id="soft-pink-grad" x1="0.3" y1="0.9" x2="0.7" y2="0.1">
+        <stop offset="0%" stop-color="#fca6cc" stop-opacity="0.9"/>
+        <stop offset="50%" stop-color="#fecada" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.95"/>
       </linearGradient>
-      <linearGradient id="center-grad" x1="0" y1="1" x2="0" y2="0">
-        <stop offset="0%" stop-color="#d4a317"/>
-        <stop offset="70%" stop-color="#fff275"/>
-        <stop offset="100%" stop-color="#fffae0"/>
+      <linearGradient id="back-pink-grad" x1="0.2" y1="0.8" x2="0.8" y2="0.2">
+        <stop offset="0%" stop-color="#eb7fa7" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="#fdbcd2" stop-opacity="0.75"/>
+      </linearGradient>
+      <linearGradient id="nature-green-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#4f7942"/>
+        <stop offset="100%" stop-color="#6b8e23"/>
       </linearGradient>
     </defs>
   </svg>
@@ -275,48 +278,42 @@
     <div class="grand-total-title">Total Attendance</div>
     <div class="grand-total-display-wrapper">
       
-      <svg class="lotus-art" viewBox="0 0 100 100">
-        <g transform="translate(0, 5)">
-          <path d="M50 15 C38 25 15 40 18 55 C20 65 35 60 50 45 C65 60 80 65 82 55 C85 40 62 25 50 15 Z" fill="#c40e59" opacity="0.8"/>
-          <path d="M50 90 C15 85 5 50 15 45 C25 40 40 65 50 90 Z" fill="url(#petal-grad)"/>
-          <path d="M50 90 C85 85 95 50 85 45 C75 40 60 65 50 90 Z" fill="url(#petal-grad)"/>
-          <path d="M50 85 C5 75 -5 60 8 50 C20 40 40 60 50 85 Z" fill="url(#petal-grad)"/>
-          <path d="M50 85 C95 75 105 60 92 50 C80 40 60 60 50 85 Z" fill="url(#petal-grad)"/>
-          <path d="M50 25 C32 35 22 50 26 62 C30 72 45 70 50 55 Z" fill="url(#petal-grad)" opacity="0.95"/>
-          <path d="M50 25 C68 35 78 50 74 62 C70 72 55 70 50 55 Z" fill="url(#petal-grad)" opacity="0.95"/>
-          <path d="M50 32 C38 42 30 55 35 68 C40 75 48 72 50 62 Z" fill="url(#petal-grad)"/>
-          <path d="M50 32 C62 42 70 55 65 68 C60 75 52 72 50 62 Z" fill="url(#petal-grad)"/>
-          <path d="M50 88 C30 88 25 72 38 65 C45 60 48 75 50 88 Z" fill="url(#petal-grad)"/>
-          <path d="M50 88 C70 88 75 72 62 65 C55 60 52 75 50 88 Z" fill="url(#petal-grad)"/>
-          <path d="M50 92 C35 92 35 78 50 72 C65 78 65 92 50 92 Z" fill="url(#petal-grad)"/>
-          <ellipse cx="50" cy="54" rx="14" ry="10" fill="url(#center-grad)"/>
-          <circle cx="50" cy="50" r="1" fill="#614603"/><circle cx="45" cy="51" r="1" fill="#614603"/><circle cx="55" cy="51" r="1" fill="#614603"/>
-          <circle cx="42" cy="55" r="1" fill="#614603"/><circle cx="50" cy="55" r="1" fill="#614603"/><circle cx="58" cy="55" r="1" fill="#614603"/>
-          <circle cx="46" cy="58" r="1" fill="#614603"/><circle cx="54" cy="58" r="1" fill="#614603"/>
-        </g>
+      <svg class="lotus-side-art" viewBox="0 0 100 100">
+        <path d="M42 95 C43 80 46 72 48 64" fill="none" stroke="url(#nature-green-grad)" stroke-width="3" stroke-linecap="round"/>
+        
+        <path d="M48 62 C34 50 20 42 22 30 C25 16 42 25 48 40" fill="url(#back-pink-grad)"/>
+        <path d="M48 62 C38 40 32 25 40 12 C48 2 54 18 52 38" fill="url(#back-pink-grad)"/>
+        <path d="M48 64 C56 42 60 26 70 16 C78 8 80 24 64 44" fill="url(#back-pink-grad)"/>
+
+        <path d="M48 65 C42 63 36 55 38 48 C44 54 48 60 48 65 Z" fill="url(#nature-green-grad)"/>
+        <path d="M48 65 C52 64 58 58 60 50 C54 55 50 61 48 65 Z" fill="url(#nature-green-grad)"/>
+        <path d="M48 65 C46 68 50 68 48 65" stroke="url(#nature-green-grad)" stroke-width="4" stroke-linecap="round"/>
+
+        <path d="M47 63 C36 54 28 48 32 34 C36 22 46 32 49 45 C52 30 58 18 66 22 C74 26 66 42 51 58" fill="url(#soft-pink-grad)"/>
+        <path d="M48 63 C42 58 40 45 45 36 C50 25 54 38 52 50" fill="url(#soft-pink-grad)"/>
+        <path d="M49 61 C58 56 74 52 82 40 C90 28 82 34 62 52" fill="url(#soft-pink-grad)"/>
+        <path d="M48 63 C58 62 82 64 88 54 C94 44 84 48 60 58" fill="url(#soft-pink-grad)"/>
+        <path d="M47 64 C42 64 36 62 38 56 C41 50 46 56 47 64 Z" fill="url(#soft-pink-grad)"/>
       </svg>
       
       <div class="grand-total-number" id="grand-total">0</div>
       
-      <svg class="lotus-art" viewBox="0 0 100 100">
-        <g transform="translate(0, 5)">
-          <path d="M50 15 C38 25 15 40 18 55 C20 65 35 60 50 45 C65 60 80 65 82 55 C85 40 62 25 50 15 Z" fill="#c40e59" opacity="0.8"/>
-          <path d="M50 90 C15 85 5 50 15 45 C25 40 40 65 50 90 Z" fill="url(#petal-grad)"/>
-          <path d="M50 90 C85 85 95 50 85 45 C75 40 60 65 50 90 Z" fill="url(#petal-grad)"/>
-          <path d="M50 85 C5 75 -5 60 8 50 C20 40 40 60 50 85 Z" fill="url(#petal-grad)"/>
-          <path d="M50 85 C95 75 105 60 92 50 C80 40 60 60 50 85 Z" fill="url(#petal-grad)"/>
-          <path d="M50 25 C32 35 22 50 26 62 C30 72 45 70 50 55 Z" fill="url(#petal-grad)" opacity="0.95"/>
-          <path d="M50 25 C68 35 78 50 74 62 C70 72 55 70 50 55 Z" fill="url(#petal-grad)" opacity="0.95"/>
-          <path d="M50 32 C38 42 30 55 35 68 C40 75 48 72 50 62 Z" fill="url(#petal-grad)"/>
-          <path d="M50 32 C62 42 70 55 65 68 C60 75 52 72 50 62 Z" fill="url(#petal-grad)"/>
-          <path d="M50 88 C30 88 25 72 38 65 C45 60 48 75 50 88 Z" fill="url(#petal-grad)"/>
-          <path d="M50 88 C70 88 75 72 62 65 C55 60 52 75 50 88 Z" fill="url(#petal-grad)"/>
-          <path d="M50 92 C35 92 35 78 50 72 C65 78 65 92 50 92 Z" fill="url(#petal-grad)"/>
-          <ellipse cx="50" cy="54" rx="14" ry="10" fill="url(#center-grad)"/>
-          <circle cx="50" cy="50" r="1" fill="#614603"/><circle cx="45" cy="51" r="1" fill="#614603"/><circle cx="55" cy="51" r="1" fill="#614603"/>
-          <circle cx="42" cy="55" r="1" fill="#614603"/><circle cx="50" cy="55" r="1" fill="#614603"/><circle cx="58" cy="55" r="1" fill="#614603"/>
-          <circle cx="46" cy="58" r="1" fill="#614603"/><circle cx="54" cy="58" r="1" fill="#614603"/>
-        </g>
+      <svg class="lotus-side-art" viewBox="0 0 100 100">
+        <path d="M42 95 C43 80 46 72 48 64" fill="none" stroke="url(#nature-green-grad)" stroke-width="3" stroke-linecap="round"/>
+        
+        <path d="M48 62 C34 50 20 42 22 30 C25 16 42 25 48 40" fill="url(#back-pink-grad)"/>
+        <path d="M48 62 C38 40 32 25 40 12 C48 2 54 18 52 38" fill="url(#back-pink-grad)"/>
+        <path d="M48 64 C56 42 60 26 70 16 C78 8 80 24 64 44" fill="url(#back-pink-grad)"/>
+
+        <path d="M48 65 C42 63 36 55 38 48 C44 54 48 60 48 65 Z" fill="url(#nature-green-grad)"/>
+        <path d="M48 65 C52 64 58 58 60 50 C54 55 50 61 48 65 Z" fill="url(#nature-green-grad)"/>
+        <path d="M48 65 C46 68 50 68 48 65" stroke="url(#nature-green-grad)" stroke-width="4" stroke-linecap="round"/>
+
+        <path d="M47 63 C36 54 28 48 32 34 C36 22 46 32 49 45 C52 30 58 18 66 22 C74 26 66 42 51 58" fill="url(#soft-pink-grad)"/>
+        <path d="M48 63 C42 58 40 45 45 36 C50 25 54 38 52 50" fill="url(#soft-pink-grad)"/>
+        <path d="M49 61 C58 56 74 52 82 40 C90 28 82 34 62 52" fill="url(#soft-pink-grad)"/>
+        <path d="M48 63 C58 62 82 64 88 54 C94 44 84 48 60 58" fill="url(#soft-pink-grad)"/>
+        <path d="M47 64 C42 64 36 62 38 56 C41 50 46 56 47 64 Z" fill="url(#soft-pink-grad)"/>
       </svg>
     </div>
   </div>
@@ -342,7 +339,6 @@
   <div id="status-message"></div>
 
   <script>
-    // 🔗 前回のGAS Web App URLをここに貼り付けてください
     const gasUrl = 'https://script.google.com/macros/s/AKfycbxVsG2r7sZksb1etdkgvKLsxX0stOIufyqMYumgyPi4ZSa8_0UZb9LtugcXLlikFzHz/exec';
 
     let requestQueue = [];

@@ -34,7 +34,7 @@
       position: relative;
     }
 
-    /* 🌟 中央上部：高級感のあるすりガラスBOX（長押し可能であることをユーザーに伝えないシークレット仕様） */
+    /* 🌟 中央上部：Total Attendance */
     .grand-total-container {
       background: rgba(30, 25, 20, 0.7);
       backdrop-filter: blur(25px);
@@ -49,8 +49,10 @@
       z-index: 50;
       animation: pulseGlow 3s infinite alternate;
       cursor: pointer;
-      -webkit-user-select: none;
-      user-select: none;
+      
+      -webkit-touch-callout: none !important;
+      -webkit-user-select: none !important;
+      user-select: none !important;
     }
 
     @keyframes pulseGlow {
@@ -58,7 +60,6 @@
       100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4), inset 0 0 25px rgba(212, 175, 55, 0.15); }
     }
 
-    /* 🎨 白抜き文字 ＋ 輪郭をぼかしたゴールドシャドウ */
     .grand-total-title {
       font-size: 18px;
       font-weight: 900;
@@ -71,6 +72,7 @@
         0 0 18px rgba(212, 175, 55, 0.6),
         1px 2px 3px rgba(0,0,0,0.8);
       margin: 0;
+      pointer-events: none;
     }
 
     .grand-total-display-wrapper {
@@ -79,6 +81,7 @@
       justify-content: center;
       gap: 20px;
       margin-top: 4px;
+      pointer-events: none;
     }
 
     .grand-total-number {
@@ -90,7 +93,6 @@
       line-height: 1;
     }
 
-    /* 🪷 横顔の蓮のアートサイズ調整 */
     .lotus-side-art {
       width: 56px;
       height: 56px;
@@ -257,7 +259,7 @@
       100% { transform: translateY(-500px) translateX(-40px) rotate(-10deg) scale(0.85); opacity: 0; }
     }
 
-    /* 🌸 散華（Sange）エフェクト用スタイル */
+    /* 🌸 新・散華（Sange）エフェクト用スタイル */
     .sange-container {
       position: absolute;
       top: 0;
@@ -267,23 +269,47 @@
       overflow: hidden;
       pointer-events: none;
       z-index: 999;
+      perspective: 1000px; /* 3D的なひらひら感を出すための奥行き設定 */
+    }
+
+    .sange-petal-wrapper {
+      position: absolute;
+      top: -100px; /* 大きくなったので画面外の開始位置を深く変更 */
+      pointer-events: none;
+      animation: sangeFallLinear linear forwards;
     }
 
     .sange-petal {
-      position: absolute;
-      top: -60px;
-      width: 50px;
-      height: 50px;
-      fill-opacity: 0.85;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
-      animation: sangeFall linear forwards;
+      width: 100%;
+      height: 100%;
+      fill-opacity: 0.88;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.2));
+      transform-origin: center;
     }
 
-    @keyframes sangeFall {
-      0% { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(105vh) translateX(100px) rotate(720deg) scale(0.8); opacity: 0; }
+    /* 縦方向へのゆっくりとした自然な落下（イージングなしの一様落下） */
+    @keyframes sangeFallLinear {
+      0% { transform: translateY(0); opacity: 0; }
+      8% { opacity: 1; }
+      92% { opacity: 1; }
+      100% { transform: translateY(115vh); opacity: 0; }
+    }
+
+    /* 左右へのひらひらとした揺れ ＆ 3D回転アニメーション */
+    @keyframes sangeSwayLeft {
+      0% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
+      25% { transform: translateX(-40px) rotateY(45deg) rotateZ(15deg); }
+      50% { transform: translateX(0) rotateY(120deg) rotateZ(0deg); }
+      75% { transform: translateX(40px) rotateY(45deg) rotateZ(-15deg); }
+      100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
+    }
+
+    @keyframes sangeSwayRight {
+      0% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
+      25% { transform: translateX(45px) rotateY(-50deg) rotateZ(-20deg); }
+      50% { transform: translateX(0) rotateY(-130deg) rotateZ(0deg); }
+      75% { transform: translateX(-45px) rotateY(-50deg) rotateZ(20deg); }
+      100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
     }
   </style>
 </head>
@@ -338,7 +364,6 @@
   <div class="grand-total-container" id="grand-total-box">
     <div class="grand-total-title">Total Attendance</div>
     <div class="grand-total-display-wrapper">
-      
       <svg class="lotus-side-art" viewBox="0 0 100 100">
         <g transform="translate(2, 5)">
           <path d="M45 72 C22 58 12 44 20 28 C26 14 42 26 48 42" fill="url(#lotus-inner-grad)"/>
@@ -356,9 +381,7 @@
           <circle cx="45" cy="75" r="3.5" fill="url(#lotus-gaku-grad)"/>
         </g>
       </svg>
-      
       <div class="grand-total-number" id="grand-total">0</div>
-      
       <svg class="lotus-side-art" viewBox="0 0 100 100">
         <g transform="translate(2, 5)">
           <path d="M45 72 C22 58 12 44 20 28 C26 14 42 26 48 42" fill="url(#lotus-inner-grad)"/>
@@ -408,53 +431,48 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       updateDisplay();
-      setupLongPress(); // 🌟 長押しイベントの初期化
+      setupLongPress(); 
       window.addEventListener('contextmenu', function(e) { e.preventDefault(); }, { passive: false });
     });
 
-    // 🌟 セキュリティ：長押しによるカウンターリセット管理システム
     function setupLongPress() {
       const target = document.getElementById('grand-total-box');
       let pressTimer;
 
       const startPress = (e) => {
-        // 誤発火を防ぐため3秒（3000ms）ホールド
+        if (e.cancelable) e.preventDefault();
+        clearTimeout(pressTimer);
         pressTimer = setTimeout(() => {
           triggerResetAuth();
-        }, 3000);
+        }, 2500);
       };
 
-      const cancelPress = () => {
+      const cancelPress = (e) => {
         clearTimeout(pressTimer);
       };
 
-      // iPadのタッチイベント、およびPCマウス両対応
-      target.addEventListener('touchstart', startPress, { passive: true });
-      target.addEventListener('touchend', cancelPress, { passive: true });
-      target.addEventListener('touchmove', cancelPress, { passive: true });
+      target.addEventListener('touchstart', startPress, { passive: false });
+      target.addEventListener('touchend', cancelPress, { passive: false });
+      target.addEventListener('touchmove', cancelPress, { passive: false });
+      
       target.addEventListener('mousedown', startPress);
       target.addEventListener('mouseup', cancelPress);
       target.addEventListener('mouseleave', cancelPress);
     }
 
-    // 🌟 パスワード認証およびローカルストレージ初期化処理
     function triggerResetAuth() {
       const password = prompt("Please enter the reset password:");
       
       if (password === "0425") {
-        // すべての数値をクリア
         localStorage.setItem('today_member', '0');
         localStorage.setItem('today_visitor', '0');
         localStorage.setItem('total_member', '0');
         localStorage.setItem('total_visitor', '0');
         
-        // 散華の再生記録もクリア
         hasCelebrated = false;
         
         updateDisplay();
         alert("All counters have been successfully reset to 0.");
-        
-        // サーバー（GAS）側にも同期用ダミーまたはリセット信号を送る場合はここに追記可能
       } else if (password !== null) {
         alert("Incorrect password. Reset canceled.");
       }
@@ -495,20 +513,27 @@
       document.getElementById('count-visitor').innerText = tVisitor;
       document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
 
-      // 【テスト用】10人で散華が舞う設定
+      // 【テスト用】10人で散華がダイナミックに舞う
       if (grandTotal === 10 && !hasCelebrated) {
         triggerSangeEffect();
         hasCelebrated = true; 
       }
     }
 
+    // 🌟 バラバラ＆ひらひら舞い落ちる散華ロジック
     function triggerSangeEffect() {
       const sangeLayer = document.getElementById('sange-layer');
       const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
-      const petalCount = 35;
+      const petalCount = 30; // 1枚が大きくなったため、画面が埋まりすぎないよう上品な30枚に調整
 
       for (let i = 0; i < petalCount; i++) {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        // ラッパー要素（直線の落下制御用）
+        const wrapper = document.createElement('div');
+        wrapper.className = 'sange-petal-wrapper';
+
+        // 実体SVG要素（サイズ拡大 ＆ ひらひら揺れ制御用）
         const svgNS = "http://www.w3.org/2000/svg";
         const svgPetal = document.createElementNS(svgNS, "svg");
         svgPetal.setAttribute("class", "sange-petal");
@@ -518,23 +543,37 @@
         const useTag = document.createElementNS(svgNS, "use");
         useTag.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#sange-petal-shape");
         svgPetal.appendChild(useTag);
+        wrapper.appendChild(svgPetal);
 
-        const startLeft = Math.random() * 100;
-        const animationDelay = Math.random() * 3;
-        const animationDuration = 4 + Math.random() * 3;
-        const size = 30 + Math.random() * 25;
+        // 🌟 1枚1枚のサイズを「大幅に拡大」（旧: 30px〜55px → 新: 55px〜95px）
+        const size = 55 + Math.random() * 40;
+        wrapper.style.width = `${size}px`;
+        wrapper.style.height = `${size}px`;
 
-        svgPetal.style.left = `${startLeft}%`;
-        svgPetal.style.width = `${size}px`;
-        svgPetal.style.height = `${size}px`;
-        svgPetal.style.animationDelay = `${animationDelay}s`;
-        svgPetal.style.animationDuration = `${animationDuration}s`;
+        // 🌟 横位置・落下タイミングを「よりバラバラ」に分散
+        const startLeft = Math.random() * 95; // 画面の端から端まで
+        wrapper.style.left = `${startLeft}%`;
 
-        sangeLayer.appendChild(svgPetal);
+        // ディレイ（発生時間差）を 0秒〜4.5秒 に広げて、一斉に落ちるのを回避
+        const animationDelay = Math.random() * 4.5;
+        // 落下速度（滞空時間）を 6秒〜9秒 にのばして「ゆっくり」に変更（旧: 4秒〜7秒）
+        const fallDuration = 6.0 + Math.random() * 3.0; 
+        // ひらひら揺れるピッチ（周期）
+        const swayDuration = 2.5 + Math.random() * 2.0;
 
+        wrapper.style.animationDelay = `${animationDelay}s`;
+        wrapper.style.animationDuration = `${fallDuration}s`;
+
+        // 左右どちらにひらひら揺れるかをランダムで決定
+        const swayType = Math.random() > 0.5 ? 'sangeSwayLeft' : 'sangeSwayRight';
+        svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+
+        sangeLayer.appendChild(wrapper);
+
+        // 落下が完全に終わったら要素を削除
         setTimeout(() => {
-          svgPetal.remove();
-        }, (animationDelay + animationDuration) * 1000);
+          wrapper.remove();
+        }, (animationDelay + fallDuration) * 1000);
       }
     }
 

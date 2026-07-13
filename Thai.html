@@ -34,22 +34,20 @@
       position: relative;
     }
 
-    /* 🌟 Central Top Display: Total Attendance */
+    /* 🌟 中央上部：すりガラスBOX */
     .grand-total-container {
       background: rgba(30, 25, 20, 0.7);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 50px;
-      padding: 12px 60px;
+      padding: 12px 45px;
       margin-top: 30px;
       margin-bottom: -10px;
       text-align: center;
       box-shadow: 0 12px 35px rgba(0,0,0,0.45), inset 0 0 20px rgba(255,255,255,0.05);
       z-index: 50;
       animation: pulseGlow 3s infinite alternate;
-      cursor: pointer;
-      transition: opacity 0.3s ease;
     }
 
     @keyframes pulseGlow {
@@ -57,6 +55,7 @@
       100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4), inset 0 0 25px rgba(212, 175, 55, 0.15); }
     }
 
+    /* 🎨 白抜き文字 ＋ 輪郭をぼかしたゴールドシャドウ */
     .grand-total-title {
       font-size: 18px;
       font-weight: 900;
@@ -66,17 +65,17 @@
       text-shadow: 
         0 0 4px rgba(212, 175, 55, 0.9), 
         0 0 10px rgba(212, 175, 55, 0.8), 
+        0 0 18px rgba(212, 175, 55, 0.6),
         1px 2px 3px rgba(0,0,0,0.8);
       margin: 0;
-      pointer-events: none;
     }
 
     .grand-total-display-wrapper {
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 20px;
       margin-top: 4px;
-      pointer-events: none;
     }
 
     .grand-total-number {
@@ -88,7 +87,15 @@
       line-height: 1;
     }
 
-    /* 📦 Main Layout Containers */
+    /* 🪷 変更：横向きの凛とした蓮のアートサイズ調整 */
+    .lotus-side-art {
+      width: 54px;
+      height: 54px;
+      /* 柔らかな光と穏やかな陰影を落とすフィルター */
+      filter: drop-shadow(0 2px 8px rgba(255, 182, 193, 0.5)) drop-shadow(1px 2px 4px rgba(0,0,0,0.5));
+    }
+
+    /* 📦 メインコンテナ */
     .container {
       display: flex;
       flex: 1;
@@ -248,7 +255,7 @@
       100% { transform: translateY(-500px) translateX(-40px) rotate(-10deg) scale(0.85); opacity: 0; }
     }
 
-    /* 🌸 Sange (Kirie Petal Falling) Layer */
+    /* 🌸 散華（蓮アート）が舞い落ちるレイヤー用の設定 */
     .sange-container {
       position: fixed;
       top: 0;
@@ -263,9 +270,7 @@
 
     .sange-petal-wrapper {
       position: absolute;
-      top: -160px;
-      width: 140px; 
-      height: 140px;
+      top: -100px;
       pointer-events: none;
       animation: sangeFallLinear linear forwards;
     }
@@ -273,8 +278,8 @@
     .sange-petal {
       width: 100%;
       height: 100%;
-      /* リアルな切り絵の立体的な影を再現 */
-      filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.3));
+      /* 空間に溶け込みつつ立体感を出す柔らかなドロップシャドウ */
+      filter: drop-shadow(0 4px 12px rgba(255, 182, 193, 0.4)) drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
       transform-origin: center;
     }
 
@@ -287,108 +292,78 @@
 
     @keyframes sangeSwayLeft {
       0% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
-      25% { transform: translateX(-110px) rotateY(55deg) rotateZ(20deg); }
-      50% { transform: translateX(0) rotateY(110deg) rotateZ(0deg); }
-      75% { transform: translateX(110px) rotateY(55deg) rotateZ(-20deg); }
+      25% { transform: translateX(-60px) rotateY(45deg) rotateZ(15deg); }
+      50% { transform: translateX(0) rotateY(90deg) rotateZ(0deg); }
+      75% { transform: translateX(60px) rotateY(45deg) rotateZ(-15deg); }
       100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
     }
 
     @keyframes sangeSwayRight {
       0% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
-      25% { transform: translateX(110px) rotateY(-55deg) rotateZ(-20deg); }
-      50% { transform: translateX(0) rotateY(-110deg) rotateZ(0deg); }
-      75% { transform: translateX(-110px) rotateY(-55deg) rotateZ(20deg); }
+      25% { transform: translateX(60px) rotateY(-45deg) rotateZ(-15deg); }
+      50% { transform: translateX(0) rotateY(-90deg) rotateZ(0deg); }
+      75% { transform: translateX(-60px) rotateY(-45deg) rotateZ(15deg); }
       100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
-    }
-
-    /* 👑 Milestone Flash Overlay */
-    #celebration-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(255, 255, 255, 0);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      pointer-events: none;
-    }
-
-    .flash-aura-active {
-      animation: flashAuraAnim 2.0s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-    }
-
-    @keyframes flashAuraAnim {
-      0% { background-color: rgba(255, 255, 255, 1); box-shadow: inset 0 0 0px rgba(212, 175, 55, 0); }
-      15% { background-color: rgba(255, 255, 255, 0.15); box-shadow: inset 0 0 180px rgba(212, 175, 55, 0.7), 0 0 120px rgba(212, 175, 55, 0.4); }
-      100% { background-color: rgba(255, 255, 255, 0); box-shadow: inset 0 0 0px rgba(212, 175, 55, 0); }
-    }
-
-    #celebration-number {
-      font-size: 190px;
-      font-weight: 800;
-      color: #ffffff;
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-      text-shadow: 
-        0 0 20px rgba(212, 175, 55, 1), 
-        0 0 40px rgba(212, 175, 55, 0.85), 
-        0 0 75px rgba(212, 175, 55, 0.6);
-      opacity: 0;
-    }
-
-    .pulse-heart-active {
-      animation: heartBeat2SecAnim 2.0s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-    }
-
-    @keyframes heartBeat2SecAnim {
-      0% { transform: scale(0.5); opacity: 0; }
-      15% { transform: scale(1.5); opacity: 1; }   
-      32% { transform: scale(0.95); }              
-      50% { transform: scale(1.4); }               
-      68% { transform: scale(1.0); opacity: 1; }   
-      85% { transform: scale(1.0); opacity: 1; }   
-      100% { transform: scale(0.5); opacity: 0; }  
     }
   </style>
 </head>
 <body>
 
+  <div id="sange-layer" class="sange-container"></div>
+
   <svg style="width:0; height:0; position:absolute;">
     <defs>
-      <linearGradient id="kirie-grad-1" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#E0D0F5"/> <stop offset="100%" stop-color="#FCE1E4"/> </linearGradient>
-      <linearGradient id="kirie-grad-2" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#D6C6E5"/>
-        <stop offset="100%" stop-color="#FADADD"/>
+      <linearGradient id="soft-pink-grad" x1="0.3" y1="0.9" x2="0.7" y2="0.1">
+        <stop offset="0%" stop-color="#fca6cc" stop-opacity="0.9"/>
+        <stop offset="50%" stop-color="#fecada" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.95"/>
       </linearGradient>
-      <linearGradient id="kirie-grad-3" x1="10%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#DBD0F0"/>
-        <stop offset="100%" stop-color="#FFE4E1"/>
+      <linearGradient id="back-pink-grad" x1="0.2" y1="0.8" x2="0.8" y2="0.2">
+        <stop offset="0%" stop-color="#eb7fa7" stop-opacity="0.85"/>
+        <stop offset="100%" stop-color="#fdbcd2" stop-opacity="0.75"/>
       </linearGradient>
-      <linearGradient id="kirie-grad-4" x1="0%" y1="0%" x2="10%" y2="100%">
-        <stop offset="0%" stop-color="#E8DBFC"/>
-        <stop offset="100%" stop-color="#FADCE6"/>
-      </linearGradient>
-      <linearGradient id="kirie-grad-5" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="5%" stop-color="#DCD0F7"/>
-        <stop offset="95%" stop-color="#FCDCE2"/>
+      <linearGradient id="nature-green-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#4f7942"/>
+        <stop offset="100%" stop-color="#6b8e23"/>
       </linearGradient>
     </defs>
   </svg>
 
-  <div class="sange-container" id="sange-layer"></div>
-
-  <div id="celebration-overlay">
-    <span id="celebration-number">0</span>
-  </div>
-
-  <div class="grand-total-container" id="grand-total-box">
+  <div class="grand-total-container">
     <div class="grand-total-title">Total Attendance</div>
     <div class="grand-total-display-wrapper">
+      
+      <svg class="lotus-side-art" viewBox="0 0 100 100">
+        <path d="M42 95 C43 80 46 72 48 64" fill="none" stroke="url(#nature-green-grad)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M48 62 C34 50 20 42 22 30 C25 16 42 25 48 40" fill="url(#back-pink-grad)"/>
+        <path d="M48 62 C38 40 32 25 40 12 C48 2 54 18 52 38" fill="url(#back-pink-grad)"/>
+        <path d="M48 64 C56 42 60 26 70 16 C78 8 80 24 64 44" fill="url(#back-pink-grad)"/>
+        <path d="M48 65 C42 63 36 55 38 48 C44 54 48 60 48 65 Z" fill="url(#nature-green-grad)"/>
+        <path d="M48 65 C52 64 58 58 60 50 C54 55 50 61 48 65 Z" fill="url(#nature-green-grad)"/>
+        <path d="M48 65 C46 68 50 68 48 65" stroke="url(#nature-green-grad)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M47 63 C36 54 28 48 32 34 C36 22 46 32 49 45 C52 30 58 18 66 22 C74 26 66 42 51 58" fill="url(#soft-pink-grad)"/>
+        <path d="M48 63 C42 58 40 45 45 36 C50 25 54 38 52 50" fill="url(#soft-pink-grad)"/>
+        <path d="M49 61 C58 56 74 52 82 40 C90 28 82 34 62 52" fill="url(#soft-pink-grad)"/>
+        <path d="M48 63 C58 62 82 64 88 54 C94 44 84 48 60 58" fill="url(#soft-pink-grad)"/>
+        <path d="M47 64 C42 64 36 62 38 56 C41 50 46 56 47 64 Z" fill="url(#soft-pink-grad)"/>
+      </svg>
+      
       <div class="grand-total-number" id="grand-total">0</div>
+      
+      <svg class="lotus-side-art" viewBox="0 0 100 100">
+        <path d="M42 95 C43 80 46 72 48 64" fill="none" stroke="url(#nature-green-grad)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M48 62 C34 50 20 42 22 30 C25 16 42 25 48 40" fill="url(#back-pink-grad)"/>
+        <path d="M48 62 C38 40 32 25 40 12 C48 2 54 18 52 38" fill="url(#back-pink-grad)"/>
+        <path d="M48 64 C56 42 60 26 70 16 C78 8 80 24 64 44" fill="url(#back-pink-grad)"/>
+        <path d="M48 65 C42 63 36 55 38 48 C44 54 48 60 48 65 Z" fill="url(#nature-green-grad)"/>
+        <path d="M48 65 C52 64 58 58 60 50 C54 55 50 61 48 65 Z" fill="url(#nature-green-grad)"/>
+        <path d="M48 65 C46 68 50 68 48 65" stroke="url(#nature-green-grad)" stroke-width="4" stroke-linecap="round"/>
+        <path d="M47 63 C36 54 28 48 32 34 C36 22 46 32 49 45 C52 30 58 18 66 22 C74 26 66 42 51 58" fill="url(#soft-pink-grad)"/>
+        <path d="M48 63 C42 58 40 45 45 36 C50 25 54 38 52 50" fill="url(#soft-pink-grad)"/>
+        <path d="M49 61 C58 56 74 52 82 40 C90 28 82 34 62 52" fill="url(#soft-pink-grad)"/>
+        <path d="M48 63 C58 62 82 64 88 54 C94 44 84 48 60 58" fill="url(#soft-pink-grad)"/>
+        <path d="M47 64 C42 64 36 62 38 56 C41 50 46 56 47 64 Z" fill="url(#soft-pink-grad)"/>
+      </svg>
     </div>
   </div>
   
@@ -414,53 +389,14 @@
 
   <script>
     const gasUrl = 'https://script.google.com/macros/s/AKfycbz2QnVhVNT25mUlzxOx-hMJXYGwavhNWqUTQ9Rvyy5GWs64BA4bHfHD7Q4iLCoY3hZP/exec';
+
+    let requestQueue = [];
     let isSending = false;
 
     window.addEventListener('DOMContentLoaded', () => {
       updateDisplay();
-      setupLongPress(); 
       window.addEventListener('contextmenu', function(e) { e.preventDefault(); }, { passive: false });
-      processQueue();
     });
-
-    function getFixedTodayString() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-
-    function setupLongPress() {
-      const target = document.getElementById('grand-total-box');
-      let pressTimer;
-      const startPress = (e) => {
-        if (e.cancelable) e.preventDefault();
-        clearTimeout(pressTimer);
-        pressTimer = setTimeout(() => { triggerResetAuth(); }, 2500);
-      };
-      const cancelPress = () => clearTimeout(pressTimer);
-      target.addEventListener('touchstart', startPress, { passive: false });
-      target.addEventListener('touchend', cancelPress, { passive: false });
-      target.addEventListener('touchmove', cancelPress, { passive: false });
-      target.addEventListener('mousedown', startPress);
-      target.addEventListener('mouseup', cancelPress);
-      target.addEventListener('mouseleave', cancelPress);
-    }
-
-    function triggerResetAuth() {
-      const password = prompt("Please enter the reset password:");
-      if (password === "0425") {
-        localStorage.setItem('today_member', '0');
-        localStorage.setItem('today_visitor', '0');
-        localStorage.setItem('total_member', '0');
-        localStorage.setItem('total_visitor', '0');
-        localStorage.removeItem('gas_request_queue'); 
-        localStorage.removeItem('last_celebrated_total');
-        document.getElementById('grand-total-box').style.opacity = '1';
-        updateDisplay();
-        alert("All counters and queues have been successfully reset to 0.");
-      } else if (password !== null) {
-        alert("Incorrect password. Reset canceled.");
-      }
-    }
 
     function getOrCreateDeviceId() {
       let id = localStorage.getItem('deviceId');
@@ -472,8 +408,10 @@
     }
 
     function checkDateReset() {
-      const todayStr = getFixedTodayString();
-      if (localStorage.getItem('lastSavedDate') !== todayStr) {
+      const todayStr = new Date().toLocaleDateString('ja-JP');
+      const savedDate = localStorage.getItem('lastSavedDate');
+
+      if (savedDate !== todayStr) {
         localStorage.setItem('today_member', '0');
         localStorage.setItem('today_visitor', '0');
         localStorage.setItem('lastSavedDate', todayStr);
@@ -482,128 +420,106 @@
 
     function updateDisplay() {
       checkDateReset();
+      
       let tMember = parseInt(localStorage.getItem('today_member') || '0', 10);
       let tVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
       let totalM = parseInt(localStorage.getItem('total_member') || '0', 10);
       let totalV = parseInt(localStorage.getItem('total_visitor') || '0', 10);
+
       let grandTotal = totalM + totalV;
 
       document.getElementById('count-member').innerText = tMember;
       document.getElementById('count-visitor').innerText = tVisitor;
       document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
 
-      // 🌟 Milestone Check (Set to every 10 counts for testing)
-      const targetUnit = 10; 
+      // 🌟 キリ番チェック（トータルが10の倍数になったら美しい散華を降らせる）
+      const targetUnit = 10;
       if (grandTotal > 0 && grandTotal % targetUnit === 0) {
         if (localStorage.getItem('last_celebrated_total') !== String(grandTotal)) {
-          triggerCelebration(grandTotal);
+          triggerCelebration();
           localStorage.setItem('last_celebrated_total', String(grandTotal));
         }
       }
     }
 
-    // 👑 Celebration animation with beautiful Kirie-SVG paths (No external images required)
-    function triggerCelebration(currentTotal) {
-      const grandTotalBox = document.getElementById('grand-total-box');
-      grandTotalBox.style.opacity = '0';
-
-      document.getElementById('celebration-number').innerText = currentTotal;
-      const overlay = document.getElementById('celebration-overlay');
-      const numberSpan = document.getElementById('celebration-number');
-
-      overlay.style.display = 'flex';
-      overlay.classList.add('flash-aura-active');
-      numberSpan.classList.add('pulse-heart-active');
-
-      setTimeout(() => {
-        overlay.style.display = 'none';
-        overlay.classList.remove('flash-aura-active');
-        numberSpan.classList.remove('pulse-heart-active');
-        grandTotalBox.style.opacity = '1';
-      }, 2000);
-
-      // 🌸 5種類の緻密な和柄（蓮の蕾、松、流水）切り絵SVGの定義
-      const kiriePatterns = [
-        // Pattern 1: 蓮の蕾と美しい輪郭線
-        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-1)" stroke="#ffffff" stroke-width="1.6"/>
-         <path d="M 25,12 C 29,18 33,25 33,32 C 33,39 29,42 25,42 C 21,42 17,39 17,32 C 17,25 21,18 25,12 Z" fill="none" stroke="#ffffff" stroke-width="1.2"/>
-         <path d="M 25,18 C 27,22 30,27 30,32 C 30,37 27,40 25,40 C 23,40 20,37 20,32 C 20,27 23,22 25,18 Z" fill="none" stroke="#ffffff" stroke-width="0.8"/>
-         <path d="M 6,30 Q 15,25 25,32 T 44,30" fill="none" stroke="#ffffff" stroke-width="1.0" opacity="0.8"/>
-         <path d="M 8,36 Q 18,32 25,38 T 42,36" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.6"/>`,
-
-        // Pattern 2: 伝統的な「松」を配置した和柄
-        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-2)" stroke="#ffffff" stroke-width="1.6"/>
-         <path d="M 25,20 C 20,20 14,24 10,30 C 16,30 21,26 25,23 C 29,26 34,30 40,30 C 36,24 30,20 25,20 Z" fill="none" stroke="#ffffff" stroke-width="1.3"/>
-         <path d="M 25,28 C 21,28 16,31 12,36 C 17,36 21,33 25,30 C 29,33 33,36 38,36 C 34,31 29,28 25,28 Z" fill="none" stroke="#ffffff" stroke-width="1.0"/>
-         <path d="M 5,26 Q 25,40 45,26" fill="none" stroke="#ffffff" stroke-width="0.9" opacity="0.7"/>`,
-
-        // Pattern 3: 流水紋が優雅に流れる切り絵
-        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-3)" stroke="#ffffff" stroke-width="1.6"/>
-         <path d="M 25,15 C 27,20 29,25 29,30 C 29,35 27,37 25,37 C 23,37 21,35 21,30 C 21,25 23,20 25,15 Z" fill="none" stroke="#ffffff" stroke-width="1.2"/>
-         <path d="M 4,22 C 15,22 15,28 25,28 C 35,28 35,22 46,22" fill="none" stroke="#ffffff" stroke-width="1.1"/>
-         <path d="M 4,26 C 15,26 15,32 25,32 C 35,32 35,26 46,26" fill="none" stroke="#ffffff" stroke-width="0.8"/>
-         <path d="M 4,18 C 15,18 15,24 25,24 C 35,24 35,18 46,18" fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.5"/>`,
-
-        // Pattern 4: 蓮の花弁が幾何学的に広がる構成
-        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-4)" stroke="#ffffff" stroke-width="1.6"/>
-         <path d="M 25,2 L 25,48" stroke="#ffffff" stroke-width="1.0" opacity="0.6"/>
-         <path d="M 4,32 Q 25,20 46,32" fill="none" stroke="#ffffff" stroke-width="1.2"/>
-         <path d="M 6,24 Q 25,35 44,24" fill="none" stroke="#ffffff" stroke-width="0.9"/>
-         <path d="M 10,16 Q 25,44 40,16" fill="none" stroke="#ffffff" stroke-width="0.8"/>`,
-
-        // Pattern 5: 流水に浮かぶ蓮の蕾と繊細な網脈
-        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-5)" stroke="#ffffff" stroke-width="1.6"/>
-         <path d="M 25,8 C 26,12 28,15 31,18" fill="none" stroke="#ffffff" stroke-width="1.1"/>
-         <path d="M 25,8 C 24,12 22,15 19,18" fill="none" stroke="#ffffff" stroke-width="1.1"/>
-         <path d="M 15,25 Q 25,15 35,25" fill="none" stroke="#ffffff" stroke-width="1.3"/>
-         <path d="M 12,32 Q 25,22 38,32" fill="none" stroke="#ffffff" stroke-width="1.0"/>
-         <path d="M 9,39 Q 25,29 41,39" fill="none" stroke="#ffffff" stroke-width="0.8"/>`
-      ];
-
+    // 🌸 蓮のアートSVGをそのまま動的に生成してハラハラと降らせる関数
+    function triggerCelebration() {
       const sangeLayer = document.getElementById('sange-layer');
-      const basePositions = [12, 31, 50, 69, 88]; 
+      if (!sangeLayer) return;
 
-      for (let i = 0; i < 5; i++) {
+      const petalCount = 20; // 降らせる蓮の数
+
+      for (let i = 0; i < petalCount; i++) {
         const wrapper = document.createElement('div');
         wrapper.className = 'sange-petal-wrapper';
 
-        // 🌟 高精細SVG切り絵オブジェクトの生成
-        const svgNS = "http://www.w3.org/2000/svg";
-        const svgPetal = document.createElementNS(svgNS, "svg");
-        svgPetal.setAttribute("class", "sange-petal");
-        svgPetal.setAttribute("viewBox", "0 0 50 50");
-        
-        // 配列から対応する和柄デザインのパスを流し込む
-        svgPetal.innerHTML = kiriePatterns[i];
-        wrapper.appendChild(svgPetal);
+        // 提示されたコードの美しい蓮のデザインを完全移植
+        wrapper.innerHTML = `
+          <svg class="sange-petal" viewBox="0 0 100 100">
+            <path d="M42 95 C43 80 46 72 48 64" fill="none" stroke="url(#nature-green-grad)" stroke-width="3" stroke-linecap="round"/>
+            <path d="M48 62 C34 50 20 42 22 30 C25 16 42 25 48 40" fill="url(#back-pink-grad)"/>
+            <path d="M48 62 C38 40 32 25 40 12 C48 2 54 18 52 38" fill="url(#back-pink-grad)"/>
+            <path d="M48 64 C56 42 60 26 70 16 C78 8 80 24 64 44" fill="url(#back-pink-grad)"/>
+            <path d="M48 65 C42 63 36 55 38 48 C44 54 48 60 48 65 Z" fill="url(#nature-green-grad)"/>
+            <path d="M48 65 C52 64 58 58 60 50 C54 55 50 61 48 65 Z" fill="url(#nature-green-grad)"/>
+            <path d="M48 65 C46 68 50 68 48 65" stroke="url(#nature-green-grad)" stroke-width="4" stroke-linecap="round"/>
+            <path d="M47 63 C36 54 28 48 32 34 C36 22 46 32 49 45 C52 30 58 18 66 22 C74 26 66 42 51 58" fill="url(#soft-pink-grad)"/>
+            <path d="M48 63 C42 58 40 45 45 36 C50 25 54 38 52 50" fill="url(#soft-pink-grad)"/>
+            <path d="M49 61 C58 56 74 52 82 40 C90 28 82 34 62 52" fill="url(#soft-pink-grad)"/>
+            <path d="M48 63 C58 62 82 64 88 54 C94 44 84 48 60 58" fill="url(#soft-pink-grad)"/>
+            <path d="M47 64 C42 64 36 62 38 56 C41 50 46 56 47 64 Z" fill="url(#soft-pink-grad)"/>
+          </svg>
+        `;
 
-        const jitter = (Math.random() * 6) - 3;
-        wrapper.style.left = `${basePositions[i] + jitter}%`;
+        // 画面の横幅全体（0%〜100%）にランダム配置
+        wrapper.style.left = `${Math.random() * 100}%`;
 
-        const animationDelay = Math.random() * 0.8;
-        const fallDuration = 7.5 + Math.random() * 2.5; 
-        const swayDuration = 3.5 + Math.random() * 1.5;
+        // サイズをランダムに変化させて遠近感を演出（35px〜75px）
+        const size = 35 + Math.random() * 40;
+        wrapper.style.width = `${size}px`;
+        wrapper.style.height = `${size}px`;
+
+        // ひらひら感を出すために遅延時間、落下速度、揺れの周期をランダム化
+        const animationDelay = Math.random() * 3.5; 
+        const fallDuration = 6.0 + Math.random() * 4.0; 
+        const swayDuration = 2.5 + Math.random() * 2.0; 
 
         wrapper.style.animationDelay = `${animationDelay}s`;
         wrapper.style.animationDuration = `${fallDuration}s`;
 
+        // 左右のひらひら揺れアニメーションをランダムに割り振る
         const swayType = i % 2 === 0 ? 'sangeSwayLeft' : 'sangeSwayRight';
-        svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+        const svgElement = wrapper.querySelector('.sange-petal');
+        if (svgElement) {
+          svgElement.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+          // 落ちる初期角度もバラつかせる
+          svgElement.style.transform = `rotate(${Math.random() * 360}deg)`;
+        }
 
         sangeLayer.appendChild(wrapper);
-        setTimeout(() => { wrapper.remove(); }, (animationDelay + fallDuration) * 1000);
+
+        // アニメーションが完全に終わったらメモリ解放のため要素を削除
+        setTimeout(() => {
+          wrapper.remove();
+        }, (animationDelay + fallDuration) * 1000);
       }
     }
 
     function handleCounterClick(type, circleElement) {
       checkDateReset();
+
       let todayMember = parseInt(localStorage.getItem('today_member') || '0', 10);
       let todayVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
       let totalMember = parseInt(localStorage.getItem('total_member') || '0', 10);
       let totalVisitor = parseInt(localStorage.getItem('total_visitor') || '0', 10);
 
-      if (type === 'member') { todayMember++; totalMember++; } 
-      else { todayVisitor++; totalVisitor++; }
+      if (type === 'member') {
+        todayMember++;
+        totalMember++;
+      } else {
+        todayVisitor++;
+        totalVisitor++;
+      }
 
       localStorage.setItem('today_member', todayMember.toString());
       localStorage.setItem('today_visitor', todayVisitor.toString());
@@ -611,28 +527,32 @@
       localStorage.setItem('total_visitor', totalVisitor.toString());
 
       updateDisplay();
-      createTripleRipple(circleElement, type);
-      spawnFootprints(circleElement.parentElement);
 
-      let queue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
-      queue.push({
+      createTripleRipple(circleElement, type);
+      const zone = circleElement.parentElement;
+      spawnFootprints(zone);
+
+      const payload = {
         type: "click_counter",
         date: localStorage.getItem('lastSavedDate'),
         memberToday: todayMember,
         visitorToday: todayVisitor,
         totalToday: todayMember + todayVisitor,
         deviceId: getOrCreateDeviceId()
-      });
-      localStorage.setItem('gas_request_queue', JSON.stringify(queue));
+      };
+      requestQueue.push(payload);
       processQueue();
     }
 
     function createTripleRipple(button, type) {
-      [0, 700, 1400].forEach(delay => {
+      const delays = [0, 700, 1400];
+      delays.forEach(delay => {
         setTimeout(() => {
           const ripple = document.createElement('div');
           ripple.className = 'ripple-effect';
-          if (type === 'visitor') ripple.classList.add('ripple-visitor');
+          if (type === 'visitor') {
+            ripple.classList.add('ripple-visitor');
+          }
           button.appendChild(ripple);
           setTimeout(() => ripple.remove(), 4000);
         }, delay);
@@ -642,15 +562,17 @@
     function spawnFootprints(zone) {
       const animations = ['walkUpLeft', 'walkUpRight', 'walkUpFinal'];
       const svgs = [leftFootSVG, rightFootSVG, leftFootSVG];
-      [0, 650, 1300].forEach((delay, index) => {
+      const delays = [0, 650, 1300];
+
+      animations.forEach((anim, index) => {
         setTimeout(() => {
           const step = document.createElement('div');
           step.className = 'walking-step';
           step.innerHTML = svgs[index];
-          step.style.animation = `${animations[index]} 2.4s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
+          step.style.animation = `${anim} 2.4s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
           zone.appendChild(step);
           setTimeout(() => step.remove(), 2400);
-        }, delay);
+        }, delays[index]);
       });
     }
 
@@ -658,25 +580,30 @@
     const rightFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M48,85 C55,85 58,75 56,62 C54,52 62,44 60,34 C58,26 48,25 44,32 C40,39 44,48 42,58 C40,68 40,85 48,85 Z"/><circle cx="39" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="59" cy="19" r="4"/><circle cx="67" cy="24" r="3.5"/><circle cx="73" cy="31" r="3"/></svg>`;
 
     function processQueue() {
-      let queue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
-      if (isSending || queue.length === 0) return;
+      if (isSending || requestQueue.length === 0) return;
+
       isSending = true;
-      document.getElementById('status-message').innerText = "Syncing... (" + queue.length + ")";
+      document.getElementById('status-message').innerText = "Syncing... (" + requestQueue.length + ")";
+
+      const currentPayload = requestQueue[0];
+
       fetch(gasUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(queue[0])
+        body: JSON.stringify(currentPayload)
       })
-      .then(() => {
-        queue.shift();
-        localStorage.setItem('gas_request_queue', JSON.stringify(queue));
+      .then(res => {
+        requestQueue.shift();
       })
-      .catch(err => console.error("Transmission failed:", err))
+      .catch(err => {
+        console.error("Transmission failed:", err);
+      })
       .finally(() => {
         isSending = false;
-        let nextQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
-        document.getElementById('status-message').innerText = nextQueue.length === 0 ? "" : "Syncing... (" + nextQueue.length + ")";
-        setTimeout(processQueue, 500);
+        if (requestQueue.length === 0) {
+          document.getElementById('status-message').innerText = "";
+        }
+        setTimeout(processQueue, 100);
       });
     }
   </script>

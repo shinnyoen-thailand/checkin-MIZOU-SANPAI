@@ -56,22 +56,41 @@
     .ripple-visitor { border: 3px solid rgba(52, 211, 153, 0.85) !important; background: radial-gradient(circle, rgba(52, 211, 153, 0.1) 0%, rgba(52, 211, 153, 0) 70%) !important; }
     @keyframes rippleSpread { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(2.6); opacity: 0; } }
     
-    /* 🌸 仏教の散華：大きくゆったり、左右に大きくひらひら舞うアニメーション */
+/* 🌸 仏教の散華：大きくゆったり、左右に大きくひらひら舞い降りる修正版 */
     .sange-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 99999; }
-    .sange-petal-wrapper { position: absolute; top: -100px; animation: sangeFall linear forwards, sangeSway ease-in-out infinite alternate; }
     
-    /* 縦方向：8〜13秒かけて優雅にゆっくり降下 */
-    @keyframes sangeFall {
-      0% { transform: translateY(0); opacity: 0; }
-      8% { opacity: 1; }
-      92% { opacity: 1; }
-      100% { transform: translateY(115vh); opacity: 0; }
+    /* 縦落ちと左右揺れのアニメーションを1つのtransformにまとめ、ケンカしないように修正 */
+    .sange-petal-wrapper { 
+      position: absolute; 
+      top: -120px; 
+      animation: sangeMainAnimation linear forwards; 
     }
-    /* 左右の揺れ：仏教散華特有の、大きく風に流され、ダイナミックに表裏回転する動き */
-    @keyframes sangeSway {
-      0% { margin-left: -120px; transform: rotate3d(1, 1, 0.5, -60deg); }
-      50% { transform: rotate3d(0.5, 2, 1, 180deg); }
-      100% { margin-left: 120px; transform: rotate3d(1, 1, 0.5, 420deg); }
+    
+    /* 🌟 縦への確実な降下と、左右への大きな揺れ・優雅な回転を完全に融合 */
+    @keyframes sangeMainAnimation {
+      0% {
+        transform: translateY(0) translateX(0) rotate(0deg) rotateY(0deg);
+        opacity: 0;
+      }
+      8% {
+        opacity: 1;
+      }
+      25% {
+        transform: translateY(30vh) translateX(120px) rotate(45deg) rotateY(180deg);
+      }
+      50% {
+        transform: translateY(60vh) translateX(-120px) rotate(-30deg) rotateY(360deg);
+      }
+      75% {
+        transform: translateY(90vh) translateX(100px) rotate(35deg) rotateY(540deg);
+      }
+      92% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(120vh) translateX(-80px) rotate(0deg) rotateY(720deg);
+        opacity: 0;
+      }
     }
     
     #status-message { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255, 255, 255, 0.5); z-index: 100; }

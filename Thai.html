@@ -248,7 +248,7 @@
       100% { transform: translateY(-500px) translateX(-40px) rotate(-10deg) scale(0.85); opacity: 0; }
     }
 
-    /* 🌸 Sange (Petal Falling) Effects Layer */
+    /* 🌸 Sange (Kirie Petal Falling) Layer */
     .sange-container {
       position: fixed;
       top: 0;
@@ -270,11 +270,11 @@
       animation: sangeFallLinear linear forwards;
     }
 
-    .sange-petal-img {
+    .sange-petal {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.25));
+      /* リアルな切り絵の立体的な影を再現 */
+      filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.3));
       transform-origin: center;
     }
 
@@ -355,6 +355,29 @@
   </style>
 </head>
 <body>
+
+  <svg style="width:0; height:0; position:absolute;">
+    <defs>
+      <linearGradient id="kirie-grad-1" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#E0D0F5"/> <stop offset="100%" stop-color="#FCE1E4"/> </linearGradient>
+      <linearGradient id="kirie-grad-2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#D6C6E5"/>
+        <stop offset="100%" stop-color="#FADADD"/>
+      </linearGradient>
+      <linearGradient id="kirie-grad-3" x1="10%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#DBD0F0"/>
+        <stop offset="100%" stop-color="#FFE4E1"/>
+      </linearGradient>
+      <linearGradient id="kirie-grad-4" x1="0%" y1="0%" x2="10%" y2="100%">
+        <stop offset="0%" stop-color="#E8DBFC"/>
+        <stop offset="100%" stop-color="#FADCE6"/>
+      </linearGradient>
+      <linearGradient id="kirie-grad-5" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="5%" stop-color="#DCD0F7"/>
+        <stop offset="95%" stop-color="#FCDCE2"/>
+      </linearGradient>
+    </defs>
+  </svg>
 
   <div class="sange-container" id="sange-layer"></div>
 
@@ -479,7 +502,7 @@
       }
     }
 
-    // 👑 Celebration animation for reaching milestones (JPG Image Version)
+    // 👑 Celebration animation with beautiful Kirie-SVG paths (No external images required)
     function triggerCelebration(currentTotal) {
       const grandTotalBox = document.getElementById('grand-total-box');
       grandTotalBox.style.opacity = '0';
@@ -499,7 +522,44 @@
         grandTotalBox.style.opacity = '1';
       }, 2000);
 
-      // 🌸 Sange (Petal Falling) Logic
+      // 🌸 5種類の緻密な和柄（蓮の蕾、松、流水）切り絵SVGの定義
+      const kiriePatterns = [
+        // Pattern 1: 蓮の蕾と美しい輪郭線
+        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-1)" stroke="#ffffff" stroke-width="1.6"/>
+         <path d="M 25,12 C 29,18 33,25 33,32 C 33,39 29,42 25,42 C 21,42 17,39 17,32 C 17,25 21,18 25,12 Z" fill="none" stroke="#ffffff" stroke-width="1.2"/>
+         <path d="M 25,18 C 27,22 30,27 30,32 C 30,37 27,40 25,40 C 23,40 20,37 20,32 C 20,27 23,22 25,18 Z" fill="none" stroke="#ffffff" stroke-width="0.8"/>
+         <path d="M 6,30 Q 15,25 25,32 T 44,30" fill="none" stroke="#ffffff" stroke-width="1.0" opacity="0.8"/>
+         <path d="M 8,36 Q 18,32 25,38 T 42,36" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.6"/>`,
+
+        // Pattern 2: 伝統的な「松」を配置した和柄
+        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-2)" stroke="#ffffff" stroke-width="1.6"/>
+         <path d="M 25,20 C 20,20 14,24 10,30 C 16,30 21,26 25,23 C 29,26 34,30 40,30 C 36,24 30,20 25,20 Z" fill="none" stroke="#ffffff" stroke-width="1.3"/>
+         <path d="M 25,28 C 21,28 16,31 12,36 C 17,36 21,33 25,30 C 29,33 33,36 38,36 C 34,31 29,28 25,28 Z" fill="none" stroke="#ffffff" stroke-width="1.0"/>
+         <path d="M 5,26 Q 25,40 45,26" fill="none" stroke="#ffffff" stroke-width="0.9" opacity="0.7"/>`,
+
+        // Pattern 3: 流水紋が優雅に流れる切り絵
+        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-3)" stroke="#ffffff" stroke-width="1.6"/>
+         <path d="M 25,15 C 27,20 29,25 29,30 C 29,35 27,37 25,37 C 23,37 21,35 21,30 C 21,25 23,20 25,15 Z" fill="none" stroke="#ffffff" stroke-width="1.2"/>
+         <path d="M 4,22 C 15,22 15,28 25,28 C 35,28 35,22 46,22" fill="none" stroke="#ffffff" stroke-width="1.1"/>
+         <path d="M 4,26 C 15,26 15,32 25,32 C 35,32 35,26 46,26" fill="none" stroke="#ffffff" stroke-width="0.8"/>
+         <path d="M 4,18 C 15,18 15,24 25,24 C 35,24 35,18 46,18" fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.5"/>`,
+
+        // Pattern 4: 蓮の花弁が幾何学的に広がる構成
+        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-4)" stroke="#ffffff" stroke-width="1.6"/>
+         <path d="M 25,2 L 25,48" stroke="#ffffff" stroke-width="1.0" opacity="0.6"/>
+         <path d="M 4,32 Q 25,20 46,32" fill="none" stroke="#ffffff" stroke-width="1.2"/>
+         <path d="M 6,24 Q 25,35 44,24" fill="none" stroke="#ffffff" stroke-width="0.9"/>
+         <path d="M 10,16 Q 25,44 40,16" fill="none" stroke="#ffffff" stroke-width="0.8"/>`,
+
+        // Pattern 5: 流水に浮かぶ蓮の蕾と繊細な網脈
+        `<path d="M 25,2 C 32,2 46,14 46,32 C 46,43 36,48 25,48 C 14,48 4,43 4,32 C 4,14 18,2 25,2 Z" fill="url(#kirie-grad-5)" stroke="#ffffff" stroke-width="1.6"/>
+         <path d="M 25,8 C 26,12 28,15 31,18" fill="none" stroke="#ffffff" stroke-width="1.1"/>
+         <path d="M 25,8 C 24,12 22,15 19,18" fill="none" stroke="#ffffff" stroke-width="1.1"/>
+         <path d="M 15,25 Q 25,15 35,25" fill="none" stroke="#ffffff" stroke-width="1.3"/>
+         <path d="M 12,32 Q 25,22 38,32" fill="none" stroke="#ffffff" stroke-width="1.0"/>
+         <path d="M 9,39 Q 25,29 41,39" fill="none" stroke="#ffffff" stroke-width="0.8"/>`
+      ];
+
       const sangeLayer = document.getElementById('sange-layer');
       const basePositions = [12, 31, 50, 69, 88]; 
 
@@ -507,10 +567,15 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'sange-petal-wrapper';
 
-        const imgPetal = document.createElement('img');
-        imgPetal.src = `sange${i+1}.jpg`; 
-        imgPetal.className = 'sange-petal-img';
-        wrapper.appendChild(imgPetal);
+        // 🌟 高精細SVG切り絵オブジェクトの生成
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svgPetal = document.createElementNS(svgNS, "svg");
+        svgPetal.setAttribute("class", "sange-petal");
+        svgPetal.setAttribute("viewBox", "0 0 50 50");
+        
+        // 配列から対応する和柄デザインのパスを流し込む
+        svgPetal.innerHTML = kiriePatterns[i];
+        wrapper.appendChild(svgPetal);
 
         const jitter = (Math.random() * 6) - 3;
         wrapper.style.left = `${basePositions[i] + jitter}%`;
@@ -523,7 +588,7 @@
         wrapper.style.animationDuration = `${fallDuration}s`;
 
         const swayType = i % 2 === 0 ? 'sangeSwayLeft' : 'sangeSwayRight';
-        imgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+        svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
 
         sangeLayer.appendChild(wrapper);
         setTimeout(() => { wrapper.remove(); }, (animationDelay + fallDuration) * 1000);

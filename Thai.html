@@ -34,7 +34,7 @@
       position: relative;
     }
 
-    /* 🌟 中央上部：Total Attendance */
+    /* 🌟 Central Top Display: Total Attendance */
     .grand-total-container {
       background: rgba(30, 25, 20, 0.7);
       backdrop-filter: blur(25px);
@@ -88,7 +88,7 @@
       line-height: 1;
     }
 
-    /* 📦 メインコンテナ */
+    /* 📦 Main Layout Containers */
     .container {
       display: flex;
       flex: 1;
@@ -248,7 +248,7 @@
       100% { transform: translateY(-500px) translateX(-40px) rotate(-10deg) scale(0.85); opacity: 0; }
     }
 
-    /* 🌸 散華（Sange）エフェクト用レイヤー */
+    /* 🌸 Sange (Petal Falling) Effects Layer */
     .sange-container {
       position: fixed;
       top: 0;
@@ -264,21 +264,12 @@
     .sange-petal-wrapper {
       position: absolute;
       top: -160px;
-      width: 140px; /* 約4cmサイズ */
+      width: 140px; 
       height: 140px;
       pointer-events: none;
       animation: sangeFallLinear linear forwards;
     }
 
-    .sange-petal {
-      width: 100%;
-      height: 100%;
-      fill-opacity: 0.92;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.25));
-      transform-origin: center;
-    }
-
-    /* まるで本物の画像ファイルを読み込んだかのように綺麗に表示するCSS（JPG変更時用） */
     .sange-petal-img {
       width: 100%;
       height: 100%;
@@ -310,7 +301,7 @@
       100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
     }
 
-    /* 👑 1000人達成：全画面フラッシュ＆特大パルス演出 */
+    /* 👑 Milestone Flash Overlay */
     #celebration-overlay {
       position: fixed;
       top: 0;
@@ -364,40 +355,6 @@
   </style>
 </head>
 <body>
-
-  <svg style="width:0; height:0; position:absolute;">
-    <defs>
-      <radialGradient id="sange-pink" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" stop-color="#f4f7f0"/>
-        <stop offset="55%" stop-color="#e6bebe"/>
-        <stop offset="100%" stop-color="#b53d56"/>
-      </radialGradient>
-      
-      <radialGradient id="sange-yellow" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" stop-color="#fafaf2"/>
-        <stop offset="55%" stop-color="#e0c56e"/>
-        <stop offset="100%" stop-color="#c48f29"/>
-      </radialGradient>
-
-      <radialGradient id="sange-green" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" stop-color="#f7faf3"/>
-        <stop offset="60%" stop-color="#9bbd8e"/>
-        <stop offset="100%" stop-color="#4a783d"/>
-      </radialGradient>
-      
-      <radialGradient id="sange-blue" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" stop-color="#edf4ec"/>
-        <stop offset="55%" stop-color="#9fa9cb"/>
-        <stop offset="100%" stop-color="#3a4a85"/>
-      </radialGradient>
-      
-      <radialGradient id="sange-purple" cx="50%" cy="40%" r="60%">
-        <stop offset="0%" stop-color="#f7f4fa"/>
-        <stop offset="55%" stop-color="#c5afd6"/>
-        <stop offset="100%" stop-color="#7c529c"/>
-      </radialGradient>
-    </defs>
-  </svg>
 
   <div class="sange-container" id="sange-layer"></div>
 
@@ -512,7 +469,7 @@
       document.getElementById('count-visitor').innerText = tVisitor;
       document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
 
-      // 🌟 到達判定テスト（現在は10人単位。本番は 1000 に書き換えてください）
+      // 🌟 Milestone Check (Set to every 10 counts for testing)
       const targetUnit = 10; 
       if (grandTotal > 0 && grandTotal % targetUnit === 0) {
         if (localStorage.getItem('last_celebrated_total') !== String(grandTotal)) {
@@ -522,7 +479,7 @@
       }
     }
 
-    // 👑 達成時の大演出アニメーション
+    // 👑 Celebration animation for reaching milestones (JPG Image Version)
     function triggerCelebration(currentTotal) {
       const grandTotalBox = document.getElementById('grand-total-box');
       grandTotalBox.style.opacity = '0';
@@ -542,43 +499,18 @@
         grandTotalBox.style.opacity = '1';
       }, 2000);
 
-      // 🌸 散華生成ロジック
+      // 🌸 Sange (Petal Falling) Logic
       const sangeLayer = document.getElementById('sange-layer');
-      const colors = ['pink', 'yellow', 'green', 'blue', 'purple'];
       const basePositions = [12, 31, 50, 69, 88]; 
 
       for (let i = 0; i < 5; i++) {
-        const color = colors[i];
         const wrapper = document.createElement('div');
         wrapper.className = 'sange-petal-wrapper';
 
-        /* 💡 【方法1】高精細SVGによる美しい透かし葉脈散華の描画 */
-        const svgNS = "http://www.w3.org/2000/svg";
-        const svgPetal = document.createElementNS(svgNS, "svg");
-        svgPetal.setAttribute("class", "sange-petal");
-        svgPetal.setAttribute("viewBox", "0 0 50 50");
-        svgPetal.setAttribute("fill", `url(#sange-${color})`);
-
-        // 画像1・2枚目の「シャープな先端とふっくらした下部」の輪郭＋美しい黄色の網脈
-        svgPetal.innerHTML = `
-          <path d="M 25,2 C 29,2 46,14 46,30 C 46,43 36,47 25,47 C 14,47 4,43 4,30 C 4,14 21,2 25,2 Z" />
-          <path d="M 25,2 L 25,47" stroke="#f5f2c2" stroke-width="0.7" opacity="0.9" fill="none" stroke-linecap="round" />
-          <path d="M 25,8 Q 34,11 42,16 M 25,8 Q 16,11 8,16" stroke="#eadd9b" stroke-width="0.35" opacity="0.8" fill="none" />
-          <path d="M 25,15 Q 36,19 45,25 M 25,15 Q 14,19 5,25" stroke="#eadd9b" stroke-width="0.35" opacity="0.8" fill="none" />
-          <path d="M 25,22 Q 37,27 46,34 M 25,22 Q 13,27 4,34" stroke="#eadd9b" stroke-width="0.35" opacity="0.8" fill="none" />
-          <path d="M 25,29 Q 36,35 44,42 M 25,29 Q 14,35 6,42" stroke="#eadd9b" stroke-width="0.35" opacity="0.8" fill="none" />
-          <path d="M 25,36 Q 32,41 39,46 M 25,36 Q 18,41 11,46" stroke="#eadd9b" stroke-width="0.3" opacity="0.6" fill="none" />
-        `;
-        wrapper.appendChild(svgPetal);
-
-        /* 💡 【方法2】もしご自身でJPG画像ファイルを使う場合は、上の「方法1」の5行をコメントアウトし、
-           下の3行のコメントアウト(/* と */)を解除して、sange1.jpg ~ sange5.jpg をHTMLと同じフォルダに置いてください。
-        
         const imgPetal = document.createElement('img');
         imgPetal.src = `sange${i+1}.jpg`; 
         imgPetal.className = 'sange-petal-img';
         wrapper.appendChild(imgPetal);
-        */
 
         const jitter = (Math.random() * 6) - 3;
         wrapper.style.left = `${basePositions[i] + jitter}%`;
@@ -591,11 +523,7 @@
         wrapper.style.animationDuration = `${fallDuration}s`;
 
         const swayType = i % 2 === 0 ? 'sangeSwayLeft' : 'sangeSwayRight';
-        if(wrapper.querySelector('svg')) {
-          wrapper.querySelector('svg').style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
-        } else if(wrapper.querySelector('img')) {
-          wrapper.querySelector('img').style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
-        }
+        imgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
 
         sangeLayer.appendChild(wrapper);
         setTimeout(() => { wrapper.remove(); }, (animationDelay + fallDuration) * 1000);

@@ -34,7 +34,7 @@
       position: relative;
     }
 
-    /* 🌟 中央上部：Total Attendance (蓮の絵なし) */
+    /* 🌟 中央上部：Total Attendance */
     .grand-total-container {
       background: rgba(30, 25, 20, 0.7);
       backdrop-filter: blur(25px);
@@ -50,10 +50,6 @@
       animation: pulseGlow 3s infinite alternate;
       cursor: pointer;
       transition: opacity 0.3s ease;
-      
-      -webkit-touch-callout: none !important;
-      -webkit-user-select: none !important;
-      user-select: none !important;
     }
 
     @keyframes pulseGlow {
@@ -268,8 +264,8 @@
     .sange-petal-wrapper {
       position: absolute;
       top: -160px;
-      width: 150px; /* 約4cm相当 */
-      height: 150px;
+      width: 140px; /* 約4cmサイズ */
+      height: 140px;
       pointer-events: none;
       animation: sangeFallLinear linear forwards;
     }
@@ -277,35 +273,44 @@
     .sange-petal {
       width: 100%;
       height: 100%;
-      fill-opacity: 0.85;
-      filter: drop-shadow(0 8px 15px rgba(0,0,0,0.15));
+      fill-opacity: 0.92;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.25));
+      transform-origin: center;
+    }
+
+    /* まるで本物の画像ファイルを読み込んだかのように綺麗に表示するCSS（JPG変更時用） */
+    .sange-petal-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,0.25));
       transform-origin: center;
     }
 
     @keyframes sangeFallLinear {
       0% { transform: translateY(0); opacity: 0; }
-      12% { opacity: 1; }
-      88% { opacity: 1; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
       100% { transform: translateY(120vh); opacity: 0; }
     }
 
     @keyframes sangeSwayLeft {
       0% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
-      25% { transform: translateX(-110px) rotateY(60deg) rotateZ(25deg); }
-      50% { transform: translateX(0) rotateY(120deg) rotateZ(0deg); }
-      75% { transform: translateX(110px) rotateY(60deg) rotateZ(-25deg); }
+      25% { transform: translateX(-110px) rotateY(55deg) rotateZ(20deg); }
+      50% { transform: translateX(0) rotateY(110deg) rotateZ(0deg); }
+      75% { transform: translateX(110px) rotateY(55deg) rotateZ(-20deg); }
       100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
     }
 
     @keyframes sangeSwayRight {
       0% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
-      25% { transform: translateX(110px) rotateY(-60deg) rotateZ(-25deg); }
-      50% { transform: translateX(0) rotateY(-120deg) rotateZ(0deg); }
-      75% { transform: translateX(-110px) rotateY(-60deg) rotateZ(25deg); }
+      25% { transform: translateX(110px) rotateY(-55deg) rotateZ(-20deg); }
+      50% { transform: translateX(0) rotateY(-110deg) rotateZ(0deg); }
+      75% { transform: translateX(-110px) rotateY(-55deg) rotateZ(20deg); }
       100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
     }
 
-    /* 👑 1000人(テスト10人)達成：全画面フラッシュ＆特大パルス演出 */
+    /* 👑 1000人達成：全画面フラッシュ＆特大パルス演出 */
     #celebration-overlay {
       position: fixed;
       top: 0;
@@ -325,21 +330,11 @@
     }
 
     @keyframes flashAuraAnim {
-      0% { 
-        background-color: rgba(255, 255, 255, 1); 
-        box-shadow: inset 0 0 0px rgba(212, 175, 55, 0);
-      }
-      15% { 
-        background-color: rgba(255, 255, 255, 0.15); 
-        box-shadow: inset 0 0 180px rgba(212, 175, 55, 0.7), 0 0 120px rgba(212, 175, 55, 0.4);
-      }
-      100% { 
-        background-color: rgba(255, 255, 255, 0); 
-        box-shadow: inset 0 0 0px rgba(212, 175, 55, 0);
-      }
+      0% { background-color: rgba(255, 255, 255, 1); box-shadow: inset 0 0 0px rgba(212, 175, 55, 0); }
+      15% { background-color: rgba(255, 255, 255, 0.15); box-shadow: inset 0 0 180px rgba(212, 175, 55, 0.7), 0 0 120px rgba(212, 175, 55, 0.4); }
+      100% { background-color: rgba(255, 255, 255, 0); box-shadow: inset 0 0 0px rgba(212, 175, 55, 0); }
     }
 
-    /* 白文字、金色の華やかなぼかし枠（数字のみを美しく魅せる） */
     #celebration-number {
       font-size: 190px;
       font-weight: 800;
@@ -357,15 +352,14 @@
       animation: heartBeat2SecAnim 2.0s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     }
 
-    /* 2秒間で綺麗に2回、心臓のようにドクン・ドクンと波打つ完全同期パルス */
     @keyframes heartBeat2SecAnim {
       0% { transform: scale(0.5); opacity: 0; }
-      15% { transform: scale(1.5); opacity: 1; }   /* 1回目のドクン（最大化） */
-      32% { transform: scale(0.95); }              /* 収縮 */
-      50% { transform: scale(1.4); }               /* 2回目のドクン（中最大化） */
-      68% { transform: scale(1.0); opacity: 1; }   /* 安定 */
-      85% { transform: scale(1.0); opacity: 1; }   /* 余韻をキープ */
-      100% { transform: scale(0.5); opacity: 0; }  /* 収縮しながら美しく消滅 */
+      15% { transform: scale(1.5); opacity: 1; }   
+      32% { transform: scale(0.95); }              
+      50% { transform: scale(1.4); }               
+      68% { transform: scale(1.0); opacity: 1; }   
+      85% { transform: scale(1.0); opacity: 1; }   
+      100% { transform: scale(0.5); opacity: 0; }  
     }
   </style>
 </head>
@@ -373,30 +367,34 @@
 
   <svg style="width:0; height:0; position:absolute;">
     <defs>
-      <radialGradient id="sange-pink" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="72%" stop-color="#fff2f6"/>
-        <stop offset="100%" stop-color="#fba3c8"/>
+      <radialGradient id="sange-pink" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#f4f7f0"/>
+        <stop offset="55%" stop-color="#e6bebe"/>
+        <stop offset="100%" stop-color="#b53d56"/>
       </radialGradient>
-      <radialGradient id="sange-blue" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="72%" stop-color="#f2faff"/>
-        <stop offset="100%" stop-color="#add8e6"/>
+      
+      <radialGradient id="sange-yellow" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#fafaf2"/>
+        <stop offset="55%" stop-color="#e0c56e"/>
+        <stop offset="100%" stop-color="#c48f29"/>
       </radialGradient>
-      <radialGradient id="sange-green" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="72%" stop-color="#f6fff9"/>
-        <stop offset="100%" stop-color="#b4dcad"/>
+
+      <radialGradient id="sange-green" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#f7faf3"/>
+        <stop offset="60%" stop-color="#9bbd8e"/>
+        <stop offset="100%" stop-color="#4a783d"/>
       </radialGradient>
-      <radialGradient id="sange-yellow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="72%" stop-color="#fffffa"/>
-        <stop offset="100%" stop-color="#fcefa6"/>
+      
+      <radialGradient id="sange-blue" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#edf4ec"/>
+        <stop offset="55%" stop-color="#9fa9cb"/>
+        <stop offset="100%" stop-color="#3a4a85"/>
       </radialGradient>
-      <radialGradient id="sange-purple" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/>
-        <stop offset="72%" stop-color="#faf7ff"/>
-        <stop offset="100%" stop-color="#d1c2f0"/>
+      
+      <radialGradient id="sange-purple" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#f7f4fa"/>
+        <stop offset="55%" stop-color="#c5afd6"/>
+        <stop offset="100%" stop-color="#7c529c"/>
       </radialGradient>
     </defs>
   </svg>
@@ -436,7 +434,6 @@
 
   <script>
     const gasUrl = 'https://script.google.com/macros/s/AKfycbz2QnVhVNT25mUlzxOx-hMJXYGwavhNWqUTQ9Rvyy5GWs64BA4bHfHD7Q4iLCoY3hZP/exec';
-
     let isSending = false;
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -448,32 +445,21 @@
 
     function getFixedTodayString() {
       const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, '0');
-      const dd = String(d.getDate()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd}`;
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
     function setupLongPress() {
       const target = document.getElementById('grand-total-box');
       let pressTimer;
-
       const startPress = (e) => {
         if (e.cancelable) e.preventDefault();
         clearTimeout(pressTimer);
-        pressTimer = setTimeout(() => {
-          triggerResetAuth();
-        }, 2500);
+        pressTimer = setTimeout(() => { triggerResetAuth(); }, 2500);
       };
-
-      const cancelPress = (e) => {
-        clearTimeout(pressTimer);
-      };
-
+      const cancelPress = () => clearTimeout(pressTimer);
       target.addEventListener('touchstart', startPress, { passive: false });
       target.addEventListener('touchend', cancelPress, { passive: false });
       target.addEventListener('touchmove', cancelPress, { passive: false });
-      
       target.addEventListener('mousedown', startPress);
       target.addEventListener('mouseup', cancelPress);
       target.addEventListener('mouseleave', cancelPress);
@@ -481,17 +467,14 @@
 
     function triggerResetAuth() {
       const password = prompt("Please enter the reset password:");
-      
       if (password === "0425") {
         localStorage.setItem('today_member', '0');
         localStorage.setItem('today_visitor', '0');
         localStorage.setItem('total_member', '0');
         localStorage.setItem('total_visitor', '0');
         localStorage.removeItem('gas_request_queue'); 
-        localStorage.removeItem('last_celebrated_total'); // 演出履歴もリセット
-        
+        localStorage.removeItem('last_celebrated_total');
         document.getElementById('grand-total-box').style.opacity = '1';
-        
         updateDisplay();
         alert("All counters and queues have been successfully reset to 0.");
       } else if (password !== null) {
@@ -510,9 +493,7 @@
 
     function checkDateReset() {
       const todayStr = getFixedTodayString();
-      const savedDate = localStorage.getItem('lastSavedDate');
-
-      if (savedDate !== todayStr) {
+      if (localStorage.getItem('lastSavedDate') !== todayStr) {
         localStorage.setItem('today_member', '0');
         localStorage.setItem('today_visitor', '0');
         localStorage.setItem('lastSavedDate', todayStr);
@@ -521,26 +502,19 @@
 
     function updateDisplay() {
       checkDateReset();
-      
       let tMember = parseInt(localStorage.getItem('today_member') || '0', 10);
       let tVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
       let totalM = parseInt(localStorage.getItem('total_member') || '0', 10);
       let totalV = parseInt(localStorage.getItem('total_visitor') || '0', 10);
-
       let grandTotal = totalM + totalV;
 
       document.getElementById('count-member').innerText = tMember;
       document.getElementById('count-visitor').innerText = tVisitor;
       document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
 
-      /* 🌟 到達判定ロジック 🌟
-         ・【テスト用】現在は 10の倍数（10, 20, 30...）ごとに何度でも発火します。
-         ・【本番用】千単位にする場合は、下の行の「% 10」を「% 1000」に書き換えてください。
-      */
-      const targetUnit = 10; // 👈 本番時はここを 1000 に書き換えてください
-      
+      // 🌟 到達判定テスト（現在は10人単位。本番は 1000 に書き換えてください）
+      const targetUnit = 10; 
       if (grandTotal > 0 && grandTotal % targetUnit === 0) {
-        // 同じ数字で何度も大演出が重複発火するのを防ぐガード処理
         if (localStorage.getItem('last_celebrated_total') !== String(grandTotal)) {
           triggerCelebration(grandTotal);
           localStorage.setItem('last_celebrated_total', String(grandTotal));
@@ -550,11 +524,9 @@
 
     // 👑 達成時の大演出アニメーション
     function triggerCelebration(currentTotal) {
-      // 1. 上部の通常メーター表示を2秒間隠す
       const grandTotalBox = document.getElementById('grand-total-box');
       grandTotalBox.style.opacity = '0';
 
-      // 2. 演出用オーバーレイに「数字だけ」を設定
       document.getElementById('celebration-number').innerText = currentTotal;
       const overlay = document.getElementById('celebration-overlay');
       const numberSpan = document.getElementById('celebration-number');
@@ -563,7 +535,6 @@
       overlay.classList.add('flash-aura-active');
       numberSpan.classList.add('pulse-heart-active');
 
-      // 3. 2秒後に中央の数字表示を片付け、上部通常メーターを復帰
       setTimeout(() => {
         overlay.style.display = 'none';
         overlay.classList.remove('flash-aura-active');
@@ -571,73 +542,75 @@
         grandTotalBox.style.opacity = '1';
       }, 2000);
 
-      // 4. 仏教的な散華エフェクトを実行（5枚、数字消去後も下まで落ち続ける）
+      // 🌸 散華生成ロジック
       const sangeLayer = document.getElementById('sange-layer');
-      const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
-      const basePositions = [12, 31, 50, 69, 88]; // 横幅の初期配置
+      const colors = ['pink', 'yellow', 'green', 'blue', 'purple'];
+      const basePositions = [12, 31, 50, 69, 88]; 
 
       for (let i = 0; i < 5; i++) {
         const color = colors[i];
-        
         const wrapper = document.createElement('div');
         wrapper.className = 'sange-petal-wrapper';
 
+        /* 💡 【方法1】高精細SVGによる美しい透かし葉脈散華の描画 */
         const svgNS = "http://www.w3.org/2000/svg";
         const svgPetal = document.createElementNS(svgNS, "svg");
         svgPetal.setAttribute("class", "sange-petal");
         svgPetal.setAttribute("viewBox", "0 0 50 50");
         svgPetal.setAttribute("fill", `url(#sange-${color})`);
 
+        // 画像1・2枚目の「シャープな先端とふっくらした下部」の輪郭＋美しい黄色の網脈
         svgPetal.innerHTML = `
-          <path d="M 25,45 C 5,35 5,15 25,5 C 45,15 45,35 25,45 Z" />
-          <path d="M 25,45 C 12,38 12,22 25,12 C 38,22 38,38 25,45 Z" fill="rgba(255,255,255,0.65)" />
-          <path d="M 25,43 L 25,7" stroke="rgba(255,255,255,0.5)" stroke-width="0.4" />
-          <path d="M 25,35 C 21,31 19,26 16,23" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
-          <path d="M 25,35 C 29,31 31,26 34,23" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
-          <path d="M 25,27 C 20,24 18,20 15,17" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
-          <path d="M 25,27 C 30,24 32,20 35,17" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
-          <path d="M 25,19 C 21,17 19,14 17,11" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
-          <path d="M 25,19 C 29,17 31,14 33,11" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.3" />
+          <path d="M 25,2 C 29,2 46,14 46,30 C 46,43 36,47 25,47 C 14,47 4,43 4,30 C 4,14 21,2 25,2 Z" />
+          <path d="M 25,2 L 25,47" stroke="#f5f2c2" stroke-width="0.7" opacity="0.9" fill="none" stroke-linecap="round" />
+          <path d="M 25,8 Q 34,11 42,16 M 25,8 Q 16,11 8,16" stroke="#eadd9b" stroke-width="0.35" opacity="0.8" fill="none" />
+          <path d="M 25,15 Q 36,19 45,25 M 25,15 Q 14,19 5,25" stroke="#eadd9b" stroke-width="0.35" opacity="0.8" fill="none" />
+          <path d="M 25,22 Q 37,27 46,34 M 25,22 Q 13,27 4,34" stroke="#eadd9b" stroke-width="0.35" opacity="0.8" fill="none" />
+          <path d="M 25,29 Q 36,35 44,42 M 25,29 Q 14,35 6,42" stroke="#eadd9b" stroke-width="0.35" opacity="0.8" fill="none" />
+          <path d="M 25,36 Q 32,41 39,46 M 25,36 Q 18,41 11,46" stroke="#eadd9b" stroke-width="0.3" opacity="0.6" fill="none" />
         `;
-        
         wrapper.appendChild(svgPetal);
+
+        /* 💡 【方法2】もしご自身でJPG画像ファイルを使う場合は、上の「方法1」の5行をコメントアウトし、
+           下の3行のコメントアウト(/* と */)を解除して、sange1.jpg ~ sange5.jpg をHTMLと同じフォルダに置いてください。
+        
+        const imgPetal = document.createElement('img');
+        imgPetal.src = `sange${i+1}.jpg`; 
+        imgPetal.className = 'sange-petal-img';
+        wrapper.appendChild(imgPetal);
+        */
 
         const jitter = (Math.random() * 6) - 3;
         wrapper.style.left = `${basePositions[i] + jitter}%`;
 
         const animationDelay = Math.random() * 0.8;
-        const fallDuration = 8.0 + Math.random() * 3.0; 
-        const swayDuration = 3.6 + Math.random() * 1.4;
+        const fallDuration = 7.5 + Math.random() * 2.5; 
+        const swayDuration = 3.5 + Math.random() * 1.5;
 
         wrapper.style.animationDelay = `${animationDelay}s`;
         wrapper.style.animationDuration = `${fallDuration}s`;
 
         const swayType = i % 2 === 0 ? 'sangeSwayLeft' : 'sangeSwayRight';
-        svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+        if(wrapper.querySelector('svg')) {
+          wrapper.querySelector('svg').style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+        } else if(wrapper.querySelector('img')) {
+          wrapper.querySelector('img').style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+        }
 
         sangeLayer.appendChild(wrapper);
-
-        setTimeout(() => {
-          wrapper.remove();
-        }, (animationDelay + fallDuration) * 1000);
+        setTimeout(() => { wrapper.remove(); }, (animationDelay + fallDuration) * 1000);
       }
     }
 
     function handleCounterClick(type, circleElement) {
       checkDateReset();
-
       let todayMember = parseInt(localStorage.getItem('today_member') || '0', 10);
       let todayVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
       let totalMember = parseInt(localStorage.getItem('total_member') || '0', 10);
       let totalVisitor = parseInt(localStorage.getItem('total_visitor') || '0', 10);
 
-      if (type === 'member') {
-        todayMember++;
-        totalMember++;
-      } else {
-        todayVisitor++;
-        totalVisitor++;
-      }
+      if (type === 'member') { todayMember++; totalMember++; } 
+      else { todayVisitor++; totalVisitor++; }
 
       localStorage.setItem('today_member', todayMember.toString());
       localStorage.setItem('today_visitor', todayVisitor.toString());
@@ -645,36 +618,28 @@
       localStorage.setItem('total_visitor', totalVisitor.toString());
 
       updateDisplay();
-
       createTripleRipple(circleElement, type);
-      const zone = circleElement.parentElement;
-      spawnFootprints(zone);
+      spawnFootprints(circleElement.parentElement);
 
-      const payload = {
+      let queue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
+      queue.push({
         type: "click_counter",
         date: localStorage.getItem('lastSavedDate'),
         memberToday: todayMember,
         visitorToday: todayVisitor,
         totalToday: todayMember + todayVisitor,
         deviceId: getOrCreateDeviceId()
-      };
-
-      let queue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
-      queue.push(payload);
+      });
       localStorage.setItem('gas_request_queue', JSON.stringify(queue));
-
       processQueue();
     }
 
     function createTripleRipple(button, type) {
-      const delays = [0, 700, 1400];
-      delays.forEach(delay => {
+      [0, 700, 1400].forEach(delay => {
         setTimeout(() => {
           const ripple = document.createElement('div');
           ripple.className = 'ripple-effect';
-          if (type === 'visitor') {
-            ripple.classList.add('ripple-visitor');
-          }
+          if (type === 'visitor') ripple.classList.add('ripple-visitor');
           button.appendChild(ripple);
           setTimeout(() => ripple.remove(), 4000);
         }, delay);
@@ -684,17 +649,15 @@
     function spawnFootprints(zone) {
       const animations = ['walkUpLeft', 'walkUpRight', 'walkUpFinal'];
       const svgs = [leftFootSVG, rightFootSVG, leftFootSVG];
-      const delays = [0, 650, 1300];
-
-      animations.forEach((anim, index) => {
+      [0, 650, 1300].forEach((delay, index) => {
         setTimeout(() => {
           const step = document.createElement('div');
           step.className = 'walking-step';
           step.innerHTML = svgs[index];
-          step.style.animation = `${anim} 2.4s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
+          step.style.animation = `${animations[index]} 2.4s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
           zone.appendChild(step);
           setTimeout(() => step.remove(), 2400);
-        }, delays[index]);
+        }, delay);
       });
     }
 
@@ -704,32 +667,22 @@
     function processQueue() {
       let queue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
       if (isSending || queue.length === 0) return;
-
       isSending = true;
       document.getElementById('status-message').innerText = "Syncing... (" + queue.length + ")";
-
-      const currentPayload = queue[0];
-
       fetch(gasUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(currentPayload)
+        body: JSON.stringify(queue[0])
       })
-      .then(res => {
+      .then(() => {
         queue.shift();
         localStorage.setItem('gas_request_queue', JSON.stringify(queue));
       })
-      .catch(err => {
-        console.error("Transmission failed (Offline):", err);
-      })
+      .catch(err => console.error("Transmission failed:", err))
       .finally(() => {
         isSending = false;
         let nextQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
-        if (nextQueue.length === 0) {
-          document.getElementById('status-message').innerText = "";
-        } else {
-          document.getElementById('status-message').innerText = "Syncing... (" + nextQueue.length + ")";
-        }
+        document.getElementById('status-message').innerText = nextQueue.length === 0 ? "" : "Syncing... (" + nextQueue.length + ")";
         setTimeout(processQueue, 500);
       });
     }

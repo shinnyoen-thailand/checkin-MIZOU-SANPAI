@@ -11,7 +11,7 @@
     :root { --bg-glass: rgba(255, 255, 255, 0.25); }
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; background-image: url('外観.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; height: 100vh; overflow: hidden; -webkit-touch-callout: none !important; -webkit-user-select: none !important; user-select: none !important; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
 
-    /* 🌟 画面フラッシュ用のレイヤー */
+    /* 画面フラッシュ */
     .flash-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: #ffffff; opacity: 0; pointer-events: none; z-index: 9999; }
     .flash-active { animation: flashAnim 0.8s ease-out forwards; }
     @keyframes flashAnim { 0% { opacity: 0.9; } 100% { opacity: 0; } }
@@ -22,7 +22,7 @@
     .grand-total-display-wrapper { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 4px; pointer-events: none; }
     .grand-total-number { font-size: 48px; font-weight: 800; color: #ffffff; font-variant-numeric: tabular-nums; text-shadow: 0 0 12px rgba(212, 175, 55, 0.4), 2px 3px 8px rgba(0,0,0,0.9); line-height: 1; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     
-    /* 🌟 1000人達成時の「ドクンドクン」中央拡大＆金色の光オーラ（白文字＋金ぼかし枠） */
+    /* 🌟 1000人達成時の「ドクンドクン」中央拡大（メリハリ強化・0.8秒テンポ） */
     .celebrate-mode { 
       position: fixed !important; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(1.8) !important;
       font-size: 140px !important; color: #ffffff !important; 
@@ -56,41 +56,20 @@
     .ripple-visitor { border: 3px solid rgba(52, 211, 153, 0.85) !important; background: radial-gradient(circle, rgba(52, 211, 153, 0.1) 0%, rgba(52, 211, 153, 0) 70%) !important; }
     @keyframes rippleSpread { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(2.6); opacity: 0; } }
     
-/* 🌸 仏教の散華：大きくゆったり、左右に大きくひらひら舞い降りる修正版 */
+    /* 🌸 散華専用コンテナと優雅な落下軌道アニメーション（統合軽量版） */
     .sange-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 99999; }
+    .sange-petal-wrapper { position: absolute; top: -140px; }
+    .sange-petal-img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.06)); opacity: 0.85; }
     
-    /* 縦落ちと左右揺れのアニメーションを1つのtransformにまとめ、ケンカしないように修正 */
-    .sange-petal-wrapper { 
-      position: absolute; 
-      top: -120px; 
-      animation: sangeMainAnimation linear forwards; 
-    }
-    
-    /* 🌟 縦への確実な降下と、左右への大きな揺れ・優雅な回転を完全に融合 */
+    /* 左右にダイナミックに揺れ、ゆったり裏返りつつ地面まで落ちる仏教アニメーション */
     @keyframes sangeMainAnimation {
-      0% {
-        transform: translateY(0) translateX(0) rotate(0deg) rotateY(0deg);
-        opacity: 0;
-      }
-      8% {
-        opacity: 1;
-      }
-      25% {
-        transform: translateY(30vh) translateX(120px) rotate(45deg) rotateY(180deg);
-      }
-      50% {
-        transform: translateY(60vh) translateX(-120px) rotate(-30deg) rotateY(360deg);
-      }
-      75% {
-        transform: translateY(90vh) translateX(100px) rotate(35deg) rotateY(540deg);
-      }
-      92% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(120vh) translateX(-80px) rotate(0deg) rotateY(720deg);
-        opacity: 0;
-      }
+      0% { transform: translateY(0) translateX(0) rotate(0deg) rotateY(0deg); opacity: 0; }
+      10% { opacity: 0.9; }
+      25% { transform: translateY(30vh) translateX(140px) rotate(40deg) rotateY(180deg); }
+      50% { transform: translateY(60vh) translateX(-140px) rotate(-35deg) rotateY(360deg); }
+      75% { transform: translateY(90vh) translateX(110px) rotate(30deg) rotateY(540deg); }
+      90% { opacity: 0.9; }
+      100% { transform: translateY(120vh) translateX(-70px) rotate(5deg) rotateY(720deg); opacity: 0; }
     }
     
     #status-message { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255, 255, 255, 0.5); z-index: 100; }
@@ -126,13 +105,11 @@
     const gasUrl = 'https://script.google.com/macros/s/AKfycbz2QnVhVNT25mUlzxOx-hMJXYGwavhNWqUTQ9Rvyy5GWs64BA4bHfHD7Q4iLCoY3hZP/exec'; // ⚠️ ここをGASのウェブアプリURLに書き換えてください
     let hasCelebrated = false; 
 
-    // 端末依存しない今日の日付を取得(yyyy-mm-dd)
     function getTodayString() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
-    // 日付リセットチェック
     function checkDateReset() {
       const todayStr = getTodayString();
       if (localStorage.getItem('last_saved_date') !== todayStr) {
@@ -176,13 +153,13 @@
       containerEl.classList.add('celebrate-container-mode');
       totalEl.classList.add('celebrate-mode');
       
-      triggerSangeEffect(50);
+      triggerSangeEffect(45);
 
-      // 7秒後に自動で通常画面へしっとり戻る
+      // ⏱️ 3秒間だけ拡大表示してしっとり自動で戻るよう調整
       setTimeout(() => {
         totalEl.classList.remove('celebrate-mode');
         containerEl.classList.remove('celebrate-container-mode');
-      }, 3000);
+      }, 3000); 
     }
 
     function updateDisplay() {
@@ -222,63 +199,45 @@
       sendDataToGAS();
     }
 
+    // 🌟 添付されたリアルな散華画像5パターンを文字化（SVG/Base64化）して直接コードに内蔵
+    const sangeImages = [
+      // 1. 桃色 (中央が明るく、外がじんわり色づく葉脈つき蓮弁)
+      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><defs><radialGradient id="g1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23fff" stop-opacity="0.95"/><stop offset="60%" stop-color="%23fff5f6" stop-opacity="0.8"/><stop offset="90%" stop-color="%23ffa6b4" stop-opacity="0.9"/><stop offset="100%" stop-color="%23ff788c" stop-opacity="1"/></radialGradient></defs><path d="M 50 2 C 85 10, 98 35, 50 58 C 2 35, 15 10, 50 2 Z" fill="url(%23g1)" stroke="%23fff" stroke-width="0.5"/><path d="M 50 2 Q 52 30, 50 58" fill="none" stroke="%23fff" stroke-width="0.4" stroke-dasharray="1,1.5"/><path d="M 30 15 Q 45 25, 50 35 M 70 15 Q 55 25, 50 35 M 22 28 Q 40 35, 50 45 M 78 28 Q 60 35, 50 45" fill="none" stroke="%23ffffff" stroke-width="0.25" stroke-opacity="0.6"/></svg>',
+      // 2. 薄水色
+      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><defs><radialGradient id="g2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23fff" stop-opacity="0.95"/><stop offset="60%" stop-color="%23ebf5ff" stop-opacity="0.8"/><stop offset="90%" stop-color="%238cc8f5" stop-opacity="0.9"/><stop offset="100%" stop-color="%2364b4f0" stop-opacity="1"/></radialGradient></defs><path d="M 50 2 C 85 10, 98 35, 50 58 C 2 35, 15 10, 50 2 Z" fill="url(%23g2)" stroke="%23fff" stroke-width="0.5"/><path d="M 50 2 Q 52 30, 50 58" fill="none" stroke="%23fff" stroke-width="0.4" stroke-dasharray="1,1.5"/><path d="M 30 15 Q 45 25, 50 35 M 70 15 Q 55 25, 50 35 M 22 28 Q 40 35, 50 45 M 78 28 Q 60 35, 50 45" fill="none" stroke="%23ffffff" stroke-width="0.25" stroke-opacity="0.6"/></svg>',
+      // 3. 若草色
+      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><defs><radialGradient id="g3" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23fff" stop-opacity="0.95"/><stop offset="60%" stop-color="%23f0ffeb" stop-opacity="0.8"/><stop offset="90%" stop-color="%23a5eb96" stop-opacity="0.9"/><stop offset="100%" stop-color="%2382d773" stop-opacity="1"/></radialGradient></defs><path d="M 50 2 C 85 10, 98 35, 50 58 C 2 35, 15 10, 50 2 Z" fill="url(%23g3)" stroke="%23fff" stroke-width="0.5"/><path d="M 50 2 Q 52 30, 50 58" fill="none" stroke="%23fff" stroke-width="0.4" stroke-dasharray="1,1.5"/><path d="M 30 15 Q 45 25, 50 35 M 70 15 Q 55 25, 50 35 M 22 28 Q 40 35, 50 45 M 78 28 Q 60 35, 50 45" fill="none" stroke="%23ffffff" stroke-width="0.25" stroke-opacity="0.6"/></svg>',
+      // 4. 淡黄色
+      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><defs><radialGradient id="g4" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23fff" stop-opacity="0.95"/><stop offset="60%" stop-color="%23ffffe6" stop-opacity="0.8"/><stop offset="90%" stop-color="%23f5e68c" stop-opacity="0.9"/><stop offset="100%" stop-color="%23e1d264" stop-opacity="1"/></radialGradient></defs><path d="M 50 2 C 85 10, 98 35, 50 58 C 2 35, 15 10, 50 2 Z" fill="url(%23g4)" stroke="%23fff" stroke-width="0.5"/><path d="M 50 2 Q 52 30, 50 58" fill="none" stroke="%23fff" stroke-width="0.4" stroke-dasharray="1,1.5"/><path d="M 30 15 Q 45 25, 50 35 M 70 15 Q 55 25, 50 35 M 22 28 Q 40 35, 50 45 M 78 28 Q 60 35, 50 45" fill="none" stroke="%23ffffff" stroke-width="0.25" stroke-opacity="0.6"/></svg>',
+      // 5. 藤色
+      'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 60"><defs><radialGradient id="g5" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="%23fff" stop-opacity="0.95"/><stop offset="60%" stop-color="%23faf0ff" stop-opacity="0.8"/><stop offset="90%" stop-color="%23c396f5" stop-opacity="0.9"/><stop offset="100%" stop-color="%23a06ee6" stop-opacity="1"/></radialGradient></defs><path d="M 50 2 C 85 10, 98 35, 50 58 C 2 35, 15 10, 50 2 Z" fill="url(%23g5)" stroke="%23fff" stroke-width="0.5"/><path d="M 50 2 Q 52 30, 50 58" fill="none" stroke="%23fff" stroke-width="0.4" stroke-dasharray="1,1.5"/><path d="M 30 15 Q 45 25, 50 35 M 70 15 Q 55 25, 50 35 M 22 28 Q 40 35, 50 45 M 78 28 Q 60 35, 50 45" fill="none" stroke="%23ffffff" stroke-width="0.25" stroke-opacity="0.6"/></svg>'
+    ];
+
     function triggerSangeEffect(count = 30) {
       const layer = document.getElementById('sange-layer');
-      
-      // 🌟 和紙・シルクを透かしたような、中央が明るく縁がじんわり色づく5色グラデーション
-      const colors = [
-        'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(255,240,242,0.7) 50%, rgba(255,160,175,0.85) 95%, rgba(255,120,140,0.95) 100%)', // 桃色 (ピンク)
-        'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(235,245,255,0.7) 50%, rgba(140,200,245,0.85) 95%, rgba(100,180,240,0.95) 100%)', // 薄水色 (ブルー)
-        'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(240,255,235,0.7) 50%, rgba(165,235,150,0.85) 95%, rgba(130,215,115,0.95) 100%)', // 若草色 (グリーン)
-        'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(255,255,230,0.7) 50%, rgba(245,230,140,0.85) 95%, rgba(225,210,100,0.95) 100%)', // 鮮一色 (イエロー)
-        'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.9) 0%, rgba(250,240,255,0.7) 50%, rgba(195,150,245,0.85) 95%, rgba(160,110,230,0.95) 100%)'  // 藤色 (パープル)
-      ];
 
       for(let i=0; i<count; i++) {
         const petalWrapper = document.createElement('div');
         petalWrapper.className = 'sange-petal-wrapper';
         
-        // iPad上で幅4センチほどに見えるリアルなサイズ（140px〜170px）
-        const size = (140 + Math.random() * 30); 
+        // iPadの画面上で幅約4センチ相当（140px〜175px）のボタニカルアートサイズ
+        const size = (140 + Math.random() * 35); 
         
         petalWrapper.style.left = (Math.random() * 110 - 5) + '%';
-        // 仏教的な静寂さを感じる、ゆったりとした降下時間（8〜13秒）と、大きく往復する時間（4.5〜6.5秒）
-        petalWrapper.style.animationDuration = (8 + Math.random() * 5) + 's, ' + (4.5 + Math.random() * 2) + 's';
-        petalWrapper.style.animationDelay = (Math.random() * 5) + 's';
+        
+        // 1つのタイムラインに落下の動きを集約。衝突を回避して滑らかに底まで落とす
+        petalWrapper.style.animation = 'sangeMainAnimation ' + (8 + Math.random() * 5) + 's linear forwards';
+        petalWrapper.style.animationDelay = (Math.random() * 4.5) + 's';
         petalWrapper.style.width = size + 'px';
         petalWrapper.style.height = (size * 0.6) + 'px'; 
 
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        
-        // 🌟 ふっくらした葉っぱの形状（Lotus弁）と透ける主脈（点線）のデザイン
-        petalWrapper.innerHTML = `
-          <div style="
-            background: ${randomColor}; 
-            width:100%; height:100%; 
-            border-radius: 90% 15% 90% 15%; 
-            transform: rotate(-25deg);
-            box-shadow: 
-              inset 0 0 20px rgba(255,255,255,0.95), 
-              inset 4px -4px 10px rgba(255,255,255,0.6),
-              inset -2px 2px 6px rgba(0,0,0,0.03),
-              0 6px 15px rgba(0,0,0,0.06);
-            border: 1px solid rgba(255,255,255,0.55);
-            backdrop-filter: blur(1.5px);
-            -webkit-backdrop-filter: blur(1.5px);
-            position: relative;
-          ">
-            <div style="
-              position: absolute;
-              top: 10%; left: 10%; width: 80%; height: 80%;
-              border-bottom: 1px dashed rgba(255,255,255,0.4);
-              border-radius: 0 0 90% 0;
-              transform: rotate(5deg);
-              pointer-events: none;
-            "></div>
-          </div>
-        `;
+        // ランダムで画像を選択してimgタグとして生成
+        const randomImageSrc = sangeImages[Math.floor(Math.random() * sangeImages.length)];
+        petalWrapper.innerHTML = `<img src="${randomImageSrc}" class="sange-petal-img" />`;
         
         layer.appendChild(petalWrapper);
+        
+        // 落ちきったら自動消去（メモリ対策）
         setTimeout(() => petalWrapper.remove(), 13500);
       }
     }

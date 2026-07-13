@@ -7,20 +7,43 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="COUNTER">
   <title>Attendance Counter</title>
-  <style>
+<style>
     :root { --bg-glass: rgba(255, 255, 255, 0.25); }
     body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; background-image: url('外観.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; height: 100vh; overflow: hidden; -webkit-touch-callout: none !important; -webkit-user-select: none !important; user-select: none !important; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
 
-    .grand-total-container { background: rgba(30, 25, 20, 0.7); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px; padding: 12px 45px; margin-top: 30px; margin-bottom: -10px; text-align: center; box-shadow: 0 12px 35px rgba(0,0,0,0.45), inset 0 0 20px rgba(255,255,255,0.05); z-index: 50; animation: pulseGlow 3s infinite alternate; cursor: pointer; }
+    /* 🌟 画面フラッシュ用のレイヤー */
+    .flash-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: #ffffff; opacity: 0; pointer-events: none; z-index: 9999; }
+    .flash-active { animation: flashAnim 0.8s ease-out forwards; }
+    @keyframes flashAnim { 0% { opacity: 0.9; } 100% { opacity: 0; } }
+
+    .grand-total-container { background: rgba(30, 25, 20, 0.7); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px; padding: 12px 45px; margin-top: 30px; margin-bottom: -10px; text-align: center; box-shadow: 0 12px 35px rgba(0,0,0,0.45), inset 0 0 20px rgba(255,255,255,0.05); z-index: 50; animation: pulseGlow 3s infinite alternate; cursor: pointer; transition: all 0.5s ease-in-out; }
     @keyframes pulseGlow { 0% { box-shadow: 0 12px 35px rgba(0,0,0,0.45), inset 0 0 20px rgba(255,255,255,0.05); } 100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4), inset 0 0 25px rgba(212, 175, 55, 0.15); } }
     .grand-total-title { font-size: 18px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 2.5px; text-shadow: 0 0 4px rgba(212, 175, 55, 0.9), 0 0 10px rgba(212, 175, 55, 0.8), 0 0 18px rgba(212, 175, 55, 0.6), 1px 2px 3px rgba(0,0,0,0.8); margin: 0; pointer-events: none; }
     .grand-total-display-wrapper { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 4px; pointer-events: none; }
     .grand-total-number { font-size: 48px; font-weight: 800; color: #ffffff; font-variant-numeric: tabular-nums; text-shadow: 0 0 12px rgba(212, 175, 55, 0.4), 2px 3px 8px rgba(0,0,0,0.9); line-height: 1; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     
-    /* 🌟 達成時の巨大化演出クラス */
-    .celebrate-mode { transform: scale(2.5) !important; font-size: 120px !important; color: #ffd700 !important; text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(0, 0, 0, 0.5) !important; z-index: 10000; }
+    /* 🌟 1000人達成時の「ドクンドクン」中央拡大＆金色の光オーラ（白文字＋金ぼかし枠） */
+    .celebrate-mode { 
+      position: fixed !important; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(1.8) !important;
+      font-size: 140px !important; color: #ffffff !important; 
+      text-shadow: 0 0 25px rgba(212, 175, 55, 0.9), 0 0 50px rgba(212, 175, 55, 0.7), 0 0 80px rgba(212, 175, 55, 0.5) !important;
+      z-index: 10000; animation: heartBeat 1.2s infinite cubic-bezier(0.215, 0.610, 0.355, 1) !important; 
+    }
+    .celebrate-container-mode {
+      position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; margin: 0 !important; padding: 0 !important;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background: rgba(0, 0, 0, 0.45) !important; backdrop-filter: blur(20px) !important; -webkit-backdrop-filter: blur(20px) !important;
+      border: none !important; box-shadow: 0 0 100px rgba(212, 175, 55, 0.6), inset 0 0 60px rgba(212, 175, 55, 0.3) !important;
+      z-index: 9998;
+    }
+    @keyframes heartBeat {
+      0% { transform: translate(-50%, -50%) scale(1.5); }
+      14% { transform: translate(-50%, -50%) scale(1.65); }
+      28% { transform: translate(-50%, -50%) scale(1.5); }
+      42% { transform: translate(-50%, -50%) scale(1.6); }
+      70% { transform: translate(-50%, -50%) scale(1.5); }
+    }
 
-    .lotus-side-art { width: 56px; height: 56px; filter: drop-shadow(0 2px 6px rgba(255, 192, 203, 0.4)) drop-shadow(1px 2px 3px rgba(0,0,0,0.6)); }
     .container { display: flex; flex: 1; width: 100%; padding: 35px; gap: 30px; box-sizing: border-box; z-index: 10; }
     .card { flex: 1; background-color: var(--bg-glass); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 35px; padding: 40px 30px; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
     .title-member, .title-visitor { font-size: 50px; font-weight: 900; color: #ffffff; text-shadow: 0 0 15px rgba(0, 118, 255, 0.8), 2px 2px 5px rgba(0,0,0,0.5); margin: 10px 0 20px 0; text-align: center; }
@@ -32,13 +55,29 @@
     .ripple-effect { position: absolute; top: 50%; left: 50%; width: 220px; height: 220px; margin-top: -110px; margin-left: -110px; border-radius: 50%; border: 3px solid rgba(0, 225, 255, 0.85); background: radial-gradient(circle, rgba(0, 225, 255, 0.1) 0%, rgba(0, 225, 255, 0) 70%); pointer-events: none; z-index: 4; animation: rippleSpread 4.0s cubic-bezier(0.1, 0.2, 0.3, 1) forwards; }
     .ripple-visitor { border: 3px solid rgba(52, 211, 153, 0.85) !important; background: radial-gradient(circle, rgba(52, 211, 153, 0.1) 0%, rgba(52, 211, 153, 0) 70%) !important; }
     @keyframes rippleSpread { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(2.6); opacity: 0; } }
-    .sange-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 999; }
-    .sange-petal-wrapper { position: absolute; top: -100px; animation: sangeFallLinear linear forwards; }
-    @keyframes sangeFallLinear { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(115vh); opacity: 0; } }
+    
+    /* 🌸 散華（Sange）レイヤーとひらひら優雅なアニメーション設定 */
+    .sange-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 99999; }
+    .sange-petal-wrapper { position: absolute; top: -60px; animation: sangeFall linear forwards, sangeSway ease-in-out infinite alternate; }
+    
+    /* 縦にゆっくり落ちる */
+    @keyframes sangeFall {
+      0% { transform: translateY(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(110vh); opacity: 0; }
+    }
+    /* 左右に大きくひらひら回転しながら揺れる */
+    @keyframes sangeSway {
+      0% { margin-left: -50px; transform: rotate3d(1, 1, 0, 0deg); }
+      100% { margin-left: 50px; transform: rotate3d(1, 2, 1, 360deg); }
+    }
+    
     #status-message { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255, 255, 255, 0.5); z-index: 100; }
   </style>
 </head>
 <body>
+  <div class="flash-overlay" id="flash-screen"></div>
   <div class="sange-container" id="sange-layer"></div>
   <div class="grand-total-container" id="grand-total-box">
     <div class="grand-total-title">Total Attendance</div>
@@ -63,152 +102,188 @@
   <div id="status-message"></div>
 
 <script>
-  const gasUrl = 'https://script.google.com/macros/s/AKfycbz2QnVhVNT25mUlzxOx-hMJXYGwavhNWqUTQ9Rvyy5GWs64BA4bHfHD7Q4iLCoY3hZP/exec'; 
-  let hasCelebrated = false; 
+    const gasUrl = 'https://script.google.com/macros/s/AKfycbz2QnVhVNT25mUlzxOx-hMJXYGwavhNWqUTQ9Rvyy5GWs64BA4bHfHD7Q4iLCoY3hZP/exec'; // ⚠️ ここをご自身のGASウェブアプリURLに書き換えてください
+    let hasCelebrated = false; 
 
-  // 🛠️ 端末依存しない「今日の日付(yyyy-mm-dd)」を取得する関数
-  function getTodayString() {
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
-  }
-
-  // 🛠️ 日付が変わっていたらローカルストレージを自動リセットする関数
-  function checkDateReset() {
-    const todayStr = getTodayString();
-    const lastSavedDate = localStorage.getItem('last_saved_date');
-
-    if (lastSavedDate !== todayStr) {
-      localStorage.setItem('today_member', '0');
-      localStorage.setItem('today_visitor', '0');
-      localStorage.setItem('last_saved_date', todayStr);
-      localStorage.setItem('sync_needed', 'true'); // 日付が変わったら初期状態を同期させる
-      hasCelebrated = false;
+    // 端末依存しない今日の日付を取得(yyyy-mm-dd)
+    function getTodayString() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
-  }
 
-  function setupLongPress() {
-    const target = document.getElementById('grand-total-box');
-    let pressTimer;
-    const startPress = (e) => { pressTimer = setTimeout(() => triggerResetAuth(), 800); };
-    const cancelPress = (e) => { clearTimeout(pressTimer); };
-    target.addEventListener('touchstart', startPress);
-    target.addEventListener('touchend', cancelPress);
-    target.addEventListener('mousedown', startPress);
-    target.addEventListener('mouseup', cancelPress);
-    target.addEventListener('contextmenu', (e) => e.preventDefault());
-  }
-
-  function triggerResetAuth() {
-    if (prompt("Please enter the reset password:") === "0425") {
-      localStorage.setItem('today_member', '0');
-      localStorage.setItem('today_visitor', '0');
-      localStorage.setItem('sync_needed', 'true');
-      hasCelebrated = false;
-      updateDisplay();
-      sendDataToGAS(); // リセットしたことを即座にGASへ通知
-      alert("Reset completed.");
-    }
-  }
-
-  function performCelebrationEffect(element) {
-    element.classList.add('celebrate-mode');
-    triggerSangeEffect();
-    setTimeout(() => { element.classList.remove('celebrate-mode'); }, 3000);
-  }
-
-  function updateDisplay() {
-    checkDateReset(); // 表示更新前に必ず日付チェック
-
-    let tMember = parseInt(localStorage.getItem('today_member') || '0', 10);
-    let tVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
-    let grandTotal = tMember + tVisitor;
-
-    document.getElementById('count-member').innerText = tMember;
-    document.getElementById('count-visitor').innerText = tVisitor;
-    
-    const totalEl = document.getElementById('grand-total');
-    totalEl.innerText = grandTotal.toLocaleString();
-
-    const target = 10; 
-    if (grandTotal >= target && !hasCelebrated) {
-      performCelebrationEffect(totalEl);
-      hasCelebrated = true;
-    }
-  }
-
-  function handleCounterClick(type, el) {
-    checkDateReset(); // カウント前にも日付チェック
-
-    let m = parseInt(localStorage.getItem('today_member') || '0', 10);
-    let v = parseInt(localStorage.getItem('today_visitor') || '0', 10);
-    if (type === 'member') m++; else v++;
-    
-    localStorage.setItem('today_member', m);
-    localStorage.setItem('today_visitor', v);
-    localStorage.setItem('sync_needed', 'true'); // 未同期フラグを立てる
-    
-    updateDisplay();
-    sendDataToGAS();
-  }
-
-  // 🛠️ 通信エラー対策付きのデータ送信関数
-  function sendDataToGAS() {
-    if (localStorage.getItem('sync_needed') !== 'true') return;
-
-    const m = localStorage.getItem('today_member') || '0';
-    const v = localStorage.getItem('today_visitor') || '0';
-    const dateStr = localStorage.getItem('last_saved_date') || getTodayString();
-    const statusEl = document.getElementById('status-message');
-
-    statusEl.innerText = "Syncing...";
-
-    fetch(gasUrl, {
-      method: 'POST',
-      mode: 'cors', // 必要に応じて
-      body: JSON.stringify({ date: dateStr, memberToday: m, visitorToday: v })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "success") {
-        localStorage.removeItem('sync_needed'); // 送信成功したらフラグを下ろす
-        statusEl.innerText = "Synced successfully";
-        setTimeout(() => { if(statusEl.innerText === "Synced successfully") statusEl.innerText = ""; }, 3000);
-      } else {
-        statusEl.innerText = "Sync error (Server)";
+    // 日付リセットチェック
+    function checkDateReset() {
+      const todayStr = getTodayString();
+      if (localStorage.getItem('last_saved_date') !== todayStr) {
+        localStorage.setItem('today_member', '0');
+        localStorage.setItem('today_visitor', '0');
+        localStorage.setItem('last_saved_date', todayStr);
+        localStorage.setItem('sync_needed', 'true');
+        hasCelebrated = false;
       }
-    })
-    .catch(error => {
-      // 🛠️ オフライン時はここを通る。フラグが残るため、次のタップ時に再送を試みる
-      statusEl.innerText = "Offline - Saved locally";
-      console.log("Fetch failed, will retry next time:", error);
-    });
-  }
-
-  function triggerSangeEffect() {
-    const layer = document.getElementById('sange-layer');
-    for(let i=0; i<30; i++) {
-      const petal = document.createElement('div');
-      const size = (50 + Math.random() * 40);
-      petal.className = 'sange-petal-wrapper';
-      petal.style.left = Math.random() * 100 + '%';
-      petal.style.animationDuration = (6 + Math.random() * 3) + 's';
-      petal.style.animationDelay = Math.random() * 2 + 's';
-      petal.style.width = size + 'px';
-      petal.style.height = size + 'px';
-      petal.innerHTML = '<div style="background:pink; width:100%; height:100%; border-radius:50% 0 50% 0; opacity:0.8;"></div>';
-      layer.appendChild(petal);
-      setTimeout(() => petal.remove(), 10000);
     }
-  }
 
-  window.onload = () => { 
-    updateDisplay(); 
-    setupLongPress(); 
-    sendDataToGAS(); // 起動時にも、もし未送信データがあれば送信する
-  };
-</script>
+    function setupLongPress() {
+      const target = document.getElementById('grand-total-box');
+      let pressTimer;
+      const startPress = (e) => { pressTimer = setTimeout(() => triggerResetAuth(), 800); };
+      const cancelPress = (e) => { clearTimeout(pressTimer); };
+      target.addEventListener('touchstart', startPress);
+      target.addEventListener('touchend', cancelPress);
+      target.addEventListener('mousedown', startPress);
+      target.addEventListener('mouseup', cancelPress);
+      target.addEventListener('contextmenu', (e) => e.preventDefault());
+    }
+
+    function triggerResetAuth() {
+      if (prompt("Please enter the reset password:") === "0425") {
+        localStorage.setItem('today_member', '0');
+        localStorage.setItem('today_visitor', '0');
+        localStorage.setItem('sync_needed', 'true');
+        hasCelebrated = false;
+        updateDisplay();
+        sendDataToGAS();
+        alert("Reset completed.");
+      }
+    }
+
+    // 🌟 劇的・仏教的達成演出（フラッシュ＋心臓パルスオーラ＋散華連発）
+    function performCelebrationEffect(totalEl, containerEl) {
+      // 1. 画面ホワイトアウト（フラッシュ）
+      const flash = document.getElementById('flash-screen');
+      flash.classList.add('flash-active');
+      setTimeout(() => flash.classList.remove('flash-active'), 800);
+
+      // 2. 特大パルスオーラモード突入
+      containerEl.classList.add('celebrate-container-mode');
+      totalEl.classList.add('celebrate-mode');
+      
+      // 3. 散華を大量に美しく降らせる（多めの50枚）
+      triggerSangeEffect(50);
+
+      // 4. 7秒後に自動で通常画面にしっとり戻る
+      setTimeout(() => {
+        totalEl.classList.remove('celebrate-mode');
+        containerEl.classList.remove('celebrate-container-mode');
+      }, 7000);
+    }
+
+    function updateDisplay() {
+      checkDateReset();
+
+      let m = parseInt(localStorage.getItem('today_member') || '0', 10);
+      let v = parseInt(localStorage.getItem('today_visitor') || '0', 10);
+      let grandTotal = m + v;
+
+      document.getElementById('count-member').innerText = m;
+      document.getElementById('count-visitor').innerText = v;
+      
+      const totalEl = document.getElementById('grand-total');
+      const containerEl = document.getElementById('grand-total-box');
+      totalEl.innerText = grandTotal.toLocaleString();
+
+      // ⚠️ 達成人数の判定 (現在テスト用：10人。本番は1000)
+      const target = 10; 
+      if (grandTotal >= target && !hasCelebrated) {
+        performCelebrationEffect(totalEl, containerEl);
+        hasCelebrated = true;
+      }
+    }
+
+    function handleCounterClick(type, el) {
+      checkDateReset();
+
+      let m = parseInt(localStorage.getItem('today_member') || '0', 10);
+      let v = parseInt(localStorage.getItem('today_visitor') || '0', 10);
+      if (type === 'member') m++; else v++;
+      
+      localStorage.setItem('today_member', m);
+      localStorage.setItem('today_visitor', v);
+      localStorage.setItem('sync_needed', 'true');
+      
+      updateDisplay();
+      sendDataToGAS();
+    }
+
+    // 🛠️ ご要望通りの「和紙・シルク質感の抽象5色グラデーション散華」を生成して降らせる
+    function triggerSangeEffect(count = 30) {
+      const layer = document.getElementById('sange-layer');
+      // パステル5色のグラデーション定義（縁が少し色付き、中心は光を透かす白に近い明るさ）
+      const colors = [
+        'radial-gradient(circle, rgba(255,245,247,0.6) 0%, rgba(255,192,203,0.85) 90%, rgba(255,140,157,0.95) 100%)', // 薄いピンク
+        'radial-gradient(circle, rgba(240,248,255,0.6) 0%, rgba(173,216,230,0.85) 90%, rgba(135,206,250,0.95) 100%)', // 淡い水色
+        'radial-gradient(circle, rgba(245,255,240,0.6) 0%, rgba(202,242,194,0.85) 90%, rgba(144,238,144,0.95) 100%)', // 若草色
+        'radial-gradient(circle, rgba(255,255,240,0.6) 0%, rgba(255,250,205,0.85) 90%, rgba(238,232,170,0.95) 100%)', // 淡い黄色
+        'radial-gradient(circle, rgba(250,240,255,0.6) 0%, rgba(230,210,250,0.85) 90%, rgba(186,143,235,0.95) 100%)'  // 藤色
+      ];
+
+      for(let i=0; i<count; i++) {
+        const petalWrapper = document.createElement('div');
+        petalWrapper.className = 'sange-petal-wrapper';
+        
+        // 横幅4センチほど（約150px前後のランダムサイズ）に調整
+        const size = (130 + Math.random() * 40); 
+        
+        // 優雅にゆっくり落とすため、アニメーション時間を長め（7〜12秒）に設定
+        petalWrapper.style.left = Math.random() * 100 + '%';
+        petalWrapper.style.animationDuration = (7 + Math.random() * 5) + 's, ' + (3 + Math.random() * 3) + 's';
+        petalWrapper.style.animationDelay = (Math.random() * 4) + 's';
+        petalWrapper.style.width = size + 'px';
+        petalWrapper.style.height = (size * 0.6) + 'px'; // 蓮の花びらの比率（少し横長）
+
+        // ランダムに選んだグラデーション色で、繊細な和紙を透かしたような葉脈（box-shadowやボーダー）を表現
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        petalWrapper.innerHTML = `
+          <div style="
+            background: ${randomColor}; 
+            width:100%; height:100%; 
+            border-radius: 80% 10% 80% 10%; 
+            transform: rotate(-15deg);
+            box-shadow: inset 0 0 12px rgba(255,255,255,0.7), 0 4px 10px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.4);
+            backdrop-filter: blur(1px);
+            -webkit-backdrop-filter: blur(1px);
+          "></div>
+        `;
+        
+        layer.appendChild(petalWrapper);
+        setTimeout(() => petalWrapper.remove(), 12000);
+      }
+    }
+
+    function sendDataToGAS() {
+      if (localStorage.getItem('sync_needed') !== 'true') return;
+      const m = localStorage.getItem('today_member') || '0';
+      const v = localStorage.getItem('today_visitor') || '0';
+      const dateStr = localStorage.getItem('last_saved_date') || getTodayString();
+      const statusEl = document.getElementById('status-message');
+
+      statusEl.innerText = "Syncing...";
+
+      fetch(gasUrl, {
+        method: 'POST',
+        body: JSON.stringify({ date: dateStr, memberToday: m, visitorToday: v })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          localStorage.removeItem('sync_needed');
+          statusEl.innerText = "Synced successfully";
+          setTimeout(() => { if(statusEl.innerText === "Synced successfully") statusEl.innerText = ""; }, 3000);
+        } else {
+          statusEl.innerText = "Sync error (Server)";
+        }
+      })
+      .catch(error => {
+        statusEl.innerText = "Offline - Saved locally";
+      });
+    }
+
+    window.onload = () => { 
+      updateDisplay(); 
+      setupLongPress(); 
+      sendDataToGAS(); 
+    };
+  </script>
 </body>
 </html>

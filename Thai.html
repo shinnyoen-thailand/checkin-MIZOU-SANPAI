@@ -236,6 +236,7 @@
       height: 15px;
       z-index: 100;
       pointer-events: none;
+      display: none; /* 📡 スタッフにノイズを与えないよう完全非表示に固定 */
     }
 
     @keyframes walkUpLeft {
@@ -259,7 +260,7 @@
       100% { transform: translateY(-500px) translateX(-40px) rotate(-10deg) scale(0.85); opacity: 0; }
     }
 
-    /* 🌸 新・散華（Sange）エフェクト用スタイル */
+    /* 🌸 散華（Sange）エフェクト用スタイル */
     .sange-container {
       position: absolute;
       top: 0;
@@ -274,7 +275,7 @@
 
     .sange-petal-wrapper {
       position: absolute;
-      top: -100px; /* 大きくなったので画面外の開始位置を深く変更 */
+      top: -140px; /* 大きくなったため画面外の開始位置を深く変更 */
       pointer-events: none;
       animation: sangeFallLinear linear forwards;
     }
@@ -283,11 +284,11 @@
       width: 100%;
       height: 100%;
       fill-opacity: 0.88;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,0.2));
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
       transform-origin: center;
     }
 
-    /* 縦方向へのゆっくりとした自然な落下（イージングなしの一様落下） */
+    /* 縦方向へのゆっくりとした自然な落下 */
     @keyframes sangeFallLinear {
       0% { transform: translateY(0); opacity: 0; }
       8% { opacity: 1; }
@@ -295,21 +296,21 @@
       100% { transform: translateY(115vh); opacity: 0; }
     }
 
-    /* 左右へのひらひらとした揺れ ＆ 3D回転アニメーション */
+    /* 左右への大きく優雅な揺れ ＆ 3D回転アニメーション */
     @keyframes sangeSwayLeft {
-      0% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
-      25% { transform: translateX(-40px) rotateY(45deg) rotateZ(15deg); }
-      50% { transform: translateX(0) rotateY(120deg) rotateZ(0deg); }
-      75% { transform: translateX(40px) rotateY(45deg) rotateZ(-15deg); }
-      100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
+      0% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      25% { transform: translateX(-80px) rotateX(20deg) rotateY(50deg) rotateZ(20deg); }
+      50% { transform: translateX(0) rotateX(10deg) rotateY(110deg) rotateZ(0deg); }
+      75% { transform: translateX(80px) rotateX(25deg) rotateY(50deg) rotateZ(-20deg); }
+      100% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
     }
 
     @keyframes sangeSwayRight {
-      0% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
-      25% { transform: translateX(45px) rotateY(-50deg) rotateZ(-20deg); }
-      50% { transform: translateX(0) rotateY(-130deg) rotateZ(0deg); }
-      75% { transform: translateX(-45px) rotateY(-50deg) rotateZ(20deg); }
-      100% { transform: translateX(0) rotateY(0deg) rotateZ(0deg); }
+      0% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      25% { transform: translateX(85px) rotateX(-15deg) rotateY(-45deg) rotateZ(-25deg); }
+      50% { transform: translateX(0) rotateX(-25deg) rotateY(-120deg) rotateZ(0deg); }
+      75% { transform: translateX(-85px) rotateX(-10deg) rotateY(-45deg) rotateZ(25deg); }
+      100% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
     }
   </style>
 </head>
@@ -332,19 +333,29 @@
       </linearGradient>
 
       <radialGradient id="sange-pink" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#fff0f5"/><stop offset="100%" stop-color="#fba3c8"/>
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+        <stop offset="75%" stop-color="#fff0f5" stop-opacity="0.75"/>
+        <stop offset="100%" stop-color="#fba3c8" stop-opacity="0.95"/>
       </radialGradient>
       <radialGradient id="sange-blue" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#f0f8ff"/><stop offset="100%" stop-color="#aadaf8"/>
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+        <stop offset="75%" stop-color="#f0f8ff" stop-opacity="0.75"/>
+        <stop offset="100%" stop-color="#aadaf8" stop-opacity="0.95"/>
       </radialGradient>
       <radialGradient id="sange-green" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#f5fffa"/><stop offset="100%" stop-color="#b4dcad"/>
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+        <stop offset="75%" stop-color="#f5fffa" stop-opacity="0.75"/>
+        <stop offset="100%" stop-color="#b4dcad" stop-opacity="0.95"/>
       </radialGradient>
       <radialGradient id="sange-yellow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#fffff0"/><stop offset="100%" stop-color="#fcefa6"/>
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+        <stop offset="75%" stop-color="#fffff0" stop-opacity="0.75"/>
+        <stop offset="100%" stop-color="#fcefa6" stop-opacity="0.95"/>
       </radialGradient>
       <radialGradient id="sange-purple" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="#ffffff"/><stop offset="70%" stop-color="#f8f4ff"/><stop offset="100%" stop-color="#d1c2f0"/>
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+        <stop offset="75%" stop-color="#f8f4ff" stop-opacity="0.75"/>
+        <stop offset="100%" stop-color="#d1c2f0" stop-opacity="0.95"/>
       </radialGradient>
 
       <g id="sange-petal-shape">
@@ -425,7 +436,8 @@
   <script>
     const gasUrl = 'https://script.google.com/macros/s/AKfycbz2QnVhVNT25mUlzxOx-hMJXYGwavhNWqUTQ9Rvyy5GWs64BA4bHfHD7Q4iLCoY3hZP/exec';
 
-    let requestQueue = [];
+    // 📡 修正：ブラウザを閉じてもデータを保持するため、ローカルストレージからキューを読み込む
+    let requestQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
     let isSending = false;
     let hasCelebrated = false; 
 
@@ -433,7 +445,24 @@
       updateDisplay();
       setupLongPress(); 
       window.addEventListener('contextmenu', function(e) { e.preventDefault(); }, { passive: false });
+      processQueue();
     });
+
+    // 📅 修正：iPadの本体設定（タイ仏暦や和暦）に一切左右されない「西暦（gregory）」の YYYY-MM-DD フォーマットを完全固定
+    function getFixedTodayString() {
+      const d = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        calendar: 'gregory'
+      });
+      const parts = formatter.formatToParts(d);
+      const year = parts.find(p => p.type === 'year').value;
+      const month = parts.find(p => p.type === 'month').value;
+      const day = parts.find(p => p.type === 'day').value;
+      return `${year}-${month}-${day}`;
+    }
 
     function setupLongPress() {
       const target = document.getElementById('grand-total-box');
@@ -487,8 +516,9 @@
       return id;
     }
 
+    // ⏰ 修正：西暦固定文字列をもとに日付変更判定を行う（自動リセット用）
     function checkDateReset() {
-      const todayStr = new Date().toLocaleDateString('ja-JP');
+      const todayStr = getFixedTodayString();
       const savedDate = localStorage.getItem('lastSavedDate');
 
       if (savedDate !== todayStr) {
@@ -513,27 +543,25 @@
       document.getElementById('count-visitor').innerText = tVisitor;
       document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
 
-      // 【テスト用】10人で散華がダイナミックに舞う
+      // 【テスト用】10人で散華がダイナミックに舞う（本番は適宜1000等に変更してください）
       if (grandTotal === 10 && !hasCelebrated) {
         triggerSangeEffect();
         hasCelebrated = true; 
       }
     }
 
-    // 🌟 バラバラ＆ひらひら舞い落ちる散華ロジック
+    // 🌸 修正：和紙・シルクの半透明な質感と「ゆっくり、大きく左右にひらひら」を極めた散華ロジック
     function triggerSangeEffect() {
       const sangeLayer = document.getElementById('sange-layer');
       const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
-      const petalCount = 30; // 1枚が大きくなったため、画面が埋まりすぎないよう上品な30枚に調整
+      const petalCount = 30; 
 
       for (let i = 0; i < petalCount; i++) {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
         
-        // ラッパー要素（直線の落下制御用）
         const wrapper = document.createElement('div');
         wrapper.className = 'sange-petal-wrapper';
 
-        // 実体SVG要素（サイズ拡大 ＆ ひらひら揺れ制御用）
         const svgNS = "http://www.w3.org/2000/svg";
         const svgPetal = document.createElementNS(svgNS, "svg");
         svgPetal.setAttribute("class", "sange-petal");
@@ -545,32 +573,29 @@
         svgPetal.appendChild(useTag);
         wrapper.appendChild(svgPetal);
 
-        // 🌟 1枚1枚のサイズを「大幅に拡大」（旧: 30px〜55px → 新: 55px〜95px）
-        const size = 55 + Math.random() * 40;
+        // 🌟 葉（花びら）の大きさをさらに大きめに設定（75px〜115px）
+        const size = 75 + Math.random() * 40;
         wrapper.style.width = `${size}px`;
         wrapper.style.height = `${size}px`;
 
-        // 🌟 横位置・落下タイミングを「よりバラバラ」に分散
-        const startLeft = Math.random() * 95; // 画面の端から端まで
+        const startLeft = Math.random() * 95; 
         wrapper.style.left = `${startLeft}%`;
 
-        // ディレイ（発生時間差）を 0秒〜4.5秒 に広げて、一斉に落ちるのを回避
-        const animationDelay = Math.random() * 4.5;
-        // 落下速度（滞空時間）を 6秒〜9秒 にのばして「ゆっくり」に変更（旧: 4秒〜7秒）
-        const fallDuration = 6.0 + Math.random() * 3.0; 
-        // ひらひら揺れるピッチ（周期）
-        const swayDuration = 2.5 + Math.random() * 2.0;
+        // 🌟 5色が同時に落ちないよう、発生時間差（ディレイ）を大きく分散（0秒〜6.5秒）
+        const animationDelay = Math.random() * 6.5;
+        // 🌟 「ゆっくり」落とすために滞空時間をさらに延長（8.5秒〜13.5秒）
+        const fallDuration = 8.5 + Math.random() * 5.0; 
+        // 🌟 大きく左右にひらひら揺らすための周期設定
+        const swayDuration = 3.0 + Math.random() * 2.5;
 
         wrapper.style.animationDelay = `${animationDelay}s`;
         wrapper.style.animationDuration = `${fallDuration}s`;
 
-        // 左右どちらにひらひら揺れるかをランダムで決定
         const swayType = Math.random() > 0.5 ? 'sangeSwayLeft' : 'sangeSwayRight';
         svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
 
         sangeLayer.appendChild(wrapper);
 
-        // 落下が完全に終わったら要素を削除
         setTimeout(() => {
           wrapper.remove();
         }, (animationDelay + fallDuration) * 1000);
@@ -606,13 +631,16 @@
 
       const payload = {
         type: "click_counter",
-        date: localStorage.getItem('lastSavedDate'),
+        date: getFixedTodayString(), // 西暦固定の日付をセット
         memberToday: todayMember,
         visitorToday: todayVisitor,
         totalToday: todayMember + todayVisitor,
         deviceId: getOrCreateDeviceId()
       };
+      
+      // 📡 修正：データをキューに追加し、ローカルストレージへ即座に永続化保存
       requestQueue.push(payload);
+      localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
       processQueue();
     }
 
@@ -651,12 +679,11 @@
     const leftFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M52,85 C45,85 42,75 44,62 C46,52 38,44 40,34 C42,26 52,25 56,32 C60,39 56,48 58,58 C60,68 60,85 52,85 Z"/><circle cx="61" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="41" cy="19" r="4"/><circle cx="33" cy="24" r="3.5"/><circle cx="27" cy="31" r="3"/></svg>`;
     const rightFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M48,85 C55,85 58,75 56,62 C54,52 62,44 60,34 C58,26 48,25 44,32 C40,39 44,48 42,58 C40,68 40,85 48,85 Z"/><circle cx="39" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="59" cy="19" r="4"/><circle cx="67" cy="24" r="3.5"/><circle cx="73" cy="31" r="3"/></svg>`;
 
+    // 📡 修正：画面へのノイズを一切出さず、バックグラウンドで黙々と再送を行うサイレント送信システム
     function processQueue() {
       if (isSending || requestQueue.length === 0) return;
 
       isSending = true;
-      document.getElementById('status-message').innerText = "Syncing... (" + requestQueue.length + ")";
-
       const currentPayload = requestQueue[0];
 
       fetch(gasUrl, {
@@ -665,19 +692,31 @@
         body: JSON.stringify(currentPayload)
       })
       .then(res => {
-        requestQueue.shift();
+        if (res.ok || res.status === 200) {
+          requestQueue.shift(); // 送信完了分をキューから削除
+          localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue)); // ローカルストレージを同期
+        }
       })
       .catch(err => {
         console.error("Transmission failed:", err);
       })
       .finally(() => {
         isSending = false;
-        if (requestQueue.length === 0) {
-          document.getElementById('status-message').innerText = "";
+        if (requestQueue.length > 0) {
+          // キューが残っている（通信障害中など）場合は5秒後にサイレント再試行
+          setTimeout(processQueue, 5000);
         }
-        setTimeout(processQueue, 100);
       });
     }
+
+    // 📡 インターネット復帰時、即座にキューを処理
+    window.addEventListener('online', processQueue);
+
+    // ⏳ 起動っぱなし対策：30秒ごとにバックグラウンドで「日付変更」と「未送信データ」を自動巡回チェック
+    setInterval(() => {
+      checkDateReset();
+      processQueue();
+    }, 30000);
   </script>
 </body>
 </html>

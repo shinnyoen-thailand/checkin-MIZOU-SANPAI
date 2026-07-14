@@ -34,19 +34,19 @@
       position: relative;
     }
 
-    /* 🌟 マイルストーン達成時に背景に表示されるゴールドのオーラ効果 */
+    /* 🌟 マイルストーン達成時の背景減光オーラ */
     body.gold-aura-active::before {
       content: '';
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle, rgba(212, 175, 55, 0.35) 0%, rgba(212, 175, 55, 0) 75%);
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
       z-index: 9997;
       pointer-events: none;
       animation: auraGlow 3s ease-in-out infinite alternate;
     }
 
     @keyframes auraGlow {
-      0% { opacity: 0.6; }
+      0% { opacity: 0.7; }
       100% { opacity: 1; }
     }
 
@@ -66,10 +66,9 @@
       animation: pulseGlow 3s infinite alternate;
       cursor: pointer;
       
-      /* スムーズな位置移動・拡大縮小のアニメーション設定 */
-      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      /* 元の位置と中央位置をスムーズに繋ぐトランジション */
+      transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
       
-      /* iPad PWAでの誤動作（ジェスチャーやダブルタップズームなど）を完全に防ぐ設定 */
       touch-action: none !important; 
       -webkit-touch-callout: none !important;
       -webkit-user-select: none !important;
@@ -78,10 +77,10 @@
 
     @keyframes pulseGlow {
       0% { box-shadow: 0 12px 35px rgba(0,0,0,0.45), inset 0 0 20px rgba(255,255,255,0.05); }
-      100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4), inset 0 0 25px rgba(212, 175, 55, 0.15); }
+      100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.35), inset 0 0 25px rgba(212, 175, 55, 0.1); }
     }
 
-    /* 🏆 マイルストーン達成時の演出：中央に固定し、鼓動（ハートビート）のように脈打たせる */
+    /* 🏆 マイルストーン達成：中央飛び出し ＆ ゆっくりとした鼓動（パルスアニメーション） */
     .grand-total-container.milestone-active {
       position: fixed;
       top: 50%;
@@ -89,39 +88,63 @@
       transform: translate(-50%, -50%) scale(1.6);
       margin: 0;
       z-index: 10000;
-      background: rgba(15, 12, 10, 0.9);
+      background: rgba(15, 12, 10, 0.92);
       border: 2px solid rgba(255, 215, 0, 0.8);
-      box-shadow: 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 30px rgba(255, 215, 0, 0.2);
-      animation: dramaticHeartbeat 1.2s infinite ease-in-out;
       pointer-events: none;
+      /* ゆっくりドクンドクンと波打つパルスアニメーション（1.8秒周期） */
+      animation: slowPulseHeartbeat 1.8s infinite ease-in-out;
     }
 
-    @keyframes dramaticHeartbeat {
-      0% { transform: translate(-50%, -50%) scale(1.5); }
-      14% { transform: translate(-50%, -50%) scale(1.85); }
-      28% { transform: translate(-50%, -50%) scale(1.6); }
-      42% { transform: translate(-50%, -50%) scale(1.95); }
-      70% { transform: translate(-50%, -50%) scale(1.5); }
-      100% { transform: translate(-50%, -50%) scale(1.5); }
+    @keyframes slowPulseHeartbeat {
+      0% {
+        transform: translate(-50%, -50%) scale(1.6);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255, 215, 0, 0.2);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.75); /* 鼓動で少し大きく */
+        box-shadow: 0 0 70px rgba(255, 215, 0, 0.85), inset 0 0 35px rgba(255, 215, 0, 0.4); /* 金色のオーラが広がる */
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1.6);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255, 215, 0, 0.2);
+      }
     }
 
-    /* マイルストーン達成時の文字装飾（ゴールドの美しい光彩と白文字） */
+    /* 🏆 達成時のテキスト＆数字装飾：白文字 ＆ 金色のぼかし枠 */
     .grand-total-container.milestone-active .grand-total-title {
       color: #ffffff !important;
       text-shadow: 
-        0 0 8px rgba(255, 215, 0, 0.9), 
-        0 0 15px rgba(255, 215, 0, 0.7), 
-        0 0 25px rgba(255, 215, 0, 0.5) !important;
+        0 0 10px rgba(255, 215, 0, 0.9), 
+        0 0 20px rgba(255, 140, 0, 0.6) !important;
     }
 
     .grand-total-container.milestone-active .grand-total-number {
-      color: #ffffff !important;
+      color: #ffffff !important; /* 確実な白文字 */
       font-size: 72px !important;
-      text-shadow: 
-        0 0 12px rgba(255, 215, 0, 1), 
-        0 0 25px rgba(255, 215, 0, 0.8), 
-        0 0 45px rgba(255, 215, 0, 0.6),
-        0 0 70px rgba(255, 140, 0, 0.4) !important;
+      /* 金色のぼかし（パルスに合わせて息づくように、同じくアニメーションを同期） */
+      animation: goldGlowText 1.8s infinite ease-in-out;
+    }
+
+    @keyframes goldGlowText {
+      0% {
+        text-shadow: 
+          0 0 10px rgba(255, 215, 0, 0.9), 
+          0 0 20px rgba(255, 215, 0, 0.7), 
+          0 0 30px rgba(255, 140, 0, 0.5);
+      }
+      50% {
+        text-shadow: 
+          0 0 20px rgba(255, 255, 255, 1), /* ピーク時は中心がさらに輝く */
+          0 0 35px rgba(255, 215, 0, 1), 
+          0 0 55px rgba(255, 215, 0, 0.9),
+          0 0 80px rgba(255, 140, 0, 0.7);
+      }
+      100% {
+        text-shadow: 
+          0 0 10px rgba(255, 215, 0, 0.9), 
+          0 0 20px rgba(255, 215, 0, 0.7), 
+          0 0 30px rgba(255, 140, 0, 0.5);
+      }
     }
 
     .grand-total-title {
@@ -390,37 +413,44 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       z-index: 9998;
       pointer-events: none;
       opacity: 0;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.6s ease;
     }
 
     .milestone-backdrop.active {
       opacity: 1;
     }
 
-    /* ✨ 中央から飛び散るゴールドの火花（スパークル） */
-    .gold-sparkle {
+    /* ✨ 上から舞い降りる金色の光（キラキラ） */
+    .gold-glitter {
       position: fixed;
-      border-radius: 50%;
       pointer-events: none;
-      z-index: 10001;
-      background: radial-gradient(circle, #ffffff 15%, #ffd700 80%, #ff8c00 100%);
-      box-shadow: 0 0 10px #ffd700, 0 0 20px #ff8c00;
-      animation: sparkleFly ease-out forwards;
+      z-index: 9999;
+      background: radial-gradient(circle, #ffffff 10%, #fff3a1 50%, #ffd700 100%);
+      border-radius: 50%;
+      filter: drop-shadow(0 0 6px #ffd700);
+      animation: glitterFall linear forwards;
     }
 
-    @keyframes sparkleFly {
+    @keyframes glitterFall {
       0% {
-        transform: translate(0, 0) scale(1);
+        transform: translateY(-50px) translateX(0) rotate(0deg) scale(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+        transform: translateY(10vh) translateX(var(--sway-x)) rotate(45deg) scale(1);
+      }
+      90% {
         opacity: 1;
       }
       100% {
-        transform: translate(var(--tx), var(--ty)) scale(0);
+        transform: translateY(115vh) translateX(calc(var(--sway-x) * 2)) rotate(360deg) scale(0.2);
         opacity: 0;
       }
     }
@@ -428,7 +458,6 @@
 </head>
 <body>
 
-  <!-- 散華（花びら）のグラデーション定義 -->
   <svg style="width:0; height:0; position:absolute;">
     <defs>
       <radialGradient id="sange-pink" cx="50%" cy="50%" r="50%">
@@ -457,7 +486,6 @@
         <stop offset="100%" stop-color="#d1c2f0" stop-opacity="0.95"/>
       </radialGradient>
 
-      <!-- リアルで美しい和風の花びら3Dシェイプ -->
       <g id="sange-petal-shape">
         <path d="M 25,45 C 5,35 5,15 25,5 C 45,15 45,35 25,45 Z" />
         <path d="M 25,45 C 12,38 12,22 25,12 C 38,22 38,38 25,45 Z" fill="rgba(255,255,255,0.3)" />
@@ -470,12 +498,10 @@
     </defs>
   </svg>
 
-  <!-- ドラマチック演出用の特殊効果レイヤー -->
   <div class="flash-overlay" id="flash-layer"></div>
   <div class="milestone-backdrop" id="milestone-backdrop"></div>
   <div class="sange-container" id="sange-layer"></div>
 
-  <!-- 本日トータル表示（Total Attendance） -->
   <div class="grand-total-container" id="grand-total-box">
     <div class="grand-total-title">Total Attendance</div>
     <div class="grand-total-display-wrapper">
@@ -483,7 +509,6 @@
     </div>
   </div>
   
-  <!-- カウンター本体 -->
   <div class="container">
     <div class="card">
       <h2 class="title-member">MEMBER</h2>
@@ -504,7 +529,7 @@
 
   <div id="status-message"></div>
 
-  <script>　//⚠️ここにGASコードを貼る⚠️
+  <script>
     const gasUrl = 'https://script.google.com/macros/s/AKfycby3gqust9t0Lfjw-gXdXnxu95GIkb-L539e3tHedn-XOY8BNSCWVQT4rCHi8BpFV7PS/exec';
 
     let requestQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
@@ -517,7 +542,7 @@
       processQueue();
     });
 
-    // 暦法（カレンダー）の設定が「和暦」などになっていても、西暦（グレゴリオ暦）で今日の日付を「YYYY-MM-DD」形式で安全に取得する関数
+    // 西暦で今日の日付を取得する関数
     function getFixedTodayString() {
       const d = new Date();
       const formatter = new Intl.DateTimeFormat('en-US', {
@@ -533,7 +558,7 @@
       return `${year}-${month}-${day}`;
     }
 
-    // 安全な長押し処理の設定（わずかな指のズレで意図せずキャンセルされるのを防ぐタッチガード付き）
+    // 長押しによるリセット処理設定
     function setupLongPress() {
       const target = document.getElementById('grand-total-box');
       let pressTimer;
@@ -582,7 +607,7 @@
       target.addEventListener('mouseleave', cancelPress);
     }
 
-    // カウンターマスターリセット処理（パスワード認証）
+    // マスターリセット（管理者用）
     function triggerResetAuth() {
       const password = prompt("Please enter the administrator password for reset.：");
       
@@ -591,8 +616,6 @@
         localStorage.setItem('today_visitor', '0');
         localStorage.setItem('total_member', '0');
         localStorage.setItem('total_visitor', '0');
-        
-        // リセット時はマイルストーンの演出実行履歴も完全にクリアする
         localStorage.removeItem('last_celebrated_milestone');
         
         updateDisplay();
@@ -602,7 +625,7 @@
       }
     }
 
-    // iPadごとの一意のデバイスIDの取得または新規作成
+    // デバイスIDの取得
     function getOrCreateDeviceId() {
       let id = localStorage.getItem('deviceId');
       if (!id) {
@@ -612,7 +635,7 @@
       return id;
     }
 
-    // 日付変更時のローカルカウンター初期化チェック
+    // 日付リセット処理
     function checkDateReset() {
       const todayStr = getFixedTodayString();
       const savedDate = localStorage.getItem('lastSavedDate');
@@ -624,7 +647,7 @@
       }
     }
 
-    // 画面表示更新とマイルストーン判定
+    // ディスプレイの更新
     function updateDisplay() {
       checkDateReset();
       
@@ -639,22 +662,20 @@
       document.getElementById('count-visitor').innerText = tVisitor;
       document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
 
-      // 安全にマイルストーンをチェックして演出をトリガー
       checkMilestoneCelebration(grandTotal);
     }
 
-    // 🏆 マイルストーン判定＆重複トリガー防止ロジック
+    // 🏆 マイルストーン判定
     function checkMilestoneCelebration(grandTotal) {
       if (grandTotal <= 0) return;
 
-      // 【テスト用の設定】現在は動作確認のために10の倍数（10, 20, 30...）に設定しています。
-      // 【本番運用の設定】1000の倍数（1000, 2000, 3000...）にする場合は「grandTotal % 1000 === 0」に書き換えてください。
+      // 【テスト仕様】現在は10の倍数で反応します。
+      // 【本番仕様】1000の倍数にしたい場合は「grandTotal % 1000 === 0」に書き換えてください。
       const isMilestone = (grandTotal % 10 === 0);
 
       if (isMilestone) {
         const lastCelebrated = parseInt(localStorage.getItem('last_celebrated_milestone') || '0', 10);
         
-        // すでに同じ数値で演出が実行されていない場合のみトリガー（ページの連続リロード時などの暴発を防ぐ）
         if (grandTotal !== lastCelebrated) {
           localStorage.setItem('last_celebrated_milestone', grandTotal.toString());
           triggerMilestoneCelebration();
@@ -662,20 +683,21 @@
       }
     }
 
-    // 🎉 マイルストーン達成時のドラマチック演出シークエンス
+    // 🎉 新・マイルストーン達成時のドラマチック演出シークエンス
     function triggerMilestoneCelebration() {
-      // 1. 散華（美しい花びら）の落下をスタート
+      // 1. 散華（花びら）と、新演出の「上から舞い降りる金の光（キラキラ）」を同時スタート
       triggerSangeEffect();
+      triggerGoldGlitterShower();
 
       // 2. 画面全体を一瞬だけ白くフラッシュさせる
       const flash = document.getElementById('flash-layer');
       flash.style.transition = 'none';
       flash.style.opacity = '1';
-      flash.offsetHeight; // ブラウザの再描画を強制
+      flash.offsetHeight; // リフローを強制
       flash.style.transition = 'opacity 0.6s ease-out';
       flash.style.opacity = '0';
 
-      // 3. 背景を暗くし、カウンターを中央に移動させて鼓動のように脈打たせる
+      // 3. 背景の暗転化と、カウンター中央飛び出し＆パルス鼓動
       const backdrop = document.getElementById('milestone-backdrop');
       const totalBox = document.getElementById('grand-total-box');
       
@@ -683,72 +705,59 @@
       document.body.classList.add('gold-aura-active');
       totalBox.classList.add('milestone-active');
 
-      // 4. 中央からキラキラと輝くゴールドの火花（スパークル）を毎秒連続生成
-      const sparkInterval = setInterval(() => {
-        createGoldSparkle();
-      }, 45);
-
-      // 元の画面レイアウトに戻る少し前に火花の生成を止める
-      setTimeout(() => {
-        clearInterval(sparkInterval);
-      }, 2700);
-
-      // 5. 3秒後にすべての特別演出を終了し、スムーズに元のレイアウトに戻す
+      // 4. 3秒後に元の表示レイアウトへスムーズに戻す
       setTimeout(() => {
         backdrop.classList.remove('active');
         document.body.classList.remove('gold-aura-active');
         totalBox.classList.remove('milestone-active');
+        // ※この時点で、散華や金の光はDOM要素として落下中ですが、何事もなかったかのようにヒラヒラと落ち続けて消えていきます。
       }, 3000);
     }
 
-    // ✨ ゴールドの火花（スパークル）を生成して物理シミュレーションする関数
-    function createGoldSparkle() {
-      const sparkle = document.createElement('div');
-      sparkle.className = 'gold-sparkle';
+    // ✨ 上から優雅に降り注ぐ金色の光（キラキラ）のエフェクト
+    function triggerGoldGlitterShower() {
+      const sangeLayer = document.getElementById('sange-layer');
+      const glitterCount = 40; // 降らせるキラキラの総数
 
-      // 画面中央（トータルカウンターがある位置）の座標を計算
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
+      for (let i = 0; i < glitterCount; i++) {
+        const glitter = document.createElement('div');
+        glitter.className = 'gold-glitter';
 
-      // ボックスの周囲からランダムに発生させる
-      const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * 90;
-      const startX = centerX + Math.cos(angle) * radius;
-      const startY = centerY + Math.sin(angle) * radius;
+        // ランダムな横幅・縦幅（星・光の大小を表現）
+        const size = 6 + Math.random() * 12;
+        glitter.style.width = `${size}px`;
+        glitter.style.height = `${size}px`;
 
-      sparkle.style.left = `${startX}px`;
-      sparkle.style.top = `${startY}px`;
+        // 上からの降下開始x位置
+        const startLeft = Math.random() * 100;
+        glitter.style.left = `${startLeft}%`;
+        glitter.style.top = `-20px`;
 
-      // 火花が飛び散る方向と距離（トランスレート先）をランダムに計算
-      const driftAngle = Math.random() * Math.PI * 2;
-      const driftDistance = 180 + Math.random() * 260; // 画面全体に美しく広がるように設定
-      const tx = Math.cos(driftAngle) * driftDistance;
-      const ty = Math.sin(driftAngle) * driftDistance;
+        // 左右のランダムな揺らぎ幅を指定
+        const swayX = -80 + Math.random() * 160;
+        glitter.style.setProperty('--sway-x', `${swayX}px`);
 
-      sparkle.style.setProperty('--tx', `${tx}px`);
-      sparkle.style.setProperty('--ty', `${ty}px`);
+        // 各粒子に揺らぎを持たせる（ディレイとスピード）
+        const delay = Math.random() * 4.5; // 花びらと同じく広範囲に時間差で降らす
+        const duration = 7.0 + Math.random() * 5.0; // ゆっくり降る
 
-      // 火花の大きさをランダムに設定して奥行き感を出す
-      const size = 6 + Math.random() * 9;
-      sparkle.style.width = `${size}px`;
-      sparkle.style.height = `${size}px`;
+        glitter.style.animationDelay = `${delay}s`;
+        glitter.style.animationDuration = `${duration}s`;
 
-      // 動きが自然に見えるように移動スピード（アニメーション時間）に揺らぎを与える
-      sparkle.style.animationDuration = `${1.2 + Math.random() * 0.8}s`;
+        sangeLayer.appendChild(glitter);
 
-      document.body.appendChild(sparkle);
-
-      // アニメーション終了後にDOMから自動削除（メモリリーク対策）
-      setTimeout(() => {
-        sparkle.remove();
-      }, 2000);
+        // 落下し終わったら自動削除
+        setTimeout(() => {
+          glitter.remove();
+        }, (delay + duration) * 1000);
+      }
     }
 
-    // 🌸 散華（美しい花びらが和風にヒラヒラと舞い落ちる）エフェクト
+    // 🌸 散華（美しい花びらが和風にヒラヒラと舞い落ちる）エフェクト（コードはそのまま保持）
     function triggerSangeEffect() {
       const sangeLayer = document.getElementById('sange-layer');
       const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
-      const petalCount = 20; // 降らせる花びらの総数
+      const petalCount = 30; 
 
       for (let i = 0; i < petalCount; i++) {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -767,16 +776,13 @@
         svgPetal.appendChild(useTag);
         wrapper.appendChild(svgPetal);
 
-        // 花びらのサイズを不揃いにして自然な揺らぎを表現
         const size = 75 + Math.random() * 40;
         wrapper.style.width = `${size}px`;
         wrapper.style.height = `${size}px`;
 
-        // 落ち始める横方向の初期位置をランダム化
         const startLeft = Math.random() * 95; 
         wrapper.style.left = `${startLeft}%`;
 
-        // 各花びらにランダムな時間差（ディレイ）と落下のスピードを与える
         const animationDelay = Math.random() * 6.5;
         const fallDuration = 8.5 + Math.random() * 5.0; 
         const swayDuration = 3.0 + Math.random() * 2.5;
@@ -784,20 +790,18 @@
         wrapper.style.animationDelay = `${animationDelay}s`;
         wrapper.style.animationDuration = `${fallDuration}s`;
 
-        // 左右のひらひらダンスのパターンをランダムに決定
         const swayType = Math.random() > 0.5 ? 'sangeSwayLeft' : 'sangeSwayRight';
         svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
 
         sangeLayer.appendChild(wrapper);
 
-        // アニメーションが完全に終了した花びらを自動削除
         setTimeout(() => {
           wrapper.remove();
         }, (animationDelay + fallDuration) * 1000);
       }
     }
 
-    // カウンタークリック時のメイン制御関数
+    // カウンタークリック処理
     function handleCounterClick(type, circleElement) {
       checkDateReset();
 
@@ -825,7 +829,6 @@
       const zone = circleElement.parentElement;
       spawnFootprints(zone);
 
-      // GAS動作用の送信ペイロードデータ
       const payload = {
         type: "click_counter",
         date: getFixedTodayString(), 
@@ -840,7 +843,7 @@
       processQueue();
     }
 
-    // 美しい三重波動リップルエフェクトの生成
+    // 三重リップルエフェクト
     function createTripleRipple(button, type) {
       const delays = [0, 700, 1400];
       delays.forEach(delay => {
@@ -856,7 +859,7 @@
       });
     }
 
-    // 足跡アニメーションの順番生成処理
+    // 足跡出現
     function spawnFootprints(zone) {
       const animations = ['walkUpLeft', 'walkUpRight', 'walkUpFinal'];
       const svgs = [leftFootSVG, rightFootSVG, leftFootSVG];
@@ -874,11 +877,10 @@
       });
     }
 
-    // 足跡（左・右）の滑らかなベクターSVGデータ定義
     const leftFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M52,85 C45,85 42,75 44,62 C46,52 38,44 40,34 C42,26 52,25 56,32 C60,39 56,48 58,58 C60,68 60,85 52,85 Z"/><circle cx="61" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="41" cy="19" r="4"/><circle cx="33" cy="24" r="3.5"/><circle cx="27" cy="31" r="3"/></svg>`;
     const rightFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M48,85 C55,85 58,75 56,62 C54,52 62,44 60,34 C58,26 48,25 44,32 C40,39 44,48 42,58 C40,68 40,85 48,85 Z"/><circle cx="39" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="59" cy="19" r="4"/><circle cx="67" cy="24" r="3.5"/><circle cx="73" cy="31" r="3"/></svg>`;
 
-    // オフライン送信キュー処理（未送信データを安全に貯めて順次送信）
+    // キュー処理
     function processQueue() {
       if (isSending || requestQueue.length === 0) return;
 
@@ -897,7 +899,7 @@
         }
       })
       .catch(err => {
-        console.error("サーバーへのデータ送信に失敗しました（オフラインまたは通信エラー）:", err);
+        console.error("データ送信失敗（リトライ待機中）:", err);
       })
       .finally(() => {
         isSending = false;
@@ -907,10 +909,8 @@
       });
     }
 
-    // 端末が再びオンラインになった瞬間に未送信データを一括送信
     window.addEventListener('online', processQueue);
 
-    // 定期的な日付変更チェックおよび送信キュー監視タスク（30秒周期）
     setInterval(() => {
       checkDateReset();
       processQueue();

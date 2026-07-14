@@ -33,12 +33,11 @@
     .ripple-visitor { border: 3px solid rgba(52, 211, 153, 0.85) !important; background: radial-gradient(circle, rgba(52, 211, 153, 0.1) 0%, rgba(52, 211, 153, 0) 70%) !important; }
     @keyframes rippleSpread { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(2.6); opacity: 0; } }
     
-    /* 🌸 新設：散華（洗練された蓮の花びら）用のスタイルレイヤー */
+    /* 🌸 散華（洗練された蓮の花びら）用レイヤー */
     .sange-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; pointer-events: none; z-index: 9999; perspective: 1000px; }
     .sange-petal-wrapper { position: absolute; top: -140px; pointer-events: none; animation: sangeFallLinear linear forwards; }
     .sange-petal { width: 100%; height: 100%; transform-origin: center; filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)) drop-shadow(0 2px 5px rgba(255,255,255,0.2)); }
     
-    /* ゆっくり滑らかに垂直落下するベースライン */
     @keyframes sangeFallLinear {
       0% { transform: translateY(0); opacity: 0; }
       8% { opacity: 1; }
@@ -46,7 +45,6 @@
       100% { transform: translateY(120vh); opacity: 0; }
     }
 
-    /* 左右に大きく3Dでひらひらと舞う揺らぎモーション（軌道を2パターン用意） */
     @keyframes sangeSwayA {
       0% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
       25% { transform: translateX(-90px) rotateX(25deg) rotateY(65deg) rotateZ(20deg); }
@@ -62,7 +60,8 @@
       100% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
     }
 
-    #status-message { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255, 255, 255, 0.5); z-index: 100; }
+    /* 📡 オフライン状態警告用ステータス表示 */
+    #status-message { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); font-size: 13px; font-weight: bold; color: rgba(255, 255, 255, 0.75); background: rgba(220, 53, 69, 0.6); padding: 4px 16px; border-radius: 20px; backdrop-filter: blur(5px); z-index: 100; display: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
@@ -123,6 +122,30 @@
   <script>
     const gasUrl = 'https://script.google.com/macros/s/AKfycbz2QnVhVNT25mUlzxOx-hMJXYGwavhNWqUTQ9Rvyy5GWs64BA4bHfHD7Q4iLCoY3hZP/exec'; // ⚠️ ここをGASのURLに書き換えてください
     let hasCelebrated = false; 
+    let isProcessingQueue = false;
+
+    // 📅 ② 端末設定（仏暦・言語）に依存しない西暦固定の YYYY-MM-DD 文字列を生成
+    function getFormattedDate() {
+      const d = new Date();
+      const yyyy = d.getFullYear(); // 常に西暦を取得
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    // ⏰ ① 日付変更時の自動リセット処理
+    function checkDateReset() {
+      const currentDate = getFormattedDate();
+      const lastDate = localStorage.getItem('last_operation_date');
+      
+      if (lastDate && lastDate !== currentDate) {
+        localStorage.setItem('today_member', '0');
+        localStorage.setItem('today_visitor', '0');
+        hasCelebrated = false;
+        updateDisplay();
+      }
+      localStorage.setItem('last_operation_date', currentDate);
+    }
 
     // リセット長押し設定
     function setupLongPress() {
@@ -165,7 +188,7 @@
       const totalEl = document.getElementById('grand-total');
       totalEl.innerText = grandTotal.toLocaleString();
 
-      // ⚠️ ここで達成人数を判定 (テスト用10。本番用1000など適宜変更してください)
+      // ⚠️ 達成人数の判定 (テスト用10。本番設定に合わせて変更してください)
       const target = 10; 
       if (grandTotal >= target && !hasCelebrated) {
         performCelebrationEffect(totalEl);
@@ -174,33 +197,107 @@
     }
 
     function handleCounterClick(type, el) {
+      checkDateReset(); // 操作の瞬間に日付変更がないか都度チェック
+      
       let m = parseInt(localStorage.getItem('today_member') || '0', 10);
       let v = parseInt(localStorage.getItem('today_visitor') || '0', 10);
       if (type === 'member') m++; else v++;
+      
       localStorage.setItem('today_member', m);
       localStorage.setItem('today_visitor', v);
       updateDisplay();
       
-      // GAS送信
-      fetch(gasUrl, { method: 'POST', body: JSON.stringify({ date: new Date().toLocaleDateString(), memberToday: m, visitorToday: v }) });
+      // 📡 ③ キューにデータを追加してGAS送信タスクを開始
+      enqueueData(m, v);
     }
 
-    // 🪷 散華エフェクトの完全書き換え
+    // 📡 ③ 送信待ちデータをローカルキューに保存する処理
+    function enqueueData(memberCount, visitorCount) {
+      const currentDate = getFormattedDate();
+      const payload = {
+        date: currentDate,
+        memberToday: memberCount,
+        visitorToday: visitorCount,
+        timestamp: Date.now()
+      };
+
+      let queue = JSON.parse(localStorage.getItem('gas_send_queue') || '[]');
+      queue.push(payload);
+      localStorage.setItem('gas_send_queue', JSON.stringify(queue));
+
+      processQueue();
+    }
+
+    // 📡 ③ キュー内の未送信データを非同期で順次再送処理するコアシステム
+    async function processQueue() {
+      if (isProcessingQueue) return;
+      
+      let queue = JSON.parse(localStorage.getItem('gas_send_queue') || '[]');
+      if (queue.length === 0) {
+        updateStatusUI(0);
+        return;
+      }
+
+      isProcessingQueue = true;
+
+      while (queue.length > 0) {
+        updateStatusUI(queue.length);
+        const currentData = queue[0];
+
+        try {
+          const response = await fetch(gasUrl, {
+            method: 'POST',
+            mode: 'cors',
+            body: JSON.stringify({
+              date: currentData.date,
+              memberToday: currentData.memberToday,
+              visitorToday: currentData.visitorToday
+            })
+          });
+
+          if (response.ok) {
+            queue.shift(); // 正常送信できたらキューの先頭を削除
+            localStorage.setItem('gas_send_queue', JSON.stringify(queue));
+          } else {
+            // サーバーエラー等の場合は処理を中断し次回のタイマー等に委ねる
+            break;
+          }
+        } catch (error) {
+          // 完全にオフラインの場合はループを抜けて処理を保留
+          console.log("Network offline. Retrying later.");
+          break;
+        }
+      }
+
+      updateStatusUI(queue.length);
+      isProcessingQueue = false;
+    }
+
+    // 📡 ③ 画面下部に未送信データの状態を表示するUIチェッカー
+    function updateStatusUI(pendingCount) {
+      const statusEl = document.getElementById('status-message');
+      if (!statusEl) return;
+      if (pendingCount > 0) {
+        statusEl.innerText = `Offline mode: ${pendingCount} updates pending...`;
+        statusEl.style.display = 'block';
+      } else {
+        statusEl.style.display = 'none';
+      }
+    }
+
+    // 🪷 散華エフェクトの描画処理
     function triggerSangeEffect() {
       const layer = document.getElementById('sange-layer');
       if (!layer) return;
 
       const colors = ['sange-pink', 'sange-blue', 'sange-green', 'sange-yellow', 'sange-purple'];
-      const totalPetals = 35; // 画面を彩る花びらの総数
+      const totalPetals = 35; 
 
       for (let i = 0; i < totalPetals; i++) {
         const wrapper = document.createElement('div');
         wrapper.className = 'sange-petal-wrapper';
-        
-        // 5色を順番にマッピング
         const colorId = colors[i % colors.length];
 
-        // 抽象的かつ上品な蓮の花びらと繊細な葉脈をSVGで描写
         wrapper.innerHTML = `
           <svg class="sange-petal" viewBox="0 0 100 100">
             <path d="M50 4 C16 35 22 76 50 96 C78 76 84 35 50 4 Z" fill="url(#${colorId})" />
@@ -214,40 +311,47 @@
           </svg>
         `;
 
-        // 横軸の初期出現位置をランダム分散
         wrapper.style.left = Math.random() * 100 + '%';
 
-        // 花びらのサイズを大きめ（70px〜115px）にランダム設定
         const size = 70 + Math.random() * 45;
         wrapper.style.width = size + 'px';
         wrapper.style.height = size + 'px';
 
-        // 5色が同時に落ちないよう、ディレイを最大6.5秒まで大きく引き伸ばし
         const delay = Math.random() * 6.5;
-        // 落下速度もゆったり長め（7秒〜12秒）にランダム化
         const duration = 7 + Math.random() * 5;
         
         wrapper.style.animationDelay = delay + 's';
         wrapper.style.animationDuration = duration + 's';
 
-        // 左右へのひらひら揺らぎアニメーションを適用
         const swayType = i % 2 === 0 ? 'sangeSwayA' : 'sangeSwayB';
-        const swayDuration = 3 + Math.random() * 2.5; // 揺らぎの周期
+        const swayDuration = 3 + Math.random() * 2.5; 
         const innerPetal = wrapper.querySelector('.sange-petal');
         if (innerPetal) {
           innerPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
-          // 初期角度を少し傾けて自然な佇まいに
           innerPetal.style.transform = `rotate(${(Math.random() * 40) - 20}deg)`;
         }
 
         layer.appendChild(wrapper);
-
-        // 落下完了後（ディレイ＋アニメーション時間）にメモリ解放のため自動削除
         setTimeout(() => wrapper.remove(), (delay + duration + 1) * 1000);
       }
     }
 
-    window.onload = () => { updateDisplay(); setupLongPress(); };
+    // 🔄 ネットワーク復帰・定期同期の監視ライフサイクル
+    window.onload = () => { 
+      checkDateReset();
+      updateDisplay(); 
+      setupLongPress(); 
+      processQueue(); 
+    };
+
+    // iPadのネットワーク状態がオンラインに切り替わったら即座にキューを再送
+    window.addEventListener('online', processQueue);
+
+    // ⏳ 常時起動対策：30秒ごとに「日付の変更」と「未送信データの再送」を常時ループチェック
+    setInterval(() => {
+      checkDateReset();
+      processQueue();
+    }, 30000);
   </script>
 </body>
 </html>

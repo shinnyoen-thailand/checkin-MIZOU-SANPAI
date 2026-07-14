@@ -584,7 +584,7 @@
 
     // カウンターマスターリセット処理（パスワード認証）
     function triggerResetAuth() {
-      const password = prompt("リセット用の管理者パスワードを入力してください：");
+      const password = prompt("Please enter the administrator password for reset.：");
       
       if (password === "0425") {
         localStorage.setItem('today_member', '0');
@@ -596,9 +596,9 @@
         localStorage.removeItem('last_celebrated_milestone');
         
         updateDisplay();
-        alert("すべてのカウンターを「0」にリセットしました。");
+        alert("All counters have been reset to 0.");
       } else if (password !== null) {
-        alert("パスワードが正しくありません。リセット処理を中止しました。");
+        alert("Incorrect password. Reset canceled.");
       }
     }
 
@@ -748,7 +748,7 @@
     function triggerSangeEffect() {
       const sangeLayer = document.getElementById('sange-layer');
       const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
-      const petalCount = 30; // 降らせる花びらの総数
+      const petalCount = 20; // 降らせる花びらの総数
 
       for (let i = 0; i < petalCount; i++) {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];

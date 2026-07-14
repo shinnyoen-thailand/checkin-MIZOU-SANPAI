@@ -17,32 +17,52 @@
     .grand-total-display-wrapper { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 4px; pointer-events: none; }
     .grand-total-number { font-size: 48px; font-weight: 800; color: #ffffff; font-variant-numeric: tabular-nums; text-shadow: 0 0 12px rgba(212, 175, 55, 0.4), 2px 3px 8px rgba(0,0,0,0.9); line-height: 1; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     
+    /* 🌟 達成時の巨大化演出クラス */
     .celebrate-mode { transform: scale(2.5) !important; font-size: 120px !important; color: #ffd700 !important; text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(0, 0, 0, 0.5) !important; z-index: 10000; }
 
+    .lotus-side-art { width: 56px; height: 56px; filter: drop-shadow(0 2px 6px rgba(255, 192, 203, 0.4)) drop-shadow(1px 2px 3px rgba(0,0,0,0.6)); }
     .container { display: flex; flex: 1; width: 100%; padding: 35px; gap: 30px; box-sizing: border-box; z-index: 10; }
     .card { flex: 1; background-color: var(--bg-glass); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 35px; padding: 40px 30px; display: flex; flex-direction: column; align-items: center; position: relative; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
     .title-member, .title-visitor { font-size: 50px; font-weight: 900; color: #ffffff; text-shadow: 0 0 15px rgba(0, 118, 255, 0.8), 2px 2px 5px rgba(0,0,0,0.5); margin: 10px 0 20px 0; text-align: center; }
     .title-visitor { text-shadow: 0 0 15px rgba(16, 185, 129, 0.8), 2px 2px 5px rgba(0,0,0,0.5); }
     .counter-display { font-size: 150px; font-weight: 800; color: #ffffff; text-shadow: 2px 4px 15px rgba(0,0,0,0.7); font-variant-numeric: tabular-nums; margin: 0 0 10px 0; line-height: 1; }
-    
     .footprint-zone { width: 100%; flex: 1; display: flex; justify-content: center; align-items: center; position: relative; z-index: 1; }
-    .ripple-button { position: relative; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(135, 206, 250, 0.95) 0%, rgba(30, 144, 255, 0.45) 70%, rgba(0, 191, 255, 0) 100%); box-shadow: 0 0 35px rgba(0, 191, 255, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.6); border: 2px solid rgba(255, 255, 255, 0.5); transition: transform 0.05s; z-index: 3; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .ripple-button { position: relative; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(135, 206, 250, 0.95) 0%, rgba(30, 144, 255, 0.45) 70%, rgba(0, 191, 255, 0) 100%); box-shadow: 0 0 35px rgba(0, 191, 255, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.6); border: 2px solid rgba(255, 255, 255, 0.5); transition: transform 0.05s; z-index: 3; cursor: pointer; }
     .btn-visitor-color { background: radial-gradient(circle, rgba(167, 243, 208, 0.95) 0%, rgba(16, 185, 129, 0.45) 70%, rgba(52, 211, 153, 0) 100%) !important; box-shadow: 0 0 35px rgba(16, 185, 129, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.6) !important; }
-    
-    .ripple-effect { position: absolute; top: 50%; left: 50%; width: 220px; height: 220px; margin-top: -110px; margin-left: -110px; border-radius: 50%; border: 3px solid rgba(0, 225, 255, 0.85); background: radial-gradient(circle, rgba(0, 225, 255, 0.1) 0%, rgba(0, 225, 255, 0) 70%); pointer-events: none; z-index: 4; animation: rippleSpread 1.2s cubic-bezier(0.1, 0.2, 0.3, 1) forwards; }
+    .ripple-effect { position: absolute; top: 50%; left: 50%; width: 220px; height: 220px; margin-top: -110px; margin-left: -110px; border-radius: 50%; border: 3px solid rgba(0, 225, 255, 0.85); background: radial-gradient(circle, rgba(0, 225, 255, 0.1) 0%, rgba(0, 225, 255, 0) 70%); pointer-events: none; z-index: 4; animation: rippleSpread 4.0s cubic-bezier(0.1, 0.2, 0.3, 1) forwards; }
     .ripple-visitor { border: 3px solid rgba(52, 211, 153, 0.85) !important; background: radial-gradient(circle, rgba(52, 211, 153, 0.1) 0%, rgba(52, 211, 153, 0) 70%) !important; }
-    @keyframes rippleSpread { 0% { transform: scale(0.4); opacity: 1; } 100% { transform: scale(2.2); opacity: 0; } }
+    @keyframes rippleSpread { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(2.6); opacity: 0; } }
     
-    .footprint-svg { width: 85px; height: 85px; fill: rgba(255, 255, 255, 0.55); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); pointer-events: none; }
-
-    /* 🌸 散華用レイヤー */
+    /* 🌸 新設：散華（洗練された蓮の花びら）用のスタイルレイヤー */
     .sange-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; overflow: hidden; pointer-events: none; z-index: 9999; perspective: 1000px; }
     .sange-petal-wrapper { position: absolute; top: -140px; pointer-events: none; animation: sangeFallLinear linear forwards; }
     .sange-petal { width: 100%; height: 100%; transform-origin: center; filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)) drop-shadow(0 2px 5px rgba(255,255,255,0.2)); }
     
-    @keyframes sangeFallLinear { 0% { transform: translateY(0); opacity: 0; } 8% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(120vh); opacity: 0; } }
-    @keyframes sangeSwayA { 0% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); } 25% { transform: translateX(-90px) rotateX(25deg) rotateY(65deg) rotateZ(20deg); } 50% { transform: translateX(0) rotateX(15deg) rotateY(130deg) rotateZ(0deg); } 75% { transform: translateX(90px) rotateX(30deg) rotateY(65deg) rotateZ(-20deg); } 100% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); } }
-    @keyframes sangeSwayB { 0% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); } 25% { transform: translateX(90px) rotateX(-20deg) rotateY(-55deg) rotateZ(-25deg); } 50% { transform: translateX(0) rotateX(-30deg) rotateY(-110deg) rotateZ(0deg); } 75% { transform: translateX(-90px) rotateX(-15deg) rotateY(-55deg) rotateZ(25deg); } 100% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); } }
+    /* ゆっくり滑らかに垂直落下するベースライン */
+    @keyframes sangeFallLinear {
+      0% { transform: translateY(0); opacity: 0; }
+      8% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(120vh); opacity: 0; }
+    }
+
+    /* 左右に大きく3Dでひらひらと舞う揺らぎモーション（軌道を2パターン用意） */
+    @keyframes sangeSwayA {
+      0% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      25% { transform: translateX(-90px) rotateX(25deg) rotateY(65deg) rotateZ(20deg); }
+      50% { transform: translateX(0) rotateX(15deg) rotateY(130deg) rotateZ(0deg); }
+      75% { transform: translateX(90px) rotateX(30deg) rotateY(65deg) rotateZ(-20deg); }
+      100% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+    }
+    @keyframes sangeSwayB {
+      0% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+      25% { transform: translateX(90px) rotateX(-20deg) rotateY(-55deg) rotateZ(-25deg); }
+      50% { transform: translateX(0) rotateX(-30deg) rotateY(-110deg) rotateZ(0deg); }
+      75% { transform: translateX(-90px) rotateX(-15deg) rotateY(-55deg) rotateZ(25deg); }
+      100% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+    }
+
+    #status-message { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(255, 255, 255, 0.5); z-index: 100; }
   </style>
 </head>
 <body>
@@ -50,11 +70,31 @@
 
   <svg style="width:0; height:0; position:absolute;">
     <defs>
-      <radialGradient id="sange-pink" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/><stop offset="70%" stop-color="#fff0f5" stop-opacity="0.8"/><stop offset="100%" stop-color="#fca6cc" stop-opacity="0.95"/></radialGradient>
-      <radialGradient id="sange-blue" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/><stop offset="70%" stop-color="#f0f8ff" stop-opacity="0.8"/><stop offset="100%" stop-color="#a6d8fc" stop-opacity="0.95"/></radialGradient>
-      <radialGradient id="sange-green" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/><stop offset="70%" stop-color="#f5fff7" stop-opacity="0.8"/><stop offset="100%" stop-color="#bcecb8" stop-opacity="0.95"/></radialGradient>
-      <radialGradient id="sange-yellow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/><stop offset="70%" stop-color="#ffffec" stop-opacity="0.8"/><stop offset="100%" stop-color="#fceea6" stop-opacity="0.95"/></radialGradient>
-      <radialGradient id="sange-purple" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/><stop offset="70%" stop-color="#f7f3ff" stop-opacity="0.8"/><stop offset="100%" stop-color="#d9c3fc" stop-opacity="0.95"/></radialGradient>
+      <radialGradient id="sange-pink" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+        <stop offset="70%" stop-color="#fff0f5" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#fca6cc" stop-opacity="0.95"/>
+      </radialGradient>
+      <radialGradient id="sange-blue" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+        <stop offset="70%" stop-color="#f0f8ff" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#a6d8fc" stop-opacity="0.95"/>
+      </radialGradient>
+      <radialGradient id="sange-green" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+        <stop offset="70%" stop-color="#f5fff7" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#bcecb8" stop-opacity="0.95"/>
+      </radialGradient>
+      <radialGradient id="sange-yellow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+        <stop offset="70%" stop-color="#ffffec" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#fceea6" stop-opacity="0.95"/>
+      </radialGradient>
+      <radialGradient id="sange-purple" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+        <stop offset="70%" stop-color="#f7f3ff" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#d9c3fc" stop-opacity="0.95"/>
+      </radialGradient>
     </defs>
   </svg>
 
@@ -69,60 +109,22 @@
     <div class="card">
       <h2 class="title-member">MEMBER</h2>
       <div class="counter-display" id="count-member">0</div>
-      <div class="footprint-zone">
-        <div class="ripple-button" onclick="handleCounterClick('member', this)">
-          <svg class="footprint-svg" viewBox="0 0 100 100">
-            <ellipse cx="36" cy="56" rx="10" ry="16" transform="rotate(-12 36 56)" />
-            <ellipse cx="34" cy="76" rx="7" ry="9" transform="rotate(-12 34 76)" />
-            <circle cx="26" cy="34" r="3.5" /><circle cx="34" cy="32" r="3" /><circle cx="42" cy="33" r="2.5" /><circle cx="48" cy="36" r="2" /><circle cx="53" cy="41" r="1.5" />
-            <ellipse cx="64" cy="42" rx="10" ry="16" transform="rotate(12 64 42)" />
-            <ellipse cx="62" cy="62" rx="7" ry="9" transform="rotate(12 62 62)" />
-            <circle cx="74" cy="20" r="3.5" /><circle cx="66" cy="18" r="3" /><circle cx="58" cy="19" r="2.5" /><circle cx="52" cy="22" r="2" /><circle cx="47" cy="27" r="1.5" />
-          </svg>
-        </div>
-      </div>
+      <div class="footprint-zone"><div class="ripple-button" onclick="handleCounterClick('member', this)"></div></div>
     </div>
     <div class="card">
       <h2 class="title-visitor">VISITOR</h2>
       <div class="counter-display" id="count-visitor">0</div>
-      <div class="footprint-zone">
-        <div class="ripple-button btn-visitor-color" onclick="handleCounterClick('visitor', this)">
-          <svg class="footprint-svg" viewBox="0 0 100 100">
-            <ellipse cx="36" cy="56" rx="10" ry="16" transform="rotate(-12 36 56)" />
-            <ellipse cx="34" cy="76" rx="7" ry="9" transform="rotate(-12 34 76)" />
-            <circle cx="26" cy="34" r="3.5" /><circle cx="34" cy="32" r="3" /><circle cx="42" cy="33" r="2.5" /><circle cx="48" cy="36" r="2" /><circle cx="53" cy="41" r="1.5" />
-            <ellipse cx="64" cy="42" rx="10" ry="16" transform="rotate(12 64 42)" />
-            <ellipse cx="62" cy="62" rx="7" ry="9" transform="rotate(12 62 62)" />
-            <circle cx="74" cy="20" r="3.5" /><circle cx="66" cy="18" r="3" /><circle cx="58" cy="19" r="2.5" /><circle cx="52" cy="22" r="2" /><circle cx="47" cy="27" r="1.5" />
-          </svg>
-        </div>
-      </div>
+      <div class="footprint-zone"><div class="ripple-button btn-visitor-color" onclick="handleCounterClick('visitor', this)"></div></div>
     </div>
   </div>
+
+  <div id="status-message"></div>
 
   <script>
     const gasUrl = 'https://script.google.com/macros/s/AKfycbz2QnVhVNT25mUlzxOx-hMJXYGwavhNWqUTQ9Rvyy5GWs64BA4bHfHD7Q4iLCoY3hZP/exec'; // ⚠️ ここをGASのURLに書き換えてください
     let hasCelebrated = false; 
-    let isProcessingQueue = false;
 
-    function getFormattedDate() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-
-    function checkDateReset() {
-      const currentDate = getFormattedDate();
-      const lastDate = localStorage.getItem('last_operation_date');
-      
-      if (lastDate && lastDate !== currentDate) {
-        localStorage.setItem('today_member', '0');
-        localStorage.setItem('today_visitor', '0');
-        hasCelebrated = false;
-        updateDisplay();
-      }
-      localStorage.setItem('last_operation_date', currentDate);
-    }
-
+    // リセット長押し設定
     function setupLongPress() {
       const target = document.getElementById('grand-total-box');
       let pressTimer;
@@ -145,6 +147,7 @@
       }
     }
 
+    // 達成時演出
     function performCelebrationEffect(element) {
       element.classList.add('celebrate-mode');
       triggerSangeEffect();
@@ -162,6 +165,7 @@
       const totalEl = document.getElementById('grand-total');
       totalEl.innerText = grandTotal.toLocaleString();
 
+      // ⚠️ ここで達成人数を判定 (テスト用10。本番用1000など適宜変更してください)
       const target = 10; 
       if (grandTotal >= target && !hasCelebrated) {
         performCelebrationEffect(totalEl);
@@ -170,91 +174,33 @@
     }
 
     function handleCounterClick(type, el) {
-      checkDateReset(); 
-      
       let m = parseInt(localStorage.getItem('today_member') || '0', 10);
       let v = parseInt(localStorage.getItem('today_visitor') || '0', 10);
       if (type === 'member') m++; else v++;
-      
       localStorage.setItem('today_member', m);
       localStorage.setItem('today_visitor', v);
       updateDisplay();
       
-      createRippleTrigger(type, el);
-      enqueueData(m, v);
+      // GAS送信
+      fetch(gasUrl, { method: 'POST', body: JSON.stringify({ date: new Date().toLocaleDateString(), memberToday: m, visitorToday: v }) });
     }
 
-    function createRippleTrigger(type, el) {
-      const ripple = document.createElement('div');
-      ripple.className = `ripple-effect ${type === 'visitor' ? 'ripple-visitor' : ''}`;
-      el.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 1200);
-    }
-
-    function enqueueData(memberCount, visitorCount) {
-      const currentDate = getFormattedDate();
-      const payload = {
-        date: currentDate,
-        memberToday: memberCount,
-        visitorToday: visitorCount,
-        timestamp: Date.now()
-      };
-
-      let queue = JSON.parse(localStorage.getItem('gas_send_queue') || '[]');
-      queue.push(payload);
-      localStorage.setItem('gas_send_queue', JSON.stringify(queue));
-
-      processQueue();
-    }
-
-    // 📡 画面表示（UI）の更新処理をすべて無くし、サイレントに再送を繰り返すシステム
-    async function processQueue() {
-      if (isProcessingQueue) return;
-      
-      let queue = JSON.parse(localStorage.getItem('gas_send_queue') || '[]');
-      if (queue.length === 0) return;
-
-      isProcessingQueue = true;
-
-      while (queue.length > 0) {
-        const currentData = queue[0];
-
-        try {
-          const response = await fetch(gasUrl, {
-            method: 'POST',
-            mode: 'cors',
-            body: JSON.stringify({
-              date: currentData.date,
-              memberToday: currentData.memberToday,
-              visitorToday: currentData.visitorToday
-            })
-          });
-
-          if (response.ok) {
-            queue.shift(); 
-            localStorage.setItem('gas_send_queue', JSON.stringify(queue));
-          } else {
-            break;
-          }
-        } catch (error) {
-          break;
-        }
-      }
-      isProcessingQueue = false;
-    }
-
+    // 🪷 散華エフェクトの完全書き換え
     function triggerSangeEffect() {
       const layer = document.getElementById('sange-layer');
       if (!layer) return;
 
       const colors = ['sange-pink', 'sange-blue', 'sange-green', 'sange-yellow', 'sange-purple'];
-      const totalPetals = 35; 
+      const totalPetals = 35; // 画面を彩る花びらの総数
 
       for (let i = 0; i < totalPetals; i++) {
         const wrapper = document.createElement('div');
         wrapper.className = 'sange-petal-wrapper';
+        
+        // 5色を順番にマッピング
         const colorId = colors[i % colors.length];
 
+        // 抽象的かつ上品な蓮の花びらと繊細な葉脈をSVGで描写
         wrapper.innerHTML = `
           <svg class="sange-petal" viewBox="0 0 100 100">
             <path d="M50 4 C16 35 22 76 50 96 C78 76 84 35 50 4 Z" fill="url(#${colorId})" />
@@ -268,42 +214,40 @@
           </svg>
         `;
 
+        // 横軸の初期出現位置をランダム分散
         wrapper.style.left = Math.random() * 100 + '%';
+
+        // 花びらのサイズを大きめ（70px〜115px）にランダム設定
         const size = 70 + Math.random() * 45;
         wrapper.style.width = size + 'px';
         wrapper.style.height = size + 'px';
 
+        // 5色が同時に落ちないよう、ディレイを最大6.5秒まで大きく引き伸ばし
         const delay = Math.random() * 6.5;
+        // 落下速度もゆったり長め（7秒〜12秒）にランダム化
         const duration = 7 + Math.random() * 5;
+        
         wrapper.style.animationDelay = delay + 's';
         wrapper.style.animationDuration = duration + 's';
 
+        // 左右へのひらひら揺らぎアニメーションを適用
         const swayType = i % 2 === 0 ? 'sangeSwayA' : 'sangeSwayB';
-        const swayDuration = 3 + Math.random() * 2.5; 
+        const swayDuration = 3 + Math.random() * 2.5; // 揺らぎの周期
         const innerPetal = wrapper.querySelector('.sange-petal');
         if (innerPetal) {
           innerPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+          // 初期角度を少し傾けて自然な佇まいに
           innerPetal.style.transform = `rotate(${(Math.random() * 40) - 20}deg)`;
         }
 
         layer.appendChild(wrapper);
+
+        // 落下完了後（ディレイ＋アニメーション時間）にメモリ解放のため自動削除
         setTimeout(() => wrapper.remove(), (delay + duration + 1) * 1000);
       }
     }
 
-    window.onload = () => { 
-      checkDateReset();
-      updateDisplay(); 
-      setupLongPress(); 
-      processQueue(); 
-    };
-
-    window.addEventListener('online', processQueue);
-
-    setInterval(() => {
-      checkDateReset();
-      processQueue();
-    }, 30000);
+    window.onload = () => { updateDisplay(); setupLongPress(); };
   </script>
 </body>
 </html>

@@ -41,7 +41,7 @@
       top: 0; left: 0; width: 100%; height: 100%;
       background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
       z-index: 9997;
-      pointer-events: none; /* タッチを完全にスルー */
+      pointer-events: none; 
       animation: auraGlow 3s ease-in-out infinite alternate;
     }
 
@@ -66,7 +66,6 @@
       animation: pulseGlow 3s infinite alternate;
       cursor: pointer;
       
-      /* 元の位置と中央位置をスムーズに繋ぐトランジション */
       transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
       
       touch-action: none !important; 
@@ -90,7 +89,7 @@
       z-index: 10000;
       background: rgba(15, 12, 10, 0.92);
       border: 2px solid rgba(255, 215, 0, 0.8);
-      pointer-events: none; /* 演出中はクリック対象にしない */
+      pointer-events: none; 
       animation: slowPulseHeartbeat 1.8s infinite ease-in-out;
     }
 
@@ -109,7 +108,6 @@
       }
     }
 
-    /* 🏆 達成時のテキスト＆数字装飾：白文字 ＆ 金色のぼかし枠 */
     .grand-total-container.milestone-active .grand-total-title {
       color: #ffffff !important;
       text-shadow: 
@@ -247,6 +245,7 @@
       align-items: center;
       position: relative;
       z-index: 1;
+      pointer-events: none; 
     }
 
     .ripple-button {
@@ -260,6 +259,10 @@
       transition: transform 0.05s;
       z-index: 3;
       cursor: pointer;
+      pointer-events: auto; 
+      
+      /* 🔴 iPadでのダブルタップ判定による300msのタップ遅延をCSSレベルで完全防止 */
+      touch-action: manipulation !important;
     }
 
     .btn-visitor-color {
@@ -278,7 +281,7 @@
       border-radius: 50%;
       border: 3px solid rgba(0, 225, 255, 0.85);
       background: radial-gradient(circle, rgba(0, 225, 255, 0.1) 0%, rgba(0, 225, 255, 0) 70%);
-      pointer-events: none;
+      pointer-events: none; 
       z-index: 4;
       animation: rippleSpread 4.0s cubic-bezier(0.1, 0.2, 0.3, 1) forwards;
     }
@@ -303,7 +306,7 @@
       width: 350px;
       height: 350px;
       opacity: 0;
-      pointer-events: none;
+      pointer-events: none; 
       z-index: 2;
     }
 
@@ -349,7 +352,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      pointer-events: none; /* 🔴 散華コンテナ全体が完全にタッチを通過するように修正 */
+      pointer-events: none; 
       z-index: 999;
       perspective: 1000px; 
     }
@@ -357,7 +360,7 @@
     .sange-petal-wrapper {
       position: absolute;
       top: -140px; 
-      pointer-events: none; /* 🔴 各花びら単体もスルー */
+      pointer-events: none; 
       animation: sangeFallLinear linear forwards;
     }
 
@@ -401,11 +404,19 @@
       height: 100%;
       background: #ffffff;
       z-index: 99999;
-      pointer-events: none; /* 🔴 フラッシュレイヤーもタッチを完全にスルー */
+      pointer-events: none; 
       opacity: 0;
     }
+    
+    .flash-overlay.flash-trigger {
+      animation: flashAnim 0.6s ease-out forwards;
+    }
+    @keyframes flashAnim {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
 
-    /* 🏆 暗転レイヤーの修正 */
+    /* 🏆 暗転レイヤー */
     .milestone-backdrop {
       position: fixed;
       top: 0;
@@ -416,7 +427,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       z-index: 9998;
-      pointer-events: none; /* 🔴 初期状態・表示中に関わらずタッチを完全にスルー */
+      pointer-events: none; 
       opacity: 0;
       transition: opacity 0.6s ease;
     }
@@ -428,7 +439,7 @@
     /* ✨ 上から舞い降りる金色の光 */
     .gold-glitter {
       position: fixed;
-      pointer-events: none; /* 🔴 キラキラもタッチを完全にスルー */
+      pointer-events: none; 
       z-index: 9999;
       background: radial-gradient(circle, #ffffff 10%, #fff3a1 50%, #ffd700 100%);
       border-radius: 50%;
@@ -528,7 +539,7 @@
 
   <div id="status-message"></div>
 
-  <script {sandbox: 'allow-scripts'}>
+  <script>
     const gasUrl = 'https://script.google.com/macros/s/AKfycby3gqust9t0Lfjw-gXdXnxu95GIkb-L539e3tHedn-XOY8BNSCWVQT4rCHi8BpFV7PS/exec';
 
     let requestQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
@@ -538,17 +549,15 @@
       updateDisplay();
       setupLongPress(); 
       window.addEventListener('contextmenu', function(e) { e.preventDefault(); }, { passive: false });
-      processQueue();
+      
+      // 🔴 iPad起動時、少し落ち着いてからバックグラウンド送信監視を開始（15秒毎の省エネポーリング）
+      setInterval(processQueue, 15000);
     });
 
-    // 西暦で今日の日付を取得する関数
     function getFixedTodayString() {
       const d = new Date();
       const formatter = new Intl.DateTimeFormat('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        calendar: 'gregory'
+        year: 'numeric', month: '2-digit', day: '2-digit', calendar: 'gregory'
       });
       const parts = formatter.formatToParts(d);
       const year = parts.find(p => p.type === 'year').value;
@@ -557,7 +566,6 @@
       return `${year}-${month}-${day}`;
     }
 
-    // 長押しによるリセット処理設定
     function setupLongPress() {
       const target = document.getElementById('grand-total-box');
       let pressTimer;
@@ -572,27 +580,18 @@
           startX = e.clientX;
           startY = e.clientY;
         }
-
         clearTimeout(pressTimer);
-        pressTimer = setTimeout(() => {
-          triggerResetAuth();
-        }, 2000); 
+        pressTimer = setTimeout(() => { triggerResetAuth(); }, 2000); 
       };
 
-      const cancelPress = (e) => {
-        clearTimeout(pressTimer);
-      };
+      const cancelPress = (e) => { clearTimeout(pressTimer); };
 
       const movePress = (e) => {
         if (e.touches && e.touches[0]) {
           const currentX = e.touches[0].clientX;
           const currentY = e.touches[0].clientY;
-          const distance = Math.sqrt(
-            Math.pow(currentX - startX, 2) + Math.pow(currentY - startY, 2)
-          );
-          if (distance > moveThreshold) {
-            clearTimeout(pressTimer);
-          }
+          const distance = Math.sqrt(Math.pow(currentX - startX, 2) + Math.pow(currentY - startY, 2));
+          if (distance > moveThreshold) { clearTimeout(pressTimer); }
         }
       };
 
@@ -600,31 +599,26 @@
       target.addEventListener('touchmove', movePress, { passive: true });
       target.addEventListener('touchend', cancelPress, { passive: true });
       target.addEventListener('touchcancel', cancelPress, { passive: true });
-
       target.addEventListener('mousedown', startPress);
       target.addEventListener('mouseup', cancelPress);
       target.addEventListener('mouseleave', cancelPress);
     }
 
-    // マスターリセット
     function triggerResetAuth() {
-      const password = prompt("リセット用の管理者パスワードを入力してください：");
-      
+      const password = prompt("リreset用の管理者パスワードを入力してください：");
       if (password === "0425") {
         localStorage.setItem('today_member', '0');
         localStorage.setItem('today_visitor', '0');
         localStorage.setItem('total_member', '0');
         localStorage.setItem('total_visitor', '0');
         localStorage.removeItem('last_celebrated_milestone');
-        
         updateDisplay();
         alert("すべてのカウンターを「0」にリセットしました。");
       } else if (password !== null) {
-        alert("パスワードが正しくありません。リセット処理を中止しました。");
+        alert("パスワードが正しくありません。");
       }
     }
 
-    // デバイスIDの取得
     function getOrCreateDeviceId() {
       let id = localStorage.getItem('deviceId');
       if (!id) {
@@ -634,11 +628,9 @@
       return id;
     }
 
-    // 日付リセット処理
     function checkDateReset() {
       const todayStr = getFixedTodayString();
       const savedDate = localStorage.getItem('lastSavedDate');
-
       if (savedDate !== todayStr) {
         localStorage.setItem('today_member', '0');
         localStorage.setItem('today_visitor', '0');
@@ -646,15 +638,12 @@
       }
     }
 
-    // ディスプレイの更新
     function updateDisplay() {
       checkDateReset();
-      
       let tMember = parseInt(localStorage.getItem('today_member') || '0', 10);
       let tVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
       let totalM = parseInt(localStorage.getItem('total_member') || '0', 10);
       let totalV = parseInt(localStorage.getItem('total_visitor') || '0', 10);
-
       let grandTotal = totalM + totalV;
 
       document.getElementById('count-member').innerText = tMember;
@@ -664,15 +653,11 @@
       checkMilestoneCelebration(grandTotal);
     }
 
-    // 🏆 マイルストーン判定
     function checkMilestoneCelebration(grandTotal) {
       if (grandTotal <= 0) return;
-
       const isMilestone = (grandTotal % 10 === 0);
-
       if (isMilestone) {
         const lastCelebrated = parseInt(localStorage.getItem('last_celebrated_milestone') || '0', 10);
-        
         if (grandTotal !== lastCelebrated) {
           localStorage.setItem('last_celebrated_milestone', grandTotal.toString());
           triggerMilestoneCelebration();
@@ -680,20 +665,14 @@
       }
     }
 
-    // 🎉 マイルストーン達成時のドラマチック演出シークエンス
     function triggerMilestoneCelebration() {
       triggerSangeEffect();
       triggerGoldGlitterShower();
 
-      // 1. 画面フラッシュ
       const flash = document.getElementById('flash-layer');
-      flash.style.transition = 'none';
-      flash.style.opacity = '1';
-      flash.offsetHeight;
-      flash.style.transition = 'opacity 0.6s ease-out';
-      flash.style.opacity = '0';
+      flash.classList.add('flash-trigger');
+      setTimeout(() => { flash.classList.remove('flash-trigger'); }, 600);
 
-      // 2. 暗転背景 & カウンター中央飛び出し鼓動
       const backdrop = document.getElementById('milestone-backdrop');
       const totalBox = document.getElementById('grand-total-box');
       
@@ -701,7 +680,6 @@
       document.body.classList.add('gold-aura-active');
       totalBox.classList.add('milestone-active');
 
-      // 3. 3.0秒経過したら、即時に背景クラスを外し、タップ障害をすべて排除する
       setTimeout(() => {
         backdrop.classList.remove('active');
         document.body.classList.remove('gold-aura-active');
@@ -709,41 +687,28 @@
       }, 3000);
     }
 
-    // ✨ 上から優雅に降り注ぐ金色の光
     function triggerGoldGlitterShower() {
       const sangeLayer = document.getElementById('sange-layer');
       const glitterCount = 40;
-
       for (let i = 0; i < glitterCount; i++) {
         const glitter = document.createElement('div');
         glitter.className = 'gold-glitter';
-
         const size = 6 + Math.random() * 12;
         glitter.style.width = `${size}px`;
         glitter.style.height = `${size}px`;
-
-        const startLeft = Math.random() * 100;
-        glitter.style.left = `${startLeft}%`;
+        glitter.style.left = `${Math.random() * 100}%`;
         glitter.style.top = `-20px`;
-
-        const swayX = -80 + Math.random() * 160;
-        glitter.style.setProperty('--sway-x', `${swayX}px`);
+        glitter.style.setProperty('--sway-x', `${-80 + Math.random() * 160}px`);
 
         const delay = Math.random() * 4.5;
         const duration = 7.0 + Math.random() * 5.0;
-
         glitter.style.animationDelay = `${delay}s`;
         glitter.style.animationDuration = `${duration}s`;
-
         sangeLayer.appendChild(glitter);
-
-        setTimeout(() => {
-          glitter.remove();
-        }, (delay + duration) * 1000);
+        setTimeout(() => { glitter.remove(); }, (delay + duration) * 1000);
       }
     }
 
-    // 🌸 散華エフェクト
     function triggerSangeEffect() {
       const sangeLayer = document.getElementById('sange-layer');
       const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
@@ -751,7 +716,6 @@
 
       for (let i = 0; i < petalCount; i++) {
         const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        
         const wrapper = document.createElement('div');
         wrapper.className = 'sange-petal-wrapper';
 
@@ -769,29 +733,22 @@
         const size = 75 + Math.random() * 40;
         wrapper.style.width = `${size}px`;
         wrapper.style.height = `${size}px`;
-
-        const startLeft = Math.random() * 95; 
-        wrapper.style.left = `${startLeft}%`;
+        wrapper.style.left = `${Math.random() * 95}%`;
 
         const animationDelay = Math.random() * 6.5;
         const fallDuration = 8.5 + Math.random() * 5.0; 
-        const swayDuration = 3.0 + Math.random() * 2.5;
-
         wrapper.style.animationDelay = `${animationDelay}s`;
         wrapper.style.animationDuration = `${fallDuration}s`;
 
         const swayType = Math.random() > 0.5 ? 'sangeSwayLeft' : 'sangeSwayRight';
-        svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+        svgPetal.style.animation = `${swayType} ${(3.0 + Math.random() * 2.5)}s ease-in-out infinite`;
 
         sangeLayer.appendChild(wrapper);
-
-        setTimeout(() => {
-          wrapper.remove();
-        }, (animationDelay + fallDuration) * 1000);
+        setTimeout(() => { wrapper.remove(); }, (animationDelay + fallDuration) * 1000);
       }
     }
 
-    // カウンタークリック処理
+    // 🏆 カウンタークリック処理（完全なるローカル最優先・超高速版）
     function handleCounterClick(type, circleElement) {
       checkDateReset();
 
@@ -801,11 +758,9 @@
       let totalVisitor = parseInt(localStorage.getItem('total_visitor') || '0', 10);
 
       if (type === 'member') {
-        todayMember++;
-        totalMember++;
+        todayMember++; totalMember++;
       } else {
-        todayVisitor++;
-        totalVisitor++;
+        todayVisitor++; totalVisitor++;
       }
 
       localStorage.setItem('today_member', todayMember.toString());
@@ -813,12 +768,12 @@
       localStorage.setItem('total_member', totalMember.toString());
       localStorage.setItem('total_visitor', totalVisitor.toString());
 
+      // ✨ UIの書き換えとアニメーションを即座に行う
       updateDisplay();
-
       createTripleRipple(circleElement, type);
-      const zone = circleElement.parentElement;
-      spawnFootprints(zone);
+      spawnFootprints(circleElement.parentElement);
 
+      // 🔴 通信処理はここでは絶対に呼び出さない。LocalStorageへのスタック保存のみ行う。
       const payload = {
         type: "click_counter",
         date: getFixedTodayString(), 
@@ -827,29 +782,26 @@
         totalToday: todayMember + todayVisitor,
         deviceId: getOrCreateDeviceId()
       };
-      
       requestQueue.push(payload);
       localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
-      processQueue();
+      
+      // 💥 processQueue()の即時実行を完全に廃止しました。
+      // これにより、通信の詰まりがタップ操作をフリーズさせることが物理的に無くなります。
     }
 
-    // 三重リップルエフェクト
     function createTripleRipple(button, type) {
       const delays = [0, 700, 1400];
       delays.forEach(delay => {
         setTimeout(() => {
           const ripple = document.createElement('div');
           ripple.className = 'ripple-effect';
-          if (type === 'visitor') {
-            ripple.classList.add('ripple-visitor');
-          }
+          if (type === 'visitor') { ripple.classList.add('ripple-visitor'); }
           button.appendChild(ripple);
           setTimeout(() => ripple.remove(), 4000);
         }, delay);
       });
     }
 
-    // 足跡出現
     function spawnFootprints(zone) {
       const animations = ['walkUpLeft', 'walkUpRight', 'walkUpFinal'];
       const svgs = [leftFootSVG, rightFootSVG, leftFootSVG];
@@ -870,7 +822,7 @@
     const leftFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M52,85 C45,85 42,75 44,62 C46,52 38,44 40,34 C42,26 52,25 56,32 C60,39 56,48 58,58 C60,68 60,85 52,85 Z"/><circle cx="61" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="41" cy="19" r="4"/><circle cx="33" cy="24" r="3.5"/><circle cx="27" cy="31" r="3"/></svg>`;
     const rightFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M48,85 C55,85 58,75 56,62 C54,52 62,44 60,34 C58,26 48,25 44,32 C40,39 44,48 42,58 C40,68 40,85 48,85 Z"/><circle cx="39" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="59" cy="19" r="4"/><circle cx="67" cy="24" r="3.5"/><circle cx="73" cy="31" r="3"/></svg>`;
 
-    // キュー処理
+    // 🔴 定期的なバックグラウンドタイマーからのみ呼び出される、完全非同期通信処理
     function processQueue() {
       if (isSending || requestQueue.length === 0) return;
 
@@ -889,22 +841,18 @@
         }
       })
       .catch(err => {
-        console.error("データ送信失敗（リトライ待機中）:", err);
+        console.error("データ自動送信リトライ待機:", err);
       })
       .finally(() => {
         isSending = false;
+        // キューがまだ残っている場合、UIに影響の出ない範囲で少し間隔をあけて次を送信
         if (requestQueue.length > 0) {
-          setTimeout(processQueue, 5000);
+          setTimeout(processQueue, 1000);
         }
       });
     }
 
     window.addEventListener('online', processQueue);
-
-    setInterval(() => {
-      checkDateReset();
-      processQueue();
-    }, 30000);
   </script>
 </body>
 </html>

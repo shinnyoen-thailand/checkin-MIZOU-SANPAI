@@ -450,7 +450,7 @@
   </div>
 
   <script>
-    const gasUrl = 'https://script.google.com/macros/s/AKfycby3gqust9t0Lfjw-gXdXnxu95GIkb-L539e3tHedn-XOY8BNSCWVQT4rCHi8BpFV7PS/exec';
+    const gasUrl = 'https://script.google.com/macros/s/AKfycbxZzYE3xT25NgKUYZsjvlbEPlG9K6Zi088buF4ZLg3J9ZZv7Kv7RItlil6Ow2wZ7Pc2/exec';
 
     let requestQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
     let isSending = false;
@@ -521,7 +521,7 @@
     }
 
     function triggerResetAuth() {
-      const password = prompt("リセット用の管理者パスワードを入力してください：");
+      const password = prompt("Please enter the administrator password for reset：");
       if (password === "0425") {
         localStorage.setItem('today_member', '0');
         localStorage.setItem('today_visitor', '0');

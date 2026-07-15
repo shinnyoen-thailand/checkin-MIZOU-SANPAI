@@ -41,7 +41,7 @@
       top: 0; left: 0; width: 100%; height: 100%;
       background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
       z-index: 9997;
-      pointer-events: none;
+      pointer-events: none; /* タッチを完全にスルー */
       animation: auraGlow 3s ease-in-out infinite alternate;
     }
 
@@ -80,7 +80,7 @@
       100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.35), inset 0 0 25px rgba(212, 175, 55, 0.1); }
     }
 
-    /* 🏆 マイルストーン達成：中央飛び出し ＆ ゆっくりとした鼓動（パルスアニメーション） */
+    /* 🏆 マイルストーン達成：中央飛び出し ＆ ゆっくりとした鼓動 */
     .grand-total-container.milestone-active {
       position: fixed;
       top: 50%;
@@ -90,8 +90,7 @@
       z-index: 10000;
       background: rgba(15, 12, 10, 0.92);
       border: 2px solid rgba(255, 215, 0, 0.8);
-      pointer-events: none;
-      /* ゆっくりドクンドクンと波打つパルスアニメーション（1.8秒周期） */
+      pointer-events: none; /* 演出中はクリック対象にしない */
       animation: slowPulseHeartbeat 1.8s infinite ease-in-out;
     }
 
@@ -101,8 +100,8 @@
         box-shadow: 0 0 40px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255, 215, 0, 0.2);
       }
       50% {
-        transform: translate(-50%, -50%) scale(1.75); /* 鼓動で少し大きく */
-        box-shadow: 0 0 70px rgba(255, 215, 0, 0.85), inset 0 0 35px rgba(255, 215, 0, 0.4); /* 金色のオーラが広がる */
+        transform: translate(-50%, -50%) scale(1.75);
+        box-shadow: 0 0 70px rgba(255, 215, 0, 0.85), inset 0 0 35px rgba(255, 215, 0, 0.4);
       }
       100% {
         transform: translate(-50%, -50%) scale(1.6);
@@ -119,9 +118,8 @@
     }
 
     .grand-total-container.milestone-active .grand-total-number {
-      color: #ffffff !important; /* 確実な白文字 */
+      color: #ffffff !important;
       font-size: 72px !important;
-      /* 金色のぼかし（パルスに合わせて息づくように、同じくアニメーションを同期） */
       animation: goldGlowText 1.8s infinite ease-in-out;
     }
 
@@ -134,7 +132,7 @@
       }
       50% {
         text-shadow: 
-          0 0 20px rgba(255, 255, 255, 1), /* ピーク時は中心がさらに輝く */
+          0 0 20px rgba(255, 255, 255, 1),
           0 0 35px rgba(255, 215, 0, 1), 
           0 0 55px rgba(255, 215, 0, 0.9),
           0 0 80px rgba(255, 140, 0, 0.7);
@@ -343,7 +341,7 @@
       100% { transform: translateY(-500px) translateX(-40px) rotate(-10deg) scale(0.85); opacity: 0; }
     }
 
-    /* 🌸 散華（美しい花びら）エフェクト用スタイル */
+    /* 🌸 散華エフェクト用スタイル */
     .sange-container {
       position: absolute;
       top: 0;
@@ -351,7 +349,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      pointer-events: none;
+      pointer-events: none; /* 🔴 散華コンテナ全体が完全にタッチを通過するように修正 */
       z-index: 999;
       perspective: 1000px; 
     }
@@ -359,7 +357,7 @@
     .sange-petal-wrapper {
       position: absolute;
       top: -140px; 
-      pointer-events: none;
+      pointer-events: none; /* 🔴 各花びら単体もスルー */
       animation: sangeFallLinear linear forwards;
     }
 
@@ -394,7 +392,7 @@
       100% { transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
     }
 
-    /* ⚡ 画面全体のフラッシュと背景の減光用レイヤー */
+    /* ⚡ 画面全体のフラッシュ */
     .flash-overlay {
       position: fixed;
       top: 0;
@@ -403,10 +401,11 @@
       height: 100%;
       background: #ffffff;
       z-index: 99999;
-      pointer-events: none;
+      pointer-events: none; /* 🔴 フラッシュレイヤーもタッチを完全にスルー */
       opacity: 0;
     }
 
+    /* 🏆 暗転レイヤーの修正 */
     .milestone-backdrop {
       position: fixed;
       top: 0;
@@ -417,7 +416,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       z-index: 9998;
-      pointer-events: none;
+      pointer-events: none; /* 🔴 初期状態・表示中に関わらずタッチを完全にスルー */
       opacity: 0;
       transition: opacity 0.6s ease;
     }
@@ -426,10 +425,10 @@
       opacity: 1;
     }
 
-    /* ✨ 上から舞い降りる金色の光（キラキラ） */
+    /* ✨ 上から舞い降りる金色の光 */
     .gold-glitter {
       position: fixed;
-      pointer-events: none;
+      pointer-events: none; /* 🔴 キラキラもタッチを完全にスルー */
       z-index: 9999;
       background: radial-gradient(circle, #ffffff 10%, #fff3a1 50%, #ffd700 100%);
       border-radius: 50%;
@@ -529,7 +528,7 @@
 
   <div id="status-message"></div>
 
-  <script>
+  <script {sandbox: 'allow-scripts'}>
     const gasUrl = 'https://script.google.com/macros/s/AKfycby3gqust9t0Lfjw-gXdXnxu95GIkb-L539e3tHedn-XOY8BNSCWVQT4rCHi8BpFV7PS/exec';
 
     let requestQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
@@ -607,9 +606,9 @@
       target.addEventListener('mouseleave', cancelPress);
     }
 
-    // マスターリセット（管理者用）
+    // マスターリセット
     function triggerResetAuth() {
-      const password = prompt("Please enter the administrator password for reset.：");
+      const password = prompt("リセット用の管理者パスワードを入力してください：");
       
       if (password === "0425") {
         localStorage.setItem('today_member', '0');
@@ -619,9 +618,9 @@
         localStorage.removeItem('last_celebrated_milestone');
         
         updateDisplay();
-        alert("All counters have been reset to 0.");
+        alert("すべてのカウンターを「0」にリセットしました。");
       } else if (password !== null) {
-        alert("Incorrect password. Reset canceled.");
+        alert("パスワードが正しくありません。リセット処理を中止しました。");
       }
     }
 
@@ -669,8 +668,6 @@
     function checkMilestoneCelebration(grandTotal) {
       if (grandTotal <= 0) return;
 
-      // 【テスト仕様】現在は10の倍数で反応します。
-      // 【本番仕様】1000の倍数にしたい場合は「grandTotal % 1000 === 0」に書き換えてください。
       const isMilestone = (grandTotal % 10 === 0);
 
       if (isMilestone) {
@@ -683,21 +680,20 @@
       }
     }
 
-    // 🎉 新・マイルストーン達成時のドラマチック演出シークエンス
+    // 🎉 マイルストーン達成時のドラマチック演出シークエンス
     function triggerMilestoneCelebration() {
-      // 1. 散華（花びら）と、新演出の「上から舞い降りる金の光（キラキラ）」を同時スタート
       triggerSangeEffect();
       triggerGoldGlitterShower();
 
-      // 2. 画面全体を一瞬だけ白くフラッシュさせる
+      // 1. 画面フラッシュ
       const flash = document.getElementById('flash-layer');
       flash.style.transition = 'none';
       flash.style.opacity = '1';
-      flash.offsetHeight; // リフローを強制
+      flash.offsetHeight;
       flash.style.transition = 'opacity 0.6s ease-out';
       flash.style.opacity = '0';
 
-      // 3. 背景の暗転化と、カウンター中央飛び出し＆パルス鼓動
+      // 2. 暗転背景 & カウンター中央飛び出し鼓動
       const backdrop = document.getElementById('milestone-backdrop');
       const totalBox = document.getElementById('grand-total-box');
       
@@ -705,55 +701,49 @@
       document.body.classList.add('gold-aura-active');
       totalBox.classList.add('milestone-active');
 
-      // 4. 3秒後に元の表示レイアウトへスムーズに戻す
+      // 3. 3.0秒経過したら、即時に背景クラスを外し、タップ障害をすべて排除する
       setTimeout(() => {
         backdrop.classList.remove('active');
         document.body.classList.remove('gold-aura-active');
         totalBox.classList.remove('milestone-active');
-        // ※この時点で、散華や金の光はDOM要素として落下中ですが、何事もなかったかのようにヒラヒラと落ち続けて消えていきます。
       }, 3000);
     }
 
-    // ✨ 上から優雅に降り注ぐ金色の光（キラキラ）のエフェクト
+    // ✨ 上から優雅に降り注ぐ金色の光
     function triggerGoldGlitterShower() {
       const sangeLayer = document.getElementById('sange-layer');
-      const glitterCount = 40; // 降らせるキラキラの総数
+      const glitterCount = 40;
 
       for (let i = 0; i < glitterCount; i++) {
         const glitter = document.createElement('div');
         glitter.className = 'gold-glitter';
 
-        // ランダムな横幅・縦幅（星・光の大小を表現）
         const size = 6 + Math.random() * 12;
         glitter.style.width = `${size}px`;
         glitter.style.height = `${size}px`;
 
-        // 上からの降下開始x位置
         const startLeft = Math.random() * 100;
         glitter.style.left = `${startLeft}%`;
         glitter.style.top = `-20px`;
 
-        // 左右のランダムな揺らぎ幅を指定
         const swayX = -80 + Math.random() * 160;
         glitter.style.setProperty('--sway-x', `${swayX}px`);
 
-        // 各粒子に揺らぎを持たせる（ディレイとスピード）
-        const delay = Math.random() * 4.5; // 花びらと同じく広範囲に時間差で降らす
-        const duration = 7.0 + Math.random() * 5.0; // ゆっくり降る
+        const delay = Math.random() * 4.5;
+        const duration = 7.0 + Math.random() * 5.0;
 
         glitter.style.animationDelay = `${delay}s`;
         glitter.style.animationDuration = `${duration}s`;
 
         sangeLayer.appendChild(glitter);
 
-        // 落下し終わったら自動削除
         setTimeout(() => {
           glitter.remove();
         }, (delay + duration) * 1000);
       }
     }
 
-    // 🌸 散華（美しい花びらが和風にヒラヒラと舞い落ちる）エフェクト（コードはそのまま保持）
+    // 🌸 散華エフェクト
     function triggerSangeEffect() {
       const sangeLayer = document.getElementById('sange-layer');
       const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];

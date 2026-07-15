@@ -459,12 +459,12 @@
   </div>
 
  <!-- カウンター本体 --> 
-  <div class="container">
+<div class="container">
     <div class="card">
       <h2 class="title-member">MEMBER</h2>
       <div class="counter-display" id="count-member">0</div>
       <div class="footprint-zone">
-        <div class="ripple-button" onclick="handleCounterClick('member', this)"></div>
+        <div class="ripple-button" ontouchstart="handleCounterClick('member', this, event)"></div>
       </div>
     </div>
 
@@ -472,7 +472,7 @@
       <h2 class="title-visitor">VISITOR</h2>
       <div class="counter-display" id="count-visitor">0</div>
       <div class="footprint-zone">
-        <div class="ripple-button btn-visitor-color" onclick="handleCounterClick('visitor', this)"></div>
+        <div class="ripple-button btn-visitor-color" ontouchstart="handleCounterClick('visitor', this, event)"></div>
       </div>
     </div>
   </div>
@@ -706,10 +706,15 @@
       }
     }
 
-// カウンタークリック時のメイン制御関数
-    function handleCounterClick(type, circleElement) {
-      checkDateReset();
+// カウンタータッチ時のメイン制御関数（最速touchstart対応）
+    function handleCounterClick(type, circleElement, event) {
+      // 1. iOS/iPadOSの標準ダブルタップズームやスクロールなどの挙動を完全にキャンセルし、タップの取りこぼしを防ぐ
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
 
+      checkDateReset();
       let todayMember = parseInt(localStorage.getItem('today_member') || '0', 10);
       let todayVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
       let totalMember = parseInt(localStorage.getItem('total_member') || '0', 10);
@@ -730,7 +735,7 @@
       createTripleRipple(circleElement, type);
       spawnFootprints(circleElement.parentElement);
 
-  // GAS動作用の送信ペイロードデータ    
+      // GAS動作用の送信ペイロードデータ    
       const payload = {
         type: "click_counter",
         date: getFixedTodayString(), 

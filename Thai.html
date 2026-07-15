@@ -529,7 +529,7 @@
         localStorage.setItem('total_visitor', '0');
         localStorage.removeItem('last_celebrated_milestone');
         updateDisplay();
-        alert("リセットしました。");
+        alert("All counters have been reset to 0.");
       }
     }
 
@@ -739,7 +739,7 @@
           localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue)); 
         }
       })
-      .catch(err => { console.error("データ自動送信リトライ待機:", err); })
+      .catch(err => { console.error("Waiting to retry automatic data transmission.:", err); })
       .finally(() => {
         isSending = false;
         if (requestQueue.length > 0 && queueIntervalId !== null) {

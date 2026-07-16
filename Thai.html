@@ -468,8 +468,9 @@
   </div>
 
   <script>
-//  ⚠️ここにGASコードを貼る⚠️
-const gasUrl = 'https://script.google.com/macros/s/AKfycbzeFoq7wvgUKFwhOm3SJlV0zKJ7Gn9opHu-9aUEoErlqWAk26fm2C1cBUiTCVQWd9z_/exec';
+// ⚠️ ここにご自身のGAS WebアプリURLを貼り付けてください
+const gasUrl = 'https://script.google.com/macros/s/AKfycbzeFoq7wvgUKFwhOm3SJlV0zKJ7Gn9opHu-9aUEoErlqWAk26fm2C1cBUiTCVQWd9z_/exec'; 
+
 let requestQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
 let isSending = false;
 let queueIntervalId = null; 
@@ -484,6 +485,7 @@ window.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('contextmenu', function(e) { e.preventDefault(); }, { passive: false });
   document.body.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
   
+  // 🌟 通信のための定期タイマー（30秒ごとに自動で裏で同期）
   startQueueTimer();
 });
 
@@ -502,7 +504,10 @@ function initLocalStorage() {
 
 function startQueueTimer() {
   if (!queueIntervalId) {
-    queueIntervalId = setInterval(processQueue, 15000);
+    queueIntervalId = setInterval(() => {
+      // 🌟 iPadの操作を邪魔しないように完全に非同期でキューを処理
+      setTimeout(processQueue, 0);
+    }, 15000); // 15秒ごとに裏でスプレッドシートに同期
   }
 }
 
@@ -532,9 +537,10 @@ function setupClickEvents() {
   const handleEvent = (type, el, e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (isMilestoneMode) return; 
+    if (isMilestoneMode) return; // 演出中のみガード
     handleCounterClick(type, el);
   };
+  
   btnMember.addEventListener('touchstart', (e) => handleEvent('member', btnMember, e), { passive: false });
   btnVisitor.addEventListener('touchstart', (e) => handleEvent('visitor', btnVisitor, e), { passive: false });
 }
@@ -620,7 +626,7 @@ function updateDisplay() {
 
 function checkMilestoneCelebration(grandTotal) {
   if (grandTotal <= 0) return;
-  if (grandTotal % 10 === 0) { // 本番時は grandTotal % 1000 === 0 に変更
+  if (grandTotal % 10 === 0) { // ★本番運用時は grandTotal % 1000 === 0 に変更してください
     const lastCelebrated = parseInt(localStorage.getItem('last_celebrated_milestone') || '0', 10);
     if (grandTotal !== lastCelebrated) {
       localStorage.setItem('last_celebrated_milestone', grandTotal.toString());
@@ -631,7 +637,7 @@ function checkMilestoneCelebration(grandTotal) {
 
 function triggerMilestoneCelebration() {
   isMilestoneMode = true;
-  stopQueueTimer();
+  stopQueueTimer(); // 演出中は裏の通信タイマーを一時停止
 
   triggerSangeEffect();
   triggerGoldGlitterShower();
@@ -647,15 +653,18 @@ function triggerMilestoneCelebration() {
   document.body.classList.add('gold-aura-active');
   totalBox.classList.add('milestone-active');
 
-  // 🌟 ポップアップが元の位置に戻る時間（3秒）と完全に同期させてロックを解除
+  // 🌟 アニメーションが終了して数字が元の位置に戻る時間（3秒）と「寸分の狂いもなく完全に完全同期」してロック解除
   setTimeout(() => {
     backdrop.classList.remove('active');
     document.body.classList.remove('gold-aura-active');
     totalBox.classList.remove('milestone-active');
     
+    // 見た目が戻った瞬間に最速でボタンを有効化
     isMilestoneMode = false; 
+    
+    // 送信タイマーを安全に再始動
     startQueueTimer();
-    processQueue();
+    setTimeout(processQueue, 0);
   }, 3000);
 }
 
@@ -742,6 +751,7 @@ function handleCounterClick(type, circleElement) {
   localStorage.setItem('total_member', totalMember.toString());
   localStorage.setItem('total_visitor', totalVisitor.toString());
 
+  // 1. まず画面の数字とアニメーションを最優先で処理（絶対フリーズしない）
   updateDisplay();
   createTripleRipple(circleElement, type);
   spawnFootprints(circleElement.parentElement);
@@ -754,12 +764,13 @@ function handleCounterClick(type, circleElement) {
     totalToday: todayMember + todayVisitor
   };
 
-  // 🌟 【超重要】同じ日のデータなら上書きし、キューに無駄な古いデータを溜めない（誤差対策）
+  // 2. キューには常に最新の合計状態の1レコードのみを格納（誤差を物理的に排除）
   requestQueue = [payload];
   localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
   
+  // 3. 通信処理は「画面処理が終わった後の完全な空き時間」にバックグラウンドで非同期実行させる
   if(!isSending) {
-    processQueue();
+    setTimeout(processQueue, 0);
   }
 }
 
@@ -801,38 +812,38 @@ function processQueue() {
   isSending = true;
   const currentPayload = requestQueue[0];
 
+  // 🌟 完全非同期通信 fetch
   fetch(gasUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(currentPayload)
   })
   .then(res => {
-    if (!res.ok) throw new Error("Server response error");
+    if (!res.ok) throw new Error("Server error");
     return res.json().catch(() => ({ status: "success" })); 
   })
   .then(resData => {
-    // 🌟 送信が完全に成功した場合のみキューから削除
     if (resData.status === "success") {
       requestQueue.shift(); 
       localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue)); 
     }
   })
   .catch(err => { 
-    console.error("Transmission failed. Keep latest data in queue for retry:", err); 
+    console.error("Background sync deferred:", err); 
   })
   .finally(() => {
     isSending = false;
-    // 🌟 エラーでキューに残っている場合、5秒後に再送信を試みる（無限ループによる負荷を防ぐ）
-    if (requestQueue.length > 0 && queueIntervalId !== null) {
+    // エラー等で送信できなかった場合も、画面を絶対にフリーズさせないよう十分なインターバル（5秒）をおいて裏でリトライ
+    if (requestQueue.length > 0) {
       setTimeout(processQueue, 5000);
     }
   });
 }
 
-window.addEventListener('online', processQueue);
+window.addEventListener('online', () => { setTimeout(processQueue, 0); });
 setInterval(() => {
   checkDateReset();
-  processQueue();
+  setTimeout(processQueue, 0);
 }, 30000);
   </script>
 </body>

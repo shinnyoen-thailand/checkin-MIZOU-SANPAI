@@ -40,14 +40,13 @@
       position: relative;
     }
  
-    /* 🌟 マイルストーン達成時に背景に表示されるゴールドのオーラ効果 */
     body.gold-aura-active::before {
       content: '';
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
       z-index: 9997;
-      pointer-events: none; 
+      pointer-events: none;
       animation: auraGlow 3s ease-in-out infinite alternate;
     }
 
@@ -56,7 +55,6 @@
       100% { opacity: 1; }
     }
 
-    /* 🌟 画面上部中央：トータルカウンターボックス */
     .grand-total-container {
       background: rgba(30, 25, 20, 0.7);
       backdrop-filter: blur(25px);
@@ -75,7 +73,6 @@
       transform: translate3d(0, 0, 0) scale(1);
       will-change: transform;
       transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s;
-      
       touch-action: none !important; 
       -webkit-touch-callout: none !important;
       -webkit-user-select: none !important;
@@ -87,13 +84,12 @@
       100% { box-shadow: 0 12px 40px rgba(212, 175, 55, 0.35), inset 0 0 25px rgba(212, 175, 55, 0.1); }
     }
 
-    /* 🏆 マイルストーン達成時の拡大クローズアップ */
     .grand-total-container.milestone-active {
       transform: translate3d(0, calc(50vh - 120px), 0) scale(1.6) !important;
       z-index: 10000;
       background: rgba(15, 12, 10, 0.95);
       border: 2px solid rgba(255, 215, 0, 0.8);
-      pointer-events: none; 
+      pointer-events: none;
     }
 
     .grand-total-container.milestone-active .grand-total-title {
@@ -143,7 +139,6 @@
       transition: font-size 0.3s, color 0.3s;
     }
 
-    /* 📦 メインレイアウトコンテナ */
     .container {
       display: flex;
       flex: 1;
@@ -302,13 +297,13 @@
       overflow: hidden;
       pointer-events: none; 
       z-index: 999;
-      perspective: 1000px; 
+      perspective: 1000px;
     }
 
     .sange-petal-wrapper {
       position: absolute;
       top: -140px; 
-      pointer-events: none; 
+      pointer-events: none;
       animation: sangeFallLinear linear forwards;
     }
 
@@ -345,10 +340,7 @@
     
     .flash-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
       background: #ffffff;
       z-index: 99999;
       pointer-events: none; 
@@ -365,15 +357,12 @@
 
     .milestone-backdrop {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       z-index: 9998;
-      pointer-events: none; 
+      pointer-events: none;
       opacity: 0;
       transition: opacity 0.6s ease;
     }
@@ -468,396 +457,382 @@
   </div>
 
   <script>
-// ⚠️ ここにご自身のGAS WebアプリURLを貼り付けてください
-const gasUrl = 'https://script.google.com/macros/s/AKfycbzeFoq7wvgUKFwhOm3SJlV0zKJ7Gn9opHu-9aUEoErlqWAk26fm2C1cBUiTCVQWd9z_/exec'; 
+    // ⚠️ ここにご自身のGAS WebアプリURLを貼り付けてください
+    const gasUrl = 'https://script.google.com/macros/s/AKfycbzeFoq7wvgUKFwhOm3SJlV0zKJ7Gn9opHu-9aUEoErlqWAk26fm2C1cBUiTCVQWd9z_/exec'; 
+    
+    let requestQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
+    let isSending = false;
+    let queueIntervalId = null; 
+    let isMilestoneMode = false;
 
-let requestQueue = JSON.parse(localStorage.getItem('gas_request_queue') || '[]');
-let isSending = false;
-let queueIntervalId = null; 
-let isMilestoneMode = false;
+    window.addEventListener('DOMContentLoaded', () => {
+      initLocalStorage();
+      updateDisplay();
+      setupLongPress(); 
+      setupClickEvents();
+      
+      window.addEventListener('contextmenu', function(e) { e.preventDefault(); }, { passive: false });
+      document.body.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+      
+      startQueueTimer();
+    });
 
-window.addEventListener('DOMContentLoaded', () => {
-  initLocalStorage();
-  updateDisplay();
-  setupLongPress(); 
-  setupClickEvents();
-  
-  window.addEventListener('contextmenu', function(e) { e.preventDefault(); }, { passive: false });
-  document.body.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
-  
-  // 🌟 通信のための定期タイマー（30秒ごとに自動で裏で同期）
-  startQueueTimer();
-});
-
-function initLocalStorage() {
-  const keys = ['today_member', 'today_visitor', 'total_member', 'total_visitor'];
-  keys.forEach(key => {
-    let val = localStorage.getItem(key);
-    if (val === null || val === undefined || isNaN(parseInt(val, 10))) {
-      localStorage.setItem(key, '0');
+    function initLocalStorage() {
+      const keys = ['today_member', 'today_visitor', 'total_member', 'total_visitor'];
+      keys.forEach(key => {
+        let val = localStorage.getItem(key);
+        if (val === null || val === undefined || isNaN(parseInt(val, 10))) {
+          localStorage.setItem(key, '0');
+        }
+      });
+      if (!localStorage.getItem('lastSavedDate')) {
+        localStorage.setItem('lastSavedDate', getFixedTodayString());
+      }
     }
-  });
-  if (!localStorage.getItem('lastSavedDate')) {
-    localStorage.setItem('lastSavedDate', getFixedTodayString());
-  }
-}
 
-function startQueueTimer() {
-  if (!queueIntervalId) {
-    queueIntervalId = setInterval(() => {
-      // 🌟 iPadの操作を邪魔しないように完全に非同期でキューを処理
+    function startQueueTimer() {
+      if (!queueIntervalId) {
+        queueIntervalId = setInterval(() => {
+          setTimeout(processQueue, 0);
+        }, 15000); 
+      }
+    }
+
+    function stopQueueTimer() {
+      if (queueIntervalId) {
+        clearInterval(queueIntervalId);
+        queueIntervalId = null;
+      }
+    }
+
+    function getFixedTodayString() {
+      const d = new Date();
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric', month: '2-digit', day: '2-digit', calendar: 'gregory'
+      });
+      const parts = formatter.formatToParts(d);
+      let year = parts.find(p => p.type === 'year').value;
+      const month = parts.find(p => p.type === 'month').value;
+      const day = parts.find(p => p.type === 'day').value;
+      
+      // 🌟 【最強の二重防壁】タイ仏暦（2569年など）を確実に西暦（2026年）へ強制変換
+      let yearNum = parseInt(year, 10);
+      if (yearNum > 2500) {
+        yearNum = yearNum - 543;
+        year = yearNum.toString();
+      }
+      return `${year}-${month}-${day}`;
+    }
+
+    function setupClickEvents() {
+      const btnMember = document.getElementById('btn-member');
+      const btnVisitor = document.getElementById('btn-visitor');
+
+      const handleEvent = (type, el, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isMilestoneMode) return; 
+        handleCounterClick(type, el);
+      };
+      btnMember.addEventListener('touchstart', (e) => handleEvent('member', btnMember, e), { passive: false });
+      btnVisitor.addEventListener('touchstart', (e) => handleEvent('visitor', btnVisitor, e), { passive: false });
+    }
+
+    function setupLongPress() {
+      const target = document.getElementById('grand-total-box');
+      let pressTimer;
+      let startX, startY;
+      const moveThreshold = 10; 
+
+      const startPress = (e) => {
+        if (isMilestoneMode) return;
+        if (e.touches && e.touches[0]) {
+          startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+        } else {
+          startX = e.clientX; startY = e.clientY;
+        }
+        clearTimeout(pressTimer);
+        pressTimer = setTimeout(() => { triggerResetAuth(); }, 2000); 
+      };
+      const cancelPress = (e) => { clearTimeout(pressTimer); };
+      const movePress = (e) => {
+        if (e.touches && e.touches[0]) {
+          const distance = Math.sqrt(Math.pow(e.touches[0].clientX - startX, 2) + Math.pow(e.touches[0].clientY - startY, 2));
+          if (distance > moveThreshold) { clearTimeout(pressTimer); }
+        }
+      };
+      target.addEventListener('touchstart', startPress, { passive: true });
+      target.addEventListener('touchmove', movePress, { passive: true });
+      target.addEventListener('touchend', cancelPress, { passive: true });
+      target.addEventListener('touchcancel', cancelPress, { passive: true });
+    }
+    
+    function triggerResetAuth() {
+      const password = prompt("Please enter the admin password to reset:");
+      if (password === null) return; 
+      
+      if (password === "0425") {
+        localStorage.setItem('today_member', '0');
+        localStorage.setItem('today_visitor', '0');
+        localStorage.setItem('total_member', '0');
+        localStorage.setItem('total_visitor', '0');
+        localStorage.removeItem('last_celebrated_milestone');
+        requestQueue = [];
+        localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
+        updateDisplay();
+        alert("Counter reset successfully.");
+      } else {
+        alert("Incorrect password.");
+      }
+    }
+
+    function checkDateReset() {
+      const todayStr = getFixedTodayString();
+      if (localStorage.getItem('lastSavedDate') !== todayStr) {
+        localStorage.setItem('today_member', '0');
+        localStorage.setItem('today_visitor', '0');
+        localStorage.setItem('lastSavedDate', todayStr);
+        requestQueue = [];
+        localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
+      }
+    }
+
+    function updateDisplay() {
+      checkDateReset();
+      let tMember = parseInt(localStorage.getItem('today_member') || '0', 10);
+      let tVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
+      let totalM = parseInt(localStorage.getItem('total_member') || '0', 10);
+      let totalV = parseInt(localStorage.getItem('total_visitor') || '0', 10);
+      
+      if(isNaN(tMember)) tMember = 0;
+      if(isNaN(tVisitor)) tVisitor = 0;
+      if(isNaN(totalM)) totalM = 0;
+      if(isNaN(totalV)) totalV = 0;
+
+      let grandTotal = totalM + totalV;
+      document.getElementById('count-member').innerText = tMember;
+      document.getElementById('count-visitor').innerText = tVisitor;
+      document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
+
+      checkMilestoneCelebration(grandTotal);
+    }
+
+    function checkMilestoneCelebration(grandTotal) {
+      if (grandTotal <= 0) return;
+      if (grandTotal % 10 === 0) { // ★本番運用時は grandTotal % 1000 === 0 に変更
+        const lastCelebrated = parseInt(localStorage.getItem('last_celebrated_milestone') || '0', 10);
+        if (grandTotal !== lastCelebrated) {
+          localStorage.setItem('last_celebrated_milestone', grandTotal.toString());
+          triggerMilestoneCelebration();
+        }
+      }
+    }
+
+    function triggerMilestoneCelebration() {
+      isMilestoneMode = true;
+      stopQueueTimer();
+
+      triggerSangeEffect();
+      triggerGoldGlitterShower();
+
+      const flash = document.getElementById('flash-layer');
+      flash.classList.add('flash-trigger');
+      setTimeout(() => { flash.classList.remove('flash-trigger'); }, 600);
+
+      const backdrop = document.getElementById('milestone-backdrop');
+      const totalBox = document.getElementById('grand-total-box');
+      
+      backdrop.classList.add('active');
+      document.body.classList.add('gold-aura-active');
+      totalBox.classList.add('milestone-active');
+
+      setTimeout(() => {
+        backdrop.classList.remove('active');
+        document.body.classList.remove('gold-aura-active');
+        totalBox.classList.remove('milestone-active');
+        
+        isMilestoneMode = false; 
+        startQueueTimer();
+        setTimeout(processQueue, 0);
+      }, 3000);
+    }
+    
+    function triggerGoldGlitterShower() {
+      const sangeLayer = document.getElementById('sange-layer');
+      for (let i = 0; i < 35; i++) {
+        const glitter = document.createElement('div');
+        glitter.className = 'gold-glitter';
+        const size = 6 + Math.random() * 12;
+        glitter.style.width = `${size}px`;
+        glitter.style.height = `${size}px`;
+        glitter.style.left = `${Math.random() * 100}%`;
+        glitter.style.top = `-20px`;
+        glitter.style.setProperty('--sway-x', `${-80 + Math.random() * 160}px`);
+
+        const delay = Math.random() * 4.0;
+        const duration = 6.0 + Math.random() * 4.0;
+        glitter.style.animationDelay = `${delay}s`;
+        glitter.style.animationDuration = `${duration}s`;
+        sangeLayer.appendChild(glitter);
+        setTimeout(() => { glitter.remove(); }, (delay + duration) * 1000);
+      }
+    }
+
+    function triggerSangeEffect() {
+      const sangeLayer = document.getElementById('sange-layer');
+      const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
+
+      for (let i = 0; i < 25; i++) {
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        const wrapper = document.createElement('div');
+        wrapper.className = 'sange-petal-wrapper';
+
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svgPetal = document.createElementNS(svgNS, "svg");
+        svgPetal.setAttribute("class", "sange-petal");
+        svgPetal.setAttribute("viewBox", "0 0 50 50");
+        svgPetal.setAttribute("fill", `url(#sange-${randomColor})`);
+
+        const useTag = document.createElementNS(svgNS, "use");
+        useTag.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#sange-petal-shape");
+        svgPetal.appendChild(useTag);
+        wrapper.appendChild(svgPetal);
+
+        const size = 75 + Math.random() * 40;
+        wrapper.style.width = `${size}px`;
+        wrapper.style.height = `${size}px`;
+        wrapper.style.left = `${Math.random() * 95}%`;
+
+        const animationDelay = Math.random() * 5.5;
+        const fallDuration = 8.0 + Math.random() * 4.0;
+        const swayDuration = 3.0 + Math.random() * 2.5;
+
+        wrapper.style.animationDelay = `${animationDelay}s`;
+        wrapper.style.animationDuration = `${fallDuration}s`;
+        const swayType = Math.random() > 0.5 ? 'sangeSwayLeft' : 'sangeSwayRight';
+        svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
+
+        sangeLayer.appendChild(wrapper);
+        setTimeout(() => { wrapper.remove(); }, (animationDelay + fallDuration) * 1000);
+      }
+    }
+
+    function handleCounterClick(type, circleElement) {
+      checkDateReset();
+      let todayMember = parseInt(localStorage.getItem('today_member') || '0', 10);
+      let todayVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
+      let totalMember = parseInt(localStorage.getItem('total_member') || '0', 10);
+      let totalVisitor = parseInt(localStorage.getItem('total_visitor') || '0', 10);
+
+      if(isNaN(todayMember)) todayMember = 0;
+      if(isNaN(todayVisitor)) todayVisitor = 0;
+      if(isNaN(totalMember)) totalMember = 0;
+      if(isNaN(totalVisitor)) totalVisitor = 0;
+
+      if (type === 'member') {
+        todayMember++; totalMember++;
+      } else {
+        todayVisitor++; totalVisitor++;
+      }
+
+      localStorage.setItem('today_member', todayMember.toString());
+      localStorage.setItem('today_visitor', todayVisitor.toString());
+      localStorage.setItem('total_member', totalMember.toString());
+      localStorage.setItem('total_visitor', totalVisitor.toString());
+
+      updateDisplay();
+      createTripleRipple(circleElement, type);
+      spawnFootprints(circleElement.parentElement);
+
+      const payload = {
+        type: "click_counter",
+        date: getFixedTodayString(), 
+        memberToday: todayMember,
+        visitorToday: todayVisitor,
+        totalToday: todayMember + todayVisitor
+      };
+
+      // 🌟 最新状態のみに「上書き」してキューの渋滞を物理的に排除
+      requestQueue = [payload];
+      localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
+      
+      if(!isSending) {
+        setTimeout(processQueue, 0);
+      }
+    }
+    
+    function createTripleRipple(button, type) {
+      const delays = [0, 700, 1400];
+      delays.forEach(delay => {
+        setTimeout(() => {
+          const ripple = document.createElement('div');
+          ripple.className = 'ripple-effect';
+          if (type === 'visitor') { ripple.classList.add('ripple-visitor'); }
+          button.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 4000);
+        }, delay);
+      });
+    }
+    
+    function spawnFootprints(zone) {
+      const animations = ['walkUpLeft', 'walkUpRight', 'walkUpFinal'];
+      const svgs = [leftFootSVG, rightFootSVG, leftFootSVG];
+      const delays = [0, 650, 1300];
+      animations.forEach((anim, index) => {
+        setTimeout(() => {
+          const step = document.createElement('div');
+          step.className = 'walking-step';
+          step.innerHTML = svgs[index];
+          step.style.animation = `${anim} 2.4s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
+          zone.appendChild(step);
+          setTimeout(() => step.remove(), 2400);
+        }, delays[index]);
+      });
+    }
+
+    const leftFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M52,85 C45,85 42,75 44,62 C46,52 38,44 40,34 C42,26 52,25 56,32 C60,39 56,48 58,58 C60,68 60,85 52,85 Z"/><circle cx="61" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="41" cy="19" r="4"/></svg>`;
+    const rightFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M48,85 C55,85 58,75 56,62 C54,52 62,44 60,34 C58,26 48,25 44,32 C40,39 44,48 42,58 C40,68 40,85 48,85 Z"/><circle cx="39" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="59" cy="19" r="4"/></svg>`;
+
+    function processQueue() {
+      if (isSending || requestQueue.length === 0) return;
+
+      isSending = true;
+      const currentPayload = requestQueue[0];
+
+      fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(currentPayload)
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Server response error");
+        return res.json().catch(() => ({ status: "success" })); 
+      })
+      .then(resData => {
+        // 🌟 GAS側が成功を返した時だけキューから削除（厳密化）
+        if (resData && resData.status === "success") {
+          requestQueue.shift(); 
+          localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue)); 
+        } else {
+          throw new Error(resData.message || "GAS error");
+        }
+      })
+      .catch(err => { 
+        console.error("Waiting to retry automatic data transmission:", err); 
+      })
+      .finally(() => {
+        isSending = false;
+        if (requestQueue.length > 0) {
+          setTimeout(processQueue, 5000); // エラー時は5秒後に安全に再試行
+        }
+      });
+    }
+
+    window.addEventListener('online', () => { setTimeout(processQueue, 0); });
+    setInterval(() => {
+      checkDateReset();
       setTimeout(processQueue, 0);
-    }, 15000); // 15秒ごとに裏でスプレッドシートに同期
-  }
-}
-
-function stopQueueTimer() {
-  if (queueIntervalId) {
-    clearInterval(queueIntervalId);
-    queueIntervalId = null;
-  }
-}
-
-function getFixedTodayString() {
-  const d = new Date();
-  // 🌟 ロケールを 'en-US' にし、かつ時系列の数え方を明示的に西暦（gregory）に強制指定
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    calendar: 'gregory'
-  });
-  
-  // タイなどの環境で 'gregory' が効かないブラウザバグを想定した【最強の二重防壁】
-  const parts = formatter.formatToParts(d);
-  let year = parts.find(p => p.type === 'year').value;
-  const month = parts.find(p => p.type === 'month').value;
-  const day = parts.find(p => p.type === 'day').value;
-  
-  // もし年が2500以上（タイ仏暦）になっていたら、543年を引いて強制的に西暦にする
-  let yearNum = parseInt(year, 10);
-  if (yearNum > 2500) {
-    yearNum = yearNum - 543;
-    year = yearNum.toString();
-  }
-  
-  return `${year}-${month}-${day}`;
-}
-function setupClickEvents() {
-  const btnMember = document.getElementById('btn-member');
-  const btnVisitor = document.getElementById('btn-visitor');
-
-  const handleEvent = (type, el, e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (isMilestoneMode) return; // 演出中のみガード
-    handleCounterClick(type, el);
-  };
-  
-  btnMember.addEventListener('touchstart', (e) => handleEvent('member', btnMember, e), { passive: false });
-  btnVisitor.addEventListener('touchstart', (e) => handleEvent('visitor', btnVisitor, e), { passive: false });
-}
-
-function setupLongPress() {
-  const target = document.getElementById('grand-total-box');
-  let pressTimer;
-  let startX, startY;
-  const moveThreshold = 10; 
-
-  const startPress = (e) => {
-    if (isMilestoneMode) return;
-    if (e.touches && e.touches[0]) {
-      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
-    } else {
-      startX = e.clientX; startY = e.clientY;
-    }
-    clearTimeout(pressTimer);
-    pressTimer = setTimeout(() => { triggerResetAuth(); }, 2000); 
-  };
-  const cancelPress = (e) => { clearTimeout(pressTimer); };
-  const movePress = (e) => {
-    if (e.touches && e.touches[0]) {
-      const distance = Math.sqrt(Math.pow(e.touches[0].clientX - startX, 2) + Math.pow(e.touches[0].clientY - startY, 2));
-      if (distance > moveThreshold) { clearTimeout(pressTimer); }
-    }
-  };
-  target.addEventListener('touchstart', startPress, { passive: true });
-  target.addEventListener('touchmove', movePress, { passive: true });
-  target.addEventListener('touchend', cancelPress, { passive: true });
-  target.addEventListener('touchcancel', cancelPress, { passive: true });
-}
-
-function triggerResetAuth() {
-  const password = prompt("Please enter the admin password to reset:");
-  if (password === null) return; 
-  
-  if (password === "0425") {
-    localStorage.setItem('today_member', '0');
-    localStorage.setItem('today_visitor', '0');
-    localStorage.setItem('total_member', '0');
-    localStorage.setItem('total_visitor', '0');
-    localStorage.removeItem('last_celebrated_milestone');
-    requestQueue = [];
-    localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
-    updateDisplay();
-    alert("Counter reset successfully.");
-  } else {
-    alert("Incorrect password.");
-  }
-}
-
-function checkDateReset() {
-  const todayStr = getFixedTodayString();
-  if (localStorage.getItem('lastSavedDate') !== todayStr) {
-    localStorage.setItem('today_member', '0');
-    localStorage.setItem('today_visitor', '0');
-    localStorage.setItem('lastSavedDate', todayStr);
-    requestQueue = [];
-    localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
-  }
-}
-
-function updateDisplay() {
-  checkDateReset();
-  let tMember = parseInt(localStorage.getItem('today_member') || '0', 10);
-  let tVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
-  let totalM = parseInt(localStorage.getItem('total_member') || '0', 10);
-  let totalV = parseInt(localStorage.getItem('total_visitor') || '0', 10);
-  
-  if(isNaN(tMember)) tMember = 0;
-  if(isNaN(tVisitor)) tVisitor = 0;
-  if(isNaN(totalM)) totalM = 0;
-  if(isNaN(totalV)) totalV = 0;
-
-  let grandTotal = totalM + totalV;
-  document.getElementById('count-member').innerText = tMember;
-  document.getElementById('count-visitor').innerText = tVisitor;
-  document.getElementById('grand-total').innerText = grandTotal.toLocaleString();
-
-  checkMilestoneCelebration(grandTotal);
-}
-
-function checkMilestoneCelebration(grandTotal) {
-  if (grandTotal <= 0) return;
-  if (grandTotal % 10 === 0) { // ★本番運用時は grandTotal % 1000 === 0 に変更してください
-    const lastCelebrated = parseInt(localStorage.getItem('last_celebrated_milestone') || '0', 10);
-    if (grandTotal !== lastCelebrated) {
-      localStorage.setItem('last_celebrated_milestone', grandTotal.toString());
-      triggerMilestoneCelebration();
-    }
-  }
-}
-
-function triggerMilestoneCelebration() {
-  isMilestoneMode = true;
-  stopQueueTimer(); // 演出中は裏の通信タイマーを一時停止
-
-  triggerSangeEffect();
-  triggerGoldGlitterShower();
-
-  const flash = document.getElementById('flash-layer');
-  flash.classList.add('flash-trigger');
-  setTimeout(() => { flash.classList.remove('flash-trigger'); }, 600);
-
-  const backdrop = document.getElementById('milestone-backdrop');
-  const totalBox = document.getElementById('grand-total-box');
-  
-  backdrop.classList.add('active');
-  document.body.classList.add('gold-aura-active');
-  totalBox.classList.add('milestone-active');
-
-  // 🌟 アニメーションが終了して数字が元の位置に戻る時間（3秒）と「寸分の狂いもなく完全に完全同期」してロック解除
-  setTimeout(() => {
-    backdrop.classList.remove('active');
-    document.body.classList.remove('gold-aura-active');
-    totalBox.classList.remove('milestone-active');
-    
-    // 見た目が戻った瞬間に最速でボタンを有効化
-    isMilestoneMode = false; 
-    
-    // 送信タイマーを安全に再始動
-    startQueueTimer();
-    setTimeout(processQueue, 0);
-  }, 3000);
-}
-
-function triggerGoldGlitterShower() {
-  const sangeLayer = document.getElementById('sange-layer');
-  for (let i = 0; i < 35; i++) {
-    const glitter = document.createElement('div');
-    glitter.className = 'gold-glitter';
-    const size = 6 + Math.random() * 12;
-    glitter.style.width = `${size}px`;
-    glitter.style.height = `${size}px`;
-    glitter.style.left = `${Math.random() * 100}%`;
-    glitter.style.top = `-20px`;
-    glitter.style.setProperty('--sway-x', `${-80 + Math.random() * 160}px`);
-
-    const delay = Math.random() * 4.0;
-    const duration = 6.0 + Math.random() * 4.0;
-    glitter.style.animationDelay = `${delay}s`;
-    glitter.style.animationDuration = `${duration}s`;
-    sangeLayer.appendChild(glitter);
-    setTimeout(() => { glitter.remove(); }, (delay + duration) * 1000);
-  }
-}
-
-function triggerSangeEffect() {
-  const sangeLayer = document.getElementById('sange-layer');
-  const colors = ['pink', 'blue', 'green', 'yellow', 'purple'];
-
-  for (let i = 0; i < 25; i++) {
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    const wrapper = document.createElement('div');
-    wrapper.className = 'sange-petal-wrapper';
-
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svgPetal = document.createElementNS(svgNS, "svg");
-    svgPetal.setAttribute("class", "sange-petal");
-    svgPetal.setAttribute("viewBox", "0 0 50 50");
-    svgPetal.setAttribute("fill", `url(#sange-${randomColor})`);
-
-    const useTag = document.createElementNS(svgNS, "use");
-    useTag.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#sange-petal-shape");
-    svgPetal.appendChild(useTag);
-    wrapper.appendChild(svgPetal);
-
-    const size = 75 + Math.random() * 40;
-    wrapper.style.width = `${size}px`;
-    wrapper.style.height = `${size}px`;
-    wrapper.style.left = `${Math.random() * 95}%`;
-
-    const animationDelay = Math.random() * 5.5;
-    const fallDuration = 8.0 + Math.random() * 4.0;
-    const swayDuration = 3.0 + Math.random() * 2.5;
-
-    wrapper.style.animationDelay = `${animationDelay}s`;
-    wrapper.style.animationDuration = `${fallDuration}s`;
-    const swayType = Math.random() > 0.5 ? 'sangeSwayLeft' : 'sangeSwayRight';
-    svgPetal.style.animation = `${swayType} ${swayDuration}s ease-in-out infinite`;
-
-    sangeLayer.appendChild(wrapper);
-    setTimeout(() => { wrapper.remove(); }, (animationDelay + fallDuration) * 1000);
-  }
-}
-
-function handleCounterClick(type, circleElement) {
-  checkDateReset();
-  let todayMember = parseInt(localStorage.getItem('today_member') || '0', 10);
-  let todayVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
-  let totalMember = parseInt(localStorage.getItem('total_member') || '0', 10);
-  let totalVisitor = parseInt(localStorage.getItem('total_visitor') || '0', 10);
-
-  if(isNaN(todayMember)) todayMember = 0;
-  if(isNaN(todayVisitor)) todayVisitor = 0;
-  if(isNaN(totalMember)) totalMember = 0;
-  if(isNaN(totalVisitor)) totalVisitor = 0;
-
-  if (type === 'member') {
-    todayMember++; totalMember++;
-  } else {
-    todayVisitor++; totalVisitor++;
-  }
-
-  localStorage.setItem('today_member', todayMember.toString());
-  localStorage.setItem('today_visitor', todayVisitor.toString());
-  localStorage.setItem('total_member', totalMember.toString());
-  localStorage.setItem('total_visitor', totalVisitor.toString());
-
-  // 1. まず画面の数字とアニメーションを最優先で処理（絶対フリーズしない）
-  updateDisplay();
-  createTripleRipple(circleElement, type);
-  spawnFootprints(circleElement.parentElement);
-
-  const payload = {
-    type: "click_counter",
-    date: getFixedTodayString(), 
-    memberToday: todayMember,
-    visitorToday: todayVisitor,
-    totalToday: todayMember + todayVisitor
-  };
-
-  // 2. キューには常に最新の合計状態の1レコードのみを格納（誤差を物理的に排除）
-  requestQueue = [payload];
-  localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
-  
-  // 3. 通信処理は「画面処理が終わった後の完全な空き時間」にバックグラウンドで非同期実行させる
-  if(!isSending) {
-    setTimeout(processQueue, 0);
-  }
-}
-
-function createTripleRipple(button, type) {
-  const delays = [0, 700, 1400];
-  delays.forEach(delay => {
-    setTimeout(() => {
-      const ripple = document.createElement('div');
-      ripple.className = 'ripple-effect';
-      if (type === 'visitor') { ripple.classList.add('ripple-visitor'); }
-      button.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 4000);
-    }, delay);
-  });
-}
-
-function spawnFootprints(zone) {
-  const animations = ['walkUpLeft', 'walkUpRight', 'walkUpFinal'];
-  const svgs = [leftFootSVG, rightFootSVG, leftFootSVG];
-  const delays = [0, 650, 1300];
-  animations.forEach((anim, index) => {
-    setTimeout(() => {
-      const step = document.createElement('div');
-      step.className = 'walking-step';
-      step.innerHTML = svgs[index];
-      step.style.animation = `${anim} 2.4s cubic-bezier(0.25, 1, 0.5, 1) forwards`;
-      zone.appendChild(step);
-      setTimeout(() => step.remove(), 2400);
-    }, delays[index]);
-  });
-}
-
-const leftFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M52,85 C45,85 42,75 44,62 C46,52 38,44 40,34 C42,26 52,25 56,32 C60,39 56,48 58,58 C60,68 60,85 52,85 Z"/><circle cx="61" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="41" cy="19" r="4"/></svg>`;
-const rightFootSVG = `<svg width="100%" height="100%" viewBox="0 0 100 100" style="fill: rgba(20, 20, 20, 0.75); filter: drop-shadow(1px 2px 5px rgba(0,0,0,0.4));"><path d="M48,85 C55,85 58,75 56,62 C54,52 62,44 60,34 C58,26 48,25 44,32 C40,39 44,48 42,58 C40,68 40,85 48,85 Z"/><circle cx="39" cy="18" r="6"/><circle cx="50" cy="16" r="4.5"/><circle cx="59" cy="19" r="4"/></svg>`;
-
-function processQueue() {
-  if (isSending || requestQueue.length === 0) return;
-
-  isSending = true;
-  const currentPayload = requestQueue[0];
-
-  // 🌟 完全非同期通信 fetch
-  fetch(gasUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify(currentPayload)
-  })
-  .then(res => {
-    if (!res.ok) throw new Error("Server error");
-    return res.json().catch(() => ({ status: "success" })); 
-  })
-  .then(resData => {
-    if (resData.status === "success") {
-      requestQueue.shift(); 
-      localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue)); 
-    }
-  })
-  .catch(err => { 
-    console.error("Background sync deferred:", err); 
-  })
-  .finally(() => {
-    isSending = false;
-    // エラー等で送信できなかった場合も、画面を絶対にフリーズさせないよう十分なインターバル（5秒）をおいて裏でリトライ
-    if (requestQueue.length > 0) {
-      setTimeout(processQueue, 5000);
-    }
-  });
-}
-
-window.addEventListener('online', () => { setTimeout(processQueue, 0); });
-setInterval(() => {
-  checkDateReset();
-  setTimeout(processQueue, 0);
-}, 30000);
+    }, 30000);
   </script>
 </body>
 </html>

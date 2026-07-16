@@ -717,7 +717,7 @@
       }
     }
 
-    function handleCounterClick(type, circleElement) {
+function handleCounterClick(type, circleElement) {
       checkDateReset();
       let todayMember = parseInt(localStorage.getItem('today_member') || '0', 10);
       let todayVisitor = parseInt(localStorage.getItem('today_visitor') || '0', 10);
@@ -752,8 +752,15 @@
         totalToday: todayMember + todayVisitor
       };
 
-      // 🌟 最新状態のみに「上書き」してキューの渋滞を物理的に排除
-      requestQueue = [payload];
+      // 🌟【重要バグ修正】通信中のデータを壊さず、待機枠（インデックス1）を最新値に更新する
+      if (isSending) {
+        // 現在1件目を送信中なら、次に送るデータ枠（インデックス1）を常に最新の合計値で上書きする
+        requestQueue[1] = payload;
+      } else {
+        // 送信中でなければ、この最新データのみをリストにセットする
+        requestQueue = [payload];
+      }
+
       localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue));
       
       if(!isSending) {
@@ -798,6 +805,7 @@
 
       isSending = true;
       const currentPayload = requestQueue[0];
+      let isSuccess = false; // 通信が成功したかを記録するフラグ
 
       fetch(gasUrl, {
         method: 'POST',
@@ -809,10 +817,10 @@
         return res.json().catch(() => ({ status: "success" })); 
       })
       .then(resData => {
-        // 🌟 GAS側が成功を返した時だけキューから削除（厳密化）
         if (resData && resData.status === "success") {
-          requestQueue.shift(); 
+          requestQueue.shift(); // 成功時のみ、今送ったデータをリストから削除
           localStorage.setItem('gas_request_queue', JSON.stringify(requestQueue)); 
+          isSuccess = true;
         } else {
           throw new Error(resData.message || "GAS error");
         }
@@ -823,7 +831,8 @@
       .finally(() => {
         isSending = false;
         if (requestQueue.length > 0) {
-          setTimeout(processQueue, 5000); // エラー時は5秒後に安全に再試行
+          // 🌟【最適化】成功時は0.5秒後に連打の最終結果をすぐ送信、通信エラー時は5秒後に再試行する
+          setTimeout(processQueue, isSuccess ? 500 : 5000);
         }
       });
     }

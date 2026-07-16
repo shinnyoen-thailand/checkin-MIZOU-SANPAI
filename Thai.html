@@ -520,16 +520,29 @@ function stopQueueTimer() {
 
 function getFixedTodayString() {
   const d = new Date();
+  // 🌟 ロケールを 'en-US' にし、かつ時系列の数え方を明示的に西暦（gregory）に強制指定
   const formatter = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric', month: '2-digit', day: '2-digit', calendar: 'gregory'
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    calendar: 'gregory'
   });
+  
+  // タイなどの環境で 'gregory' が効かないブラウザバグを想定した【最強の二重防壁】
   const parts = formatter.formatToParts(d);
-  const year = parts.find(p => p.type === 'year').value;
+  let year = parts.find(p => p.type === 'year').value;
   const month = parts.find(p => p.type === 'month').value;
   const day = parts.find(p => p.type === 'day').value;
+  
+  // もし年が2500以上（タイ仏暦）になっていたら、543年を引いて強制的に西暦にする
+  let yearNum = parseInt(year, 10);
+  if (yearNum > 2500) {
+    yearNum = yearNum - 543;
+    year = yearNum.toString();
+  }
+  
   return `${year}-${month}-${day}`;
 }
-
 function setupClickEvents() {
   const btnMember = document.getElementById('btn-member');
   const btnVisitor = document.getElementById('btn-visitor');
